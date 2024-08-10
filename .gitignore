@@ -1,5 +1,1 @@
-# Backup files
-*.bak
-
-# Temporary files
-*.tmp
+*.vpp.bak_*
