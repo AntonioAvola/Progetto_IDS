@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.unicam</groupId>
-    <artifactId>Progetto_IDS_JAVA</artifactId>
+    <artifactId>Progetto_JAVA</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
