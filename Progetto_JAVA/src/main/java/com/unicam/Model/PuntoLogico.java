@@ -1,7 +1,7 @@
 package com.unicam.Model;
 
 public class PuntoLogico {
-
+    private int ID;
     private String titolo;
     private String descrizione;
     private PuntoGeolocalizzato riferimento;

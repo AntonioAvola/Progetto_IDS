@@ -2,27 +2,27 @@ package com.unicam.Model;
 
 public class PuntoGeolocalizzato {
 
-    private long longitudine;
-    private long latitudine;
+    private Double longitudine;
+    private Double latitudine;
 
-    public PuntoGeolocalizzato(long longitudine, long latitudine){
+    public PuntoGeolocalizzato(Double longitudine, Double latitudine){
         this.longitudine = longitudine;
         this.latitudine = latitudine;
     }
 
-    public long getLongitudine() {
+    public Double getLongitudine() {
         return longitudine;
     }
 
-    public void setLongitudine(long longitudine) {
+    public void setLongitudine(Double longitudine) {
         this.longitudine = longitudine;
     }
 
-    public long getLatitudine() {
+    public Double getLatitudine() {
         return latitudine;
     }
 
-    public void setLatitudine(long latitudine) {
+    public void setLatitudine(Double latitudine) {
         this.latitudine = latitudine;
     }
 }
