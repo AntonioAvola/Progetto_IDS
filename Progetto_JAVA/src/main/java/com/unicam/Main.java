@@ -2,9 +2,7 @@ package com.unicam;
 
 import com.unicam.Controller.ContenutoController;
 import com.unicam.Model.*;
-import com.unicam.Service.AutorizzioneService;
-
-import java.time.LocalDateTime;
+import com.unicam.Service.AutorizzazioneService;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +12,7 @@ public class Main {
         Contenuto contenuto = new Contenuto(1L, "vacanza", "è stato bellissimo", TipoContenuto.IMMAGINE, utente, punto, StatoContenuto.IN_ATTESA);
 
 
-        AutorizzioneService autorizzazioneService = new AutorizzioneService();
+        AutorizzazioneService autorizzazioneService = new AutorizzazioneService();
         ContenutoController controller = new ContenutoController(autorizzazioneService);
 
 
