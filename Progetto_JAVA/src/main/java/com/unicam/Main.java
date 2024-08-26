@@ -2,6 +2,7 @@ package com.unicam;
 
 import com.unicam.Controller.ContenutoController;
 import com.unicam.Model.*;
+import com.unicam.Repository.ContenutoRepository;
 import com.unicam.Service.AutorizzazioneService;
 
 public class Main {
@@ -11,9 +12,12 @@ public class Main {
         PuntoGeolocalizzato punto = new PuntoGeolocalizzato(40.24222, 23.453);
         Contenuto contenuto = new Contenuto(1L, "vacanza", "è stato bellissimo", TipoContenuto.IMMAGINE, utente, punto, StatoContenuto.IN_ATTESA);
 
+        ContenutoRepository repository = new ContenutoRepository();
+
+
 
         AutorizzazioneService autorizzazioneService = new AutorizzazioneService();
-        ContenutoController controller = new ContenutoController(autorizzazioneService);
+        ContenutoController controller = new ContenutoController(autorizzazioneService, repository);
 
 
         try {
@@ -21,7 +25,13 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.println("Errore: " + e.getMessage());
         }
+
+        System.out.println("La lista di contenuti pubblicati:");
+        for (Contenuto c : repository.findAll()) {
+            System.out.println(c.getTitolo() + ": " + c.getDescrizione());
+        }
     }
+
 
 
 }
