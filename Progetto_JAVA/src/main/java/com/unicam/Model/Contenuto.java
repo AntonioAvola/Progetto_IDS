@@ -12,6 +12,8 @@ public class Contenuto implements IContenuto{
     private StatoContenuto stato;
 
 
+    public Contenuto(){}
+
     public Contenuto(Long id, String titolo, String descrizione, User autore, StatoContenuto stato) {
         this.id = id;
         this.titolo = titolo;
