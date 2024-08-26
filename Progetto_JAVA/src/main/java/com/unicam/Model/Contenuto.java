@@ -2,7 +2,7 @@ package com.unicam.Model;
 
 import java.time.LocalDateTime;
 
-public class Contenuto {
+public class Contenuto implements IContenuto{
 
     private Long id;
     private String titolo;
@@ -12,8 +12,7 @@ public class Contenuto {
     private StatoContenuto stato;
 
 
-    public Contenuto(Long id, String titolo, String descrizione, TipoContenuto tipo, User autore,
-                     PuntoGeolocalizzato puntoDiInteresse, StatoContenuto stato) {
+    public Contenuto(Long id, String titolo, String descrizione, User autore, StatoContenuto stato) {
         this.id = id;
         this.titolo = titolo;
         this.descrizione = descrizione;

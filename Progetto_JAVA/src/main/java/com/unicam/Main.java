@@ -10,7 +10,7 @@ public class Main {
 
         User utente = new User("Antonio", "antonio.avola02@gmail.com", "1234", "Castelfidardo", "anto2002");
         PuntoGeolocalizzato punto = new PuntoGeolocalizzato(40.24222, 23.453);
-        Contenuto contenuto = new Contenuto(1L, "vacanza", "è stato bellissimo", TipoContenuto.IMMAGINE, utente, punto, StatoContenuto.IN_ATTESA);
+        Contenuto contenuto = new Contenuto(1L, "vacanza", "è stato bellissimo", utente, StatoContenuto.IN_ATTESA);
 
         ContenutoRepository repository = new ContenutoRepository();
 
