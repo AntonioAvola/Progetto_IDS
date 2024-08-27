@@ -1,4 +1,4 @@
-package com.unicam.Contenuto;
+package com.unicam.Model.ContenutoBuilder;
 
 import com.unicam.Model.Contenuto;
 import com.unicam.Model.Itinerario;

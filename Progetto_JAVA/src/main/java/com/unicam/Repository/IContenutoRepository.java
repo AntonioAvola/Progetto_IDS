@@ -14,4 +14,5 @@ public interface IContenutoRepository {
     List<Contenuto> findAll();
 
     void delete(Long ID);
+
 }

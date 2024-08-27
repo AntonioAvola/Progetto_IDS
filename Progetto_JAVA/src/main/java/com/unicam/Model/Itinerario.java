@@ -9,7 +9,7 @@ public class Itinerario extends Contenuto{
     private List<PuntoGeolocalizzato> puntiDiInteresse = new ArrayList<PuntoGeolocalizzato>();
 
     public Itinerario(Long id, String titolo, String descrizione, User autore, StatoContenuto stato) {
-        super(id, titolo, descrizione, autore, stato);
+        super(titolo, descrizione, stato);
     }
 
     public List<PuntoGeolocalizzato> getPuntiDiInteresse() {

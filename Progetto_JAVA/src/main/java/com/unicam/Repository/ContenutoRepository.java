@@ -9,8 +9,11 @@ public class ContenutoRepository implements IContenutoRepository{
 
     private List<Contenuto> contenuti = new ArrayList<Contenuto>();
 
+
+
     @Override
     public void save(Contenuto contenuto) {
+
         contenuti.add(contenuto);
     }
 
@@ -38,6 +41,8 @@ public class ContenutoRepository implements IContenutoRepository{
         }
         System.out.println("Contenuto rimosso con successo");
     }
+
+
 
 
 
