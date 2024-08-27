@@ -7,7 +7,6 @@ public class Evento {
     private User creatore;
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
-
     private String descrizione;
     private PuntoGeolocalizzato luogo;
 
@@ -59,5 +58,5 @@ public class Evento {
         this.luogo = luogo;
     }
 
-    //aggiungere lo stato (pending o no)?
+
 }

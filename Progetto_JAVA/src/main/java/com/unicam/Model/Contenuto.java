@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public class Contenuto {
+public abstract class  Contenuto {
 
     private String id;
     private String titolo;

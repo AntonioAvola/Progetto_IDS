@@ -9,10 +9,10 @@ public interface IContenutoRepository {
 
     void save(Contenuto contenuto);
 
-    Contenuto findById(Long id);
+    Contenuto findById(String id);
 
     List<Contenuto> findAll();
 
-    void delete(Long ID);
+    void delete(String ID);
 
 }

@@ -23,9 +23,9 @@ public class ContenutoRepository implements IContenutoRepository{
     }
 
     @Override
-    public Contenuto findById(Long id) {
+    public Contenuto findById(String id) {
         for (Contenuto contenuto : contenuti) {
-            if (contenuto.getId() == id) {
+            if (contenuto.getId().equals(id)) {
                 return contenuto;
             }
         }
@@ -33,9 +33,9 @@ public class ContenutoRepository implements IContenutoRepository{
     }
 
     @Override
-    public void delete(Long id){
+    public void delete(String id){
         for (Contenuto contenuto : contenuti) {
-            if (contenuto.getId() == id) {
+            if (contenuto.getId().equals(id)) {
                 contenuti.remove(contenuto);
             }
         }
