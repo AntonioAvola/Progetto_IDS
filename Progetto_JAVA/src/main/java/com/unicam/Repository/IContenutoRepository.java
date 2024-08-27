@@ -1,17 +1,16 @@
 package com.unicam.Repository;
 
-import com.unicam.Controller.ContenutoController;
 import com.unicam.Model.Contenuto;
 
 import java.util.List;
 
-public interface IContenutoRepository {
+public interface IContenutoRepository<T extends Contenuto>{
 
-    void save(Contenuto contenuto);
+    void add(T contenuto);
 
-    Contenuto findById(String id);
+    T findById(String id);
 
-    List<Contenuto> findAll();
+    List<T> findAll();
 
     void delete(String ID);
 

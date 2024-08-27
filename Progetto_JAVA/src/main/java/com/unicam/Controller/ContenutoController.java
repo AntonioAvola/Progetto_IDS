@@ -18,7 +18,7 @@ public class ContenutoController {
         if(autorizzioneService.PubblicaContenuto(utente)){
             System.out.println("Contenuto pubblicato con successo!");
             System.out.println("---------------------------------------");
-            repository.save(contenuto);
+            repository.add(contenuto);
 
         }else{
             throw new IllegalArgumentException("l'utente non ha il permesso di pubblicare contenuti");

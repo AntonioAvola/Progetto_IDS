@@ -5,26 +5,24 @@ import com.unicam.Model.Contenuto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContenutoRepository implements IContenutoRepository{
+public class ContenutoRepository<T extends Contenuto> implements IContenutoRepository {
 
-    private List<Contenuto> contenuti = new ArrayList<Contenuto>();
-
-
+    private List<T> contenuti = new ArrayList<T>();
 
     @Override
-    public void save(Contenuto contenuto) {
-
-        contenuti.add(contenuto);
+    public void add(T contenuto){
+        this.contenuti.add(contenuto);
     }
 
     @Override
-    public List<Contenuto> findAll() {
+    public List<T> findAll() {
         return contenuti;
     }
 
+
     @Override
-    public Contenuto findById(String id) {
-        for (Contenuto contenuto : contenuti) {
+    public T findById(String id) {
+        for (T contenuto : contenuti) {
             if (contenuto.getId().equals(id)) {
                 return contenuto;
             }
