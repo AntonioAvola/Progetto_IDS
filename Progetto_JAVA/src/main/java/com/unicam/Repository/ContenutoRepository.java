@@ -5,7 +5,7 @@ import com.unicam.Model.Contenuto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContenutoRepository<T extends Contenuto> implements IContenutoRepository {
+public class ContenutoRepository<T extends Contenuto> implements IContenutoRepository<T> {
 
     private List<T> contenuti = new ArrayList<T>();
 
@@ -39,9 +39,5 @@ public class ContenutoRepository<T extends Contenuto> implements IContenutoRepos
         }
         System.out.println("Contenuto rimosso con successo");
     }
-
-
-
-
 
 }

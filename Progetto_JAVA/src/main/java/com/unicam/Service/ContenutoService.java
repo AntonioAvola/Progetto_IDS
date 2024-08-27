@@ -16,4 +16,11 @@ public class ContenutoService <T extends Contenuto> {
         }
         repo.add(contenuto);
     }
+
+    public void approvaContenuto(User utente, T contenuto){
+        if(!autorizzazioni.verificaPermesso(utente, "ApprovaContenuto")){
+            throw new UnsupportedOperationException("Non hai il permesso di validare contenuti");
+        }
+        // TODO implementare logica per approvare il contenuto
+    }
 }
