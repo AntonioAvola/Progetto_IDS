@@ -1,5 +1,7 @@
 package com.unicam.Model;
 
+import com.unicam.dto.UtenteDTO;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -8,8 +10,8 @@ public class Itinerario extends Contenuto{
 
     private List<PuntoGeolocalizzato> puntiDiInteresse = new ArrayList<PuntoGeolocalizzato>();
 
-    public Itinerario(Long id, String titolo, String descrizione, User autore, StatoContenuto stato) {
-        super(titolo, descrizione, stato);
+    public Itinerario(Long id, String titolo, String descrizione, UtenteDTO autore) {
+        super(titolo, descrizione, autore);
     }
 
     public List<PuntoGeolocalizzato> getPuntiDiInteresse() {

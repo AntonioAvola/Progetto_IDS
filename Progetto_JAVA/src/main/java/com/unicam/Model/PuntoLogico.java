@@ -1,38 +1,18 @@
 package com.unicam.Model;
 
-public class PuntoLogico {
-    private int ID;
-    private String titolo;
-    private String descrizione;
+import com.unicam.dto.UtenteDTO;
+
+public class PuntoLogico extends Contenuto{
+
     private PuntoGeolocalizzato riferimento;
 
-    public PuntoLogico(String titolo, String descrizione, PuntoGeolocalizzato punto){
-        this.titolo = titolo;
-        this.descrizione = descrizione;
+    public PuntoLogico(String descrizione, UtenteDTO autore, PuntoGeolocalizzato punto){
+        super("AVVISO", descrizione, autore);
         this.riferimento = punto;
     }
 
-    public String getTitolo() {
-        return titolo;
-    }
-
-    public void setTitolo(String titolo) {
-        this.titolo = titolo;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
 
     public PuntoGeolocalizzato getRiferimento() {
         return riferimento;
-    }
-
-    public void setRiferimento(PuntoGeolocalizzato riferimento) {
-        this.riferimento = riferimento;
     }
 }

@@ -1,5 +1,7 @@
 package com.unicam.Model;
 
+import com.unicam.dto.UtenteDTO;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,18 +11,14 @@ public abstract class  Contenuto {
     private String id;
     private String titolo;
     private String descrizione;
-    private LocalDateTime dataCreazione;
-    private User autore;
+    private UtenteDTO autore;
     private StatoContenuto stato;
 
 
-
-
-    public Contenuto(String titolo, String descrizione, StatoContenuto stato) {
+    public Contenuto(String titolo, String descrizione, UtenteDTO autore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
-        this.dataCreazione = LocalDateTime.now();
-        this.stato = stato;
+        this.autore = autore;
     }
 
 
@@ -48,19 +46,11 @@ public abstract class  Contenuto {
         this.descrizione = descrizione;
     }
 
-    public LocalDateTime getDataCreazione() {
-        return dataCreazione;
-    }
-
-    public void setDataCreazione(LocalDateTime dataCreazione) {
-        this.dataCreazione = dataCreazione;
-    }
-
-    public User getAutore() {
+    public UtenteDTO getAutore() {
         return autore;
     }
 
-    public void setAutore(User autore) {
+    public void setAutore(UtenteDTO autore) {
         this.autore = autore;
     }
 
@@ -76,7 +66,6 @@ public abstract class  Contenuto {
     public String toString(){
         return "Titolo: " + titolo + "\n"
                 + "Descrizione: "+ descrizione + "\n"
-                + "Data creazione: " + dataCreazione + "\n"
                 + "Autore: " + autore + "\n"
                 + "Stato: " + stato;
     }

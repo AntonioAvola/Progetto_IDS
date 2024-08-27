@@ -1,54 +1,20 @@
 package com.unicam.Model;
 
+import com.unicam.dto.UtenteDTO;
+
 import java.time.LocalDateTime;
 
-public class Evento {
+public class Evento extends Contenuto{
 
-    private User creatore;
-    private LocalDateTime dataInizio;
-    private LocalDateTime dataFine;
-    private String descrizione;
+    private Tempo durata;
     private PuntoGeolocalizzato luogo;
 
-    public Evento(User user, LocalDateTime inizio, LocalDateTime fine, String descrizione, PuntoGeolocalizzato punto){
-        this.creatore = user;
-        this.dataInizio = inizio;
-        this.dataFine = fine;
-        this.descrizione = descrizione;
+    public Evento(Long id, String titolo, String descrizione, UtenteDTO autore, Tempo tempo, PuntoGeolocalizzato punto) {
+        super(titolo, descrizione, autore);
+        this.durata = tempo;
         this.luogo = punto;
     }
 
-    public User getCreatore() {
-        return creatore;
-    }
-
-    public void setCreatore(User creatore) {
-        this.creatore = creatore;
-    }
-
-    public LocalDateTime getDataInizio() {
-        return dataInizio;
-    }
-
-    public void setDataInizio(LocalDateTime dataInizio) {
-        this.dataInizio = dataInizio;
-    }
-
-    public LocalDateTime getDataFine() {
-        return dataFine;
-    }
-
-    public void setDataFine(LocalDateTime dataFine) {
-        this.dataFine = dataFine;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
 
     public PuntoGeolocalizzato getLuogo() {
         return luogo;
@@ -58,5 +24,9 @@ public class Evento {
         this.luogo = luogo;
     }
 
+
+    public Tempo getDurata() {
+        return durata;
+    }
 
 }
