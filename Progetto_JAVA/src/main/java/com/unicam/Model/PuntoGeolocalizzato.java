@@ -7,6 +7,9 @@ public class PuntoGeolocalizzato extends Contenuto{
     private Double longitudine;
     private Double latitudine;
 
+    public PuntoGeolocalizzato(){
+        super();
+    }
     public PuntoGeolocalizzato(Long id, String titolo, String descrizione, UtenteDTO autore, Double longitudine, Double latitudine){
         super(titolo, descrizione, autore);
         this.longitudine = longitudine;

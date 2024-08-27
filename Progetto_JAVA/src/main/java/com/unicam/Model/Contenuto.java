@@ -14,6 +14,7 @@ public abstract class  Contenuto {
     private UtenteDTO autore;
     private StatoContenuto stato;
 
+    public Contenuto(){}
 
     public Contenuto(String titolo, String descrizione, UtenteDTO autore) {
         this.titolo = titolo;

@@ -9,6 +9,9 @@ public class Evento extends Contenuto{
     private Tempo durata;
     private PuntoGeolocalizzato luogo;
 
+    public Evento(){
+        super();
+    }
     public Evento(Long id, String titolo, String descrizione, UtenteDTO autore, Tempo tempo, PuntoGeolocalizzato punto) {
         super(titolo, descrizione, autore);
         this.durata = tempo;
@@ -27,6 +30,10 @@ public class Evento extends Contenuto{
 
     public Tempo getDurata() {
         return durata;
+    }
+
+    public void setDurata(Tempo durata){
+        this.durata = durata;
     }
 
 }
