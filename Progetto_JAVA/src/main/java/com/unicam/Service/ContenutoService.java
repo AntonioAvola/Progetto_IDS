@@ -10,8 +10,13 @@ public class ContenutoService <T extends Contenuto> {
     private ContenutoRepository repo;
     private AuthorizationService autorizzazioni = new AuthorizationService();
 
+
+    public ContenutoService(ContenutoRepository repo) {
+        this.repo = repo;
+    }
+
     public void AggiungiContenuto(User utente, T contenuto){
-        if(autorizzazioni.verificaPermesso(utente, "AggiungiContenuto")){
+        if(!autorizzazioni.verificaPermesso(utente, "AggiungiContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di creare contenuti");
         }
         repo.add(contenuto);
