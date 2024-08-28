@@ -9,6 +9,7 @@ public class Contest extends Contenuto{
 
     private List<UtenteDTO> partecipanti = new ArrayList<>();
 
+    private Tempo durata;
     private int votiFavore;
     private int votiContrari;
 
@@ -34,5 +35,13 @@ public class Contest extends Contenuto{
 
     public int getVotiContrari() {
         return votiContrari;
+    }
+
+    public Tempo getDurata() {
+        return durata;
+    }
+
+    public void setDurata(Tempo durata) {
+        this.durata = durata;
     }
 }
