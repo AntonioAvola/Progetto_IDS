@@ -25,4 +25,5 @@ public class Itinerario extends Contenuto{
     public void setPuntiDiInteresse(List<PuntoGeolocalizzato> puntiDiInteresse) {
         this.puntiDiInteresse = puntiDiInteresse;
     }
+
 }

@@ -71,4 +71,5 @@ public abstract class  Contenuto {
                 + "Stato: " + stato;
     }
 
+
 }
