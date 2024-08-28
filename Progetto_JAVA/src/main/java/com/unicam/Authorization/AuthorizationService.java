@@ -15,6 +15,7 @@ public class AuthorizationService {
         autorizzazioni.put(Ruolo.CONTRIBUTOR, Set.of("CreaContenuto", "ProponiContenuto", "ModificaContenuto"));
         autorizzazioni.put(Ruolo.ANIMATORE, Set.of("CreaEvento", "CreaContest", "ApprovaPropostaContest"));
         autorizzazioni.put(Ruolo.CURATORE, Set.of("ApprovaContenuto", "DeclinaContenuto", "GestisciContenuti"));
+        autorizzazioni.put(Ruolo.CONTRIBUTOR_AUTORIZZATO, Set.of("CreaContenuto", "AggiungiContenuto", "ModificaContenuto"));
     }
 
     public boolean verificaPermesso(User utente, String azione){

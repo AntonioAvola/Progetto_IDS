@@ -18,7 +18,7 @@ public class Main {
 
         ContenutoService<Evento> eventoService = new ContenutoService(contenutoRepo);
 
-        UtenteDTO utente = new UtenteDTO("Antonio Avola", "Castelfidardo", Ruolo.CONTRIBUTOR);
+        UtenteDTO utente = new UtenteDTO("Antonio Avola", "Castelfidardo", Ruolo.CONTRIBUTOR_AUTORIZZATO);
         LocalDateTime inizio = LocalDateTime.of(2024,8,28,10,0);
         LocalDateTime fine = LocalDateTime.of(2024,8,28,12,0);
         Tempo durata = new Tempo(inizio, fine);

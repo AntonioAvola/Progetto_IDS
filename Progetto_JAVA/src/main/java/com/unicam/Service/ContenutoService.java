@@ -19,6 +19,7 @@ public class ContenutoService <T extends Contenuto> {
         if(!autorizzazioni.verificaPermesso(utente, "AggiungiContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di creare contenuti");
         }
+        System.out.println("Contenuto aggiunto");
         repo.add(contenuto);
     }
 
@@ -28,4 +29,5 @@ public class ContenutoService <T extends Contenuto> {
         }
         // TODO implementare logica per approvare il contenuto
     }
+
 }
