@@ -18,16 +18,16 @@ public class ContenutoService <T extends Contenuto> {
 
     public void AggiungiContenuto(User user, T contenuto){
         UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
-        if(!autorizzazioni.verificaPermesso(utente, "AggiungiContenuto")){
+        if(!autorizzazioni.VerificaPermesso(utente, "AggiungiContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di creare contenuti");
         }
         System.out.println("Contenuto aggiunto");
         repo.add(contenuto);
     }
 
-    public void approvaContenuto(User user, T contenuto){
+    public void ApprovaContenuto(User user, T contenuto){
         UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
-        if(!autorizzazioni.verificaPermesso(utente, "ApprovaContenuto")){
+        if(!autorizzazioni.VerificaPermesso(utente, "ApprovaContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di validare contenuti");
         }
         // TODO implementare logica per approvare il contenuto
