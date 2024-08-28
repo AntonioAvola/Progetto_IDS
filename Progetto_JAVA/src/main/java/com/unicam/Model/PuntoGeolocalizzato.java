@@ -4,8 +4,8 @@ import com.unicam.dto.UtenteDTO;
 
 public class PuntoGeolocalizzato extends Contenuto{
 
-    private Double longitudine;
-    private Double latitudine;
+    private double longitudine;
+    private double latitudine;
 
     public PuntoGeolocalizzato(){
         super();

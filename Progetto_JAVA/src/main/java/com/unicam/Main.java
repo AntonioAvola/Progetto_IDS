@@ -28,7 +28,7 @@ public class Main {
         geoBuilder.BuildTitolo("Spiaggia");
         geoBuilder.BuildDescrizione("spiaggia, vicino al mare");
         geoBuilder.BuildSpecifica(43.6167, 13.5167);
-        PuntoGeolocalizzato punto = geoBuilder.Result();
+        PuntoMappaSemplice punto = new PuntoMappaSemplice();
 
 
         //Creo un nuovo evento

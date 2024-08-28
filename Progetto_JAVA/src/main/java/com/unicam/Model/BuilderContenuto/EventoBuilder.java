@@ -1,9 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
-import com.unicam.Model.Evento;
-import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.Tempo;
-import com.unicam.Model.User;
+import com.unicam.Model.*;
 import com.unicam.dto.UtenteDTO;
 
 public class EventoBuilder implements Builder{
@@ -29,12 +26,12 @@ public class EventoBuilder implements Builder{
         this.evento.setDescrizione(descrizione);
     }
 
-    public void BuildSpecifica(Tempo tempo, PuntoGeolocalizzato punto){
+    public void BuildSpecifica(Tempo tempo, PuntoMappaSemplice punto){
         BuildInizioFine(tempo);
         BuildLuogo(punto);
     }
 
-    private void BuildLuogo(PuntoGeolocalizzato punto) {
+    private void BuildLuogo(PuntoMappaSemplice punto) {
         this.evento.setLuogo(punto);
     }
 

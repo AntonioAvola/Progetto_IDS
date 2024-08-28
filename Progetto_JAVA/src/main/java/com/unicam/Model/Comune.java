@@ -3,9 +3,9 @@ package com.unicam.Model;
 public class Comune {
 
     private String nome;
-    private PuntoGeolocalizzato posizione;
+    private PuntoMappaSemplice posizione;
 
-    public Comune(String nome, PuntoGeolocalizzato posizione){
+    public Comune(String nome, PuntoMappaSemplice posizione){
         this.nome = nome;
         this.posizione = posizione;
     }
@@ -18,11 +18,11 @@ public class Comune {
         this.nome = nome;
     }
 
-    public PuntoGeolocalizzato getPosizione() {
+    public PuntoMappaSemplice getPosizione() {
         return posizione;
     }
 
-    public void setPosizione(PuntoGeolocalizzato posizione) {
+    public void setPosizione(PuntoMappaSemplice posizione) {
         this.posizione = posizione;
     }
 }

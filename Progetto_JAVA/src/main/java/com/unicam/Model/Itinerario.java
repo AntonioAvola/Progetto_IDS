@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Itinerario extends Contenuto{
 
     private List<PuntoGeolocalizzato> puntiDiInteresse = new ArrayList<PuntoGeolocalizzato>();
+    //private List<PuntoMappaSemplice> puntiDiInteresse2 = new ArrayList<PuntoMappaSemplice>();
 
     public Itinerario(){
         super();
