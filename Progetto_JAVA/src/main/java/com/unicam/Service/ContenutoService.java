@@ -4,6 +4,7 @@ import com.unicam.Authorization.AuthorizationService;
 import com.unicam.Model.Contenuto;
 import com.unicam.Model.User;
 import com.unicam.Repository.ContenutoRepository;
+import com.unicam.dto.UtenteDTO;
 
 public class ContenutoService <T extends Contenuto> {
 
@@ -15,7 +16,8 @@ public class ContenutoService <T extends Contenuto> {
         this.repo = repo;
     }
 
-    public void AggiungiContenuto(User utente, T contenuto){
+    public void AggiungiContenuto(User user, T contenuto){
+        UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
         if(!autorizzazioni.verificaPermesso(utente, "AggiungiContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di creare contenuti");
         }
@@ -23,7 +25,8 @@ public class ContenutoService <T extends Contenuto> {
         repo.add(contenuto);
     }
 
-    public void approvaContenuto(User utente, T contenuto){
+    public void approvaContenuto(User user, T contenuto){
+        UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
         if(!autorizzazioni.verificaPermesso(utente, "ApprovaContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di validare contenuti");
         }

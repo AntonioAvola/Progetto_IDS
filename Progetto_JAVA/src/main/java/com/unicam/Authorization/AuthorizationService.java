@@ -2,6 +2,7 @@ package com.unicam.Authorization;
 
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
+import com.unicam.dto.UtenteDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class AuthorizationService {
         autorizzazioni.put(Ruolo.CONTRIBUTOR_AUTORIZZATO, Set.of("CreaContenuto", "AggiungiContenuto", "ModificaContenuto"));
     }
 
-    public boolean verificaPermesso(User utente, String azione){
+    public boolean verificaPermesso(UtenteDTO utente, String azione){
         Set<String> permessiPresenti = autorizzazioni.get(utente.getRuolo());
         return permessiPresenti != null && permessiPresenti.contains(azione);
     }
