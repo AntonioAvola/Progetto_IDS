@@ -2,11 +2,13 @@ package com.unicam.Authorization;
 
 import com.unicam.Model.Ruolo;
 import com.unicam.dto.UtenteDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Service
 public class AuthorizationService {
     private static final Map<Ruolo, Set<String>> autorizzazioni = new HashMap<Ruolo, Set<String>>();
 

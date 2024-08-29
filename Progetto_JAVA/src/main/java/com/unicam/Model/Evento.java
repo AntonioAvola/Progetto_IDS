@@ -1,16 +1,20 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(name = "evento")
 public class Evento extends Contenuto{
 
     private Tempo durata;
+
+    @OneToOne
     private PuntoGeolocalizzato luogo;
 
     public Evento(){

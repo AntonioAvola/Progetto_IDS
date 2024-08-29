@@ -11,10 +11,10 @@ public interface IContenutoRepository<T extends Contenuto> {
 
     void add(T contenuto);
 
-    T findById(String id);
+    T findById(int id);
 
     List<T> findAll();
 
-    void delete(String ID);
+    void delete(int ID);
 
 }

@@ -1,8 +1,16 @@
 package com.unicam.Model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table
 public class Comune {
 
+    @Id
+    private int id;
     private String nome;
+
+    @OneToOne
     private PuntoGeolocalizzato posizione;
 
     public Comune(String nome, PuntoGeolocalizzato posizione){

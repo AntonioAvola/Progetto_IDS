@@ -1,13 +1,23 @@
 package com.unicam.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
-@Table
+@Table(name = "utente")
 public class User {
+
+    @Id
+    @SequenceGenerator(
+            name = "utente",
+            sequenceName = "utente_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "utente"
+    )
     private int id;
     private String name;
     private String username;

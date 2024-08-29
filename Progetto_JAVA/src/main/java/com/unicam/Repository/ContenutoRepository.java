@@ -21,9 +21,9 @@ public class ContenutoRepository<T extends Contenuto> implements IContenutoRepos
 
 
     @Override
-    public T findById(String id) {
+    public T findById(int id) {
         for (T contenuto : contenuti) {
-            if (contenuto.getId().equals(id)) {
+            if (contenuto.getId() == id) {
                 return contenuto;
             }
         }
@@ -31,9 +31,9 @@ public class ContenutoRepository<T extends Contenuto> implements IContenutoRepos
     }
 
     @Override
-    public void delete(String id){
+    public void delete(int id){
         for (Contenuto contenuto : contenuti) {
-            if (contenuto.getId().equals(id)) {
+            if (contenuto.getId() == id) {
                 contenuti.remove(contenuto);
             }
         }

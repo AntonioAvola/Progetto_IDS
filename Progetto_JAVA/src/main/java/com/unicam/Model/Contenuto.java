@@ -1,14 +1,20 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+@MappedSuperclass
 public abstract class  Contenuto {
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String titolo;
     private String descrizione;
     private UtenteDTO autore;
@@ -23,11 +29,11 @@ public abstract class  Contenuto {
     }
 
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

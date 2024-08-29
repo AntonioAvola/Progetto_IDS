@@ -1,11 +1,12 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table
+@Table(name = "puntoGeolocalizzato")
 public class PuntoGeolocalizzato extends Contenuto{
 
     private double longitudine;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(name = "contest")
 public class Contest extends Contenuto{
 
     private List<UtenteDTO> partecipanti = new ArrayList<>();
