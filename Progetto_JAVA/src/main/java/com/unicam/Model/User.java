@@ -1,8 +1,12 @@
 package com.unicam.Model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
-
+@Entity
+@Table
 public class User {
     private int id;
     private String name;

@@ -2,7 +2,11 @@ package com.unicam.Model;
 
 import com.unicam.Model.BuilderContenuto.PuntoLogicoBuilder;
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table
 public class PuntoLogico extends Contenuto{
 
     private PuntoGeolocalizzato riferimento;
@@ -10,11 +14,6 @@ public class PuntoLogico extends Contenuto{
     public PuntoLogico(){
         super();
     }
-    public PuntoLogico(String descrizione, UtenteDTO autore, PuntoGeolocalizzato punto){
-        super("AVVISO", descrizione, autore);
-        this.riferimento = punto;
-    }
-
 
     public PuntoGeolocalizzato getRiferimento() {
         return riferimento;

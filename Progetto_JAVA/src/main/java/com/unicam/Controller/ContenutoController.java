@@ -4,11 +4,15 @@ import com.unicam.Model.Contenuto;
 import com.unicam.Model.User;
 import com.unicam.Repository.ContenutoRepository;
 import com.unicam.Service.AutorizzazioneService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class ContenutoController {
     private ContenutoRepository repository;
     private AutorizzazioneService autorizzioneService = new AutorizzazioneService();
 
+    @Autowired
     public ContenutoController(AutorizzazioneService autorizzioneService, ContenutoRepository repository){
         this.repository = repository;
         this.autorizzioneService = autorizzioneService;

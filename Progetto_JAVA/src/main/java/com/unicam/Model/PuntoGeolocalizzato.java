@@ -1,7 +1,11 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table
 public class PuntoGeolocalizzato extends Contenuto{
 
     private double longitudine;
@@ -9,11 +13,6 @@ public class PuntoGeolocalizzato extends Contenuto{
 
     public PuntoGeolocalizzato(){
         super();
-    }
-    public PuntoGeolocalizzato(Long id, String titolo, String descrizione, UtenteDTO autore, Double longitudine, Double latitudine){
-        super(titolo, descrizione, autore);
-        this.longitudine = longitudine;
-        this.latitudine = latitudine;
     }
 
     public Double getLongitudine() {

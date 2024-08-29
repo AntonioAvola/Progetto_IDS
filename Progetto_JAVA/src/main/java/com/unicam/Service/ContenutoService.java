@@ -5,13 +5,17 @@ import com.unicam.Model.Contenuto;
 import com.unicam.Model.User;
 import com.unicam.Repository.ContenutoRepository;
 import com.unicam.dto.UtenteDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ContenutoService <T extends Contenuto> {
 
     private ContenutoRepository repo;
     private AuthorizationService autorizzazioni = new AuthorizationService();
 
 
+    @Autowired
     public ContenutoService(ContenutoRepository repo) {
         this.repo = repo;
     }

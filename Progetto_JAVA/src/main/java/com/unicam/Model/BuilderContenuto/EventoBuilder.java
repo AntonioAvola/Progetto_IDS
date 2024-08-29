@@ -26,12 +26,12 @@ public class EventoBuilder implements Builder{
         this.evento.setDescrizione(descrizione);
     }
 
-    public void BuildSpecifica(Tempo tempo, PuntoMappaSemplice punto){
+    public void BuildSpecifica(Tempo tempo, PuntoGeolocalizzato punto){
         BuildInizioFine(tempo);
         BuildLuogo(punto);
     }
 
-    private void BuildLuogo(PuntoMappaSemplice punto) {
+    private void BuildLuogo(PuntoGeolocalizzato punto) {
         this.evento.setLuogo(punto);
     }
 

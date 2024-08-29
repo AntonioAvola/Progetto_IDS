@@ -1,29 +1,27 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table
 public class Evento extends Contenuto{
 
     private Tempo durata;
-    private PuntoMappaSemplice luogo;
+    private PuntoGeolocalizzato luogo;
 
     public Evento(){
         super();
     }
-    public Evento(Long id, String titolo, String descrizione, UtenteDTO autore, Tempo tempo, PuntoMappaSemplice punto) {
-        super(titolo, descrizione, autore);
-        this.durata = tempo;
-        this.luogo = punto;
-    }
 
-
-    public PuntoMappaSemplice getLuogo() {
+    public PuntoGeolocalizzato getLuogo() {
         return luogo;
     }
 
-    public void setLuogo(PuntoMappaSemplice luogo) {
+    public void setLuogo(PuntoGeolocalizzato luogo) {
         this.luogo = luogo;
     }
 

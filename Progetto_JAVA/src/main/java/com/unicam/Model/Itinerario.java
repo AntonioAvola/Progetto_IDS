@@ -1,21 +1,21 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.util.List;
 import java.util.ArrayList;
 
-
+@Entity
+@Table
 public class Itinerario extends Contenuto{
 
     private List<PuntoGeolocalizzato> puntiDiInteresse = new ArrayList<PuntoGeolocalizzato>();
-    //private List<PuntoMappaSemplice> puntiDiInteresse2 = new ArrayList<PuntoMappaSemplice>();
+
 
     public Itinerario(){
         super();
-    }
-    public Itinerario(Long id, String titolo, String descrizione, UtenteDTO autore) {
-        super(titolo, descrizione, autore);
     }
 
     public List<PuntoGeolocalizzato> getPuntiDiInteresse() {
