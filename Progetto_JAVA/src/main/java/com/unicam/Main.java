@@ -8,12 +8,17 @@ import com.unicam.Repository.ContenutoRepository;
 import com.unicam.Service.AutorizzazioneService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.dto.UtenteDTO;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDateTime;
-
+@SpringBootApplication
 public class Main {
     public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
 
+
+/*
         ContenutoRepository contenutoRepo = new ContenutoRepository();
 
         ContenutoService<Evento> eventoService = new ContenutoService(contenutoRepo);
@@ -40,7 +45,7 @@ public class Main {
 
         eventoService.AggiungiContenuto(new User("Antonio", "antonio@domain.com", "password", "Castelfidardo", "ant_avola"), evento);
         System.out.println("Evento creato con successo: " + evento);
-
+*/
     }
 
 
