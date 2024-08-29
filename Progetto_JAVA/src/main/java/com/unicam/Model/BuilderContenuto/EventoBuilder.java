@@ -12,8 +12,8 @@ public class EventoBuilder implements Builder{
     }
 
     @Override
-    public void BuildAutore(UtenteDTO autore) {
-        this.evento.setAutore(autore);
+    public void BuildAutore(Long autoreId) {
+        this.evento.setAutoreId(autoreId);
     }
 
     @Override

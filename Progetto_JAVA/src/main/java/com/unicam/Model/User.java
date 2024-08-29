@@ -18,7 +18,7 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "utente"
     )
-    private int id;
+    private Long id;
     private String name;
     private String username;
     private String comune;
@@ -33,6 +33,15 @@ public class User {
         this.username = username;
         this.ruolo = Ruolo.TURISTA_AUTENTICATO;
         this.password = password;
+    }
+
+    //mapper using
+    public User(){
+
+    }
+
+    public Long getId() {
+        return id;
     }
 
     /**

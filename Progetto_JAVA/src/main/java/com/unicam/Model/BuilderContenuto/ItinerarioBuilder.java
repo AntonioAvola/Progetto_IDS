@@ -2,7 +2,6 @@ package com.unicam.Model.BuilderContenuto;
 
 import com.unicam.Model.Itinerario;
 import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.User;
 import com.unicam.dto.UtenteDTO;
 
 import java.util.List;
@@ -15,8 +14,8 @@ public class ItinerarioBuilder implements Builder{
 
 
     @Override
-    public void BuildAutore(UtenteDTO autore) {
-        this.itinerario.setAutore(autore);
+    public void BuildAutore(Long autoreId) {
+        this.itinerario.setAutoreId(autoreId);
     }
 
     @Override

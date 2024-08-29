@@ -27,7 +27,7 @@ public class PermessiEInserimentiTest {
         punti.add(new PuntoGeolocalizzato());
 
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildAutore(autore);
+        builder.BuildAutore(utente.getId());
         builder.BuildTitolo("Corsa");
         builder.BuildDescrizione("Corsetta semplice in mezzo alla natura");
         builder.BuildSpecifica(punti);
@@ -52,7 +52,7 @@ public class PermessiEInserimentiTest {
         punti.add(new PuntoGeolocalizzato());
 
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildAutore(autore);
+        builder.BuildAutore(utente.getId());
         builder.BuildTitolo("Corsa");
         builder.BuildDescrizione("Corsetta semplice in mezzo alla natura");
         builder.BuildSpecifica(punti);

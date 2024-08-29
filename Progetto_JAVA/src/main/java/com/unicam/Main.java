@@ -18,7 +18,7 @@ public class Main {
         SpringApplication.run(Main.class, args);
 
 
-/*
+        /*
         ContenutoRepository contenutoRepo = new ContenutoRepository();
 
         ContenutoService<Evento> eventoService = new ContenutoService(contenutoRepo);
@@ -45,7 +45,7 @@ public class Main {
 
         eventoService.AggiungiContenuto(new User("Antonio", "antonio@domain.com", "password", "Castelfidardo", "ant_avola"), evento);
         System.out.println("Evento creato con successo: " + evento);
-*/
+        */
     }
 
 

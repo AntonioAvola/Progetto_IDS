@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "evento")
 public class Evento extends Contenuto{
 
+    @Embedded
     private Tempo durata;
 
     @OneToOne

@@ -1,10 +1,12 @@
 package com.unicam.Repository;
 
 import com.unicam.Model.Contenuto;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ContenutoRepository<T extends Contenuto> implements IContenutoRepository<T> {
 
     private List<T> contenuti = new ArrayList<T>();

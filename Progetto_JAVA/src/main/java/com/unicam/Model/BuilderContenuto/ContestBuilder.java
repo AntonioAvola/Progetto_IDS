@@ -2,6 +2,7 @@ package com.unicam.Model.BuilderContenuto;
 
 import com.unicam.Model.Contest;
 import com.unicam.Model.Tempo;
+import com.unicam.Model.User;
 import com.unicam.dto.UtenteDTO;
 
 import java.util.List;
@@ -15,8 +16,8 @@ public class ContestBuilder implements Builder{
     }
 
     @Override
-    public void BuildAutore(UtenteDTO autore) {
-        this.contest.setAutore(autore);
+    public void BuildAutore(Long autoreId) {
+        this.contest.setAutoreId(autoreId);
     }
 
     @Override
@@ -29,12 +30,12 @@ public class ContestBuilder implements Builder{
         this.contest.setDescrizione(descrizione);
     }
 
-    public void BuildSpecifica(List<UtenteDTO> partecipanti, Tempo tempo){
+    public void BuildSpecifica(List<User> partecipanti, Tempo tempo){
         BuildPartecipanti(partecipanti);
         BuildDurata(tempo);
     }
 
-    private void BuildPartecipanti(List<UtenteDTO> partecipanti){
+    private void BuildPartecipanti(List<User> partecipanti){
         this.contest.setPartecipanti(partecipanti);
     }
 

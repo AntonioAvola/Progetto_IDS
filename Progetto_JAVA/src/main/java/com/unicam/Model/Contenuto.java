@@ -6,34 +6,31 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @MappedSuperclass
 public abstract class  Contenuto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String titolo;
     private String descrizione;
-    private UtenteDTO autore;
+    private Long autoreId;
     private StatoContenuto stato;
 
     public Contenuto(){}
 
-    public Contenuto(String titolo, String descrizione, UtenteDTO autore) {
+    public Contenuto(String titolo, String descrizione, Long autore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
-        this.autore = autore;
+        this.autoreId = autore;
     }
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,12 +50,12 @@ public abstract class  Contenuto {
         this.descrizione = descrizione;
     }
 
-    public UtenteDTO getAutore() {
-        return autore;
+    public Long getAutoreId() {
+        return autoreId;
     }
 
-    public void setAutore(UtenteDTO autore) {
-        this.autore = autore;
+    public void setAutoreId(Long autoreId) {
+        this.autoreId = autoreId;
     }
 
     public StatoContenuto getStato() {
@@ -73,7 +70,7 @@ public abstract class  Contenuto {
     public String toString(){
         return "Titolo: " + titolo + "\n"
                 + "Descrizione: "+ descrizione + "\n"
-                + "Autore: " + autore + "\n"
+                + "Autore: " + autoreId + "\n"
                 + "Stato: " + stato;
     }
 

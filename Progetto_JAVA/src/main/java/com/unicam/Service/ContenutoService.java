@@ -21,8 +21,7 @@ public class ContenutoService <T extends Contenuto> {
     }
 
     public void AggiungiContenuto(User user, T contenuto){
-        UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
-        if(!autorizzazioni.VerificaPermesso(utente, "AggiungiContenuto")){
+        if(!autorizzazioni.VerificaPermesso(user, "AggiungiContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di creare contenuti");
         }
         System.out.println("Contenuto aggiunto");
@@ -30,8 +29,7 @@ public class ContenutoService <T extends Contenuto> {
     }
 
     public void ApprovaContenuto(User user, T contenuto){
-        UtenteDTO utente = new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
-        if(!autorizzazioni.VerificaPermesso(utente, "ApprovaContenuto")){
+        if(!autorizzazioni.VerificaPermesso(user, "ApprovaContenuto")){
             throw new UnsupportedOperationException("Non hai il permesso di validare contenuti");
         }
         // TODO implementare logica per approvare il contenuto

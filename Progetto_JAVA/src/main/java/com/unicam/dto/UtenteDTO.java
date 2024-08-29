@@ -13,6 +13,8 @@ public class UtenteDTO {
         this.ruolo = ruolo;
     }
 
+
+
     public String getUsername() {
         return username;
     }

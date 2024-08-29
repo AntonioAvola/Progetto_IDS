@@ -1,8 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
 import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.PuntoLogico;
-import com.unicam.Model.User;
 import com.unicam.dto.UtenteDTO;
 
 public class PuntoGeoBuilder implements Builder{
@@ -13,8 +11,8 @@ public class PuntoGeoBuilder implements Builder{
     }
 
     @Override
-    public void BuildAutore(UtenteDTO autore) {
-        this.punto.setAutore(autore);
+    public void BuildAutore(Long autoreId) {
+        this.punto.setAutoreId(autoreId);
     }
 
     @Override

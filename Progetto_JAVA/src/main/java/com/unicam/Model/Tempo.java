@@ -1,8 +1,12 @@
 package com.unicam.Model;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+@Embeddable
 public class Tempo {
 
     private LocalDateTime inizio;
@@ -13,6 +17,8 @@ public class Tempo {
         this.inizio = i;
         this.fine = f;
     }
+
+    public Tempo() { }
 
     public LocalDateTime getInizio() {
         return inizio;
