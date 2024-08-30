@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("contenuto")
+@RequestMapping("api/contenuto")
 public class ContenutoController {
     private ContenutoService servizio;
     //private AuthorizationService autorizzioneService;
