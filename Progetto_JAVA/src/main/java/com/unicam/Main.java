@@ -1,17 +1,8 @@
 package com.unicam;
 
-import com.unicam.Controller.ContenutoController;
-import com.unicam.Model.*;
-import com.unicam.Model.BuilderContenuto.EventoBuilder;
-import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
-import com.unicam.Repository.ContenutoRepository;
-import com.unicam.Service.AutorizzazioneService;
-import com.unicam.Service.ContenutoService;
-import com.unicam.dto.UtenteDTO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.time.LocalDateTime;
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {

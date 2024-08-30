@@ -17,6 +17,6 @@ public class RichiestaApprovazioneContenuto<T extends Contenuto> implements ICom
 
     @Override
     public void Execute() {
-        contenutoService.AggiungiContenuto(user, contenuto);
+        contenutoService.AggiungiContenuto(user.getId(), contenuto);
     }
 }

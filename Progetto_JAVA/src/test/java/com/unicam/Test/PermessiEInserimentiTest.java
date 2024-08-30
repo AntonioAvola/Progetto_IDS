@@ -5,7 +5,8 @@ import com.unicam.Model.Itinerario;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
-import com.unicam.Repository.ContenutoRepository;
+import com.unicam.Repository.IContenutoRepository;
+import com.unicam.Repository.IUtenteRepository;
 import com.unicam.Service.ContenutoService;
 import com.unicam.dto.UtenteDTO;
 import org.junit.Test;
@@ -16,6 +17,9 @@ import java.util.List;
 
 public class PermessiEInserimentiTest {
 
+    private IContenutoRepository repositoryContenuto;
+
+    private IUtenteRepository repositoryUtente;
     @Test
     public void testAggiuntaContenutoFallita(){
         User utente = new User("Eleonora", "ele.car@gmail.com", "EleCar3",
@@ -33,11 +37,10 @@ public class PermessiEInserimentiTest {
         builder.BuildSpecifica(punti);
         Itinerario itinerio = builder.Result();
 
-        ContenutoRepository<Itinerario> itinerarioRepo = new ContenutoRepository<>();
-        ContenutoService<Itinerario> service = new ContenutoService<>(itinerarioRepo);
+        ContenutoService<Itinerario> service = new ContenutoService<>(repositoryContenuto, repositoryUtente);
 
         assertThrows(UnsupportedOperationException.class, () -> {
-            service.AggiungiContenuto(utente, itinerio);
+            service.AggiungiContenuto(utente.getId(), itinerio);
         });
     }
 
@@ -58,10 +61,9 @@ public class PermessiEInserimentiTest {
         builder.BuildSpecifica(punti);
         Itinerario itinerio = builder.Result();
 
-        ContenutoRepository<Itinerario> itinerarioRepo = new ContenutoRepository<>();
-        ContenutoService<Itinerario> service = new ContenutoService<>(itinerarioRepo);
+        ContenutoService<Itinerario> service = new ContenutoService<>(repositoryContenuto, repositoryUtente);
 
-        service.AggiungiContenuto(utente, itinerio);
+        service.AggiungiContenuto(utente.getId(), itinerio);
     }
 
 }
