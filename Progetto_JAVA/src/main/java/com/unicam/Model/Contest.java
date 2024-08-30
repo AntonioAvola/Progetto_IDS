@@ -26,6 +26,7 @@ public class Contest extends Contenuto{
         this.votiContrari = 0;
     }
 
+
     public List<User> getPartecipanti() {
         return partecipanti;
     }

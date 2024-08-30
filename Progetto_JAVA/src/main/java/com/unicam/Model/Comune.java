@@ -18,6 +18,9 @@ public class Comune {
         this.posizione = posizione;
     }
 
+    //Costruttore adibito a springboot per istanziare l'entità
+    public Comune(){}
+
     public String getNome() {
         return nome;
     }
