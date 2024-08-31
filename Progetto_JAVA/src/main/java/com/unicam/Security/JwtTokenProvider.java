@@ -38,6 +38,15 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    public String getUserRole(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_JWT)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class);
+    }
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(SECRET_JWT).parseClaimsJws(authToken);

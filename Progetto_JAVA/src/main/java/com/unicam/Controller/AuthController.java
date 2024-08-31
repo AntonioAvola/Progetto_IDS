@@ -24,6 +24,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginRequest) {
+        /*
         User user = utenteRepository.findByUsername(loginRequest.getUsername());
 
         if (user == null) {
@@ -41,7 +42,9 @@ public class AuthController {
                 user.getUsername(), // Username
                 user.getRuolo() // Ruolo
         );
+        */
+        //TODO implementare logica login da utente service
 
-        return ResponseEntity.ok(response);
+        return null;
     }
 }

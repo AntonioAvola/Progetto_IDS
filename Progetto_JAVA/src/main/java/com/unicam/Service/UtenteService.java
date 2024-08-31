@@ -1,7 +1,9 @@
 package com.unicam.Service;
 
+import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
 import com.unicam.Repository.IUtenteRepository;
+import com.unicam.Security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,16 +14,23 @@ public class UtenteService {
 
     private IUtenteRepository repository;
 
+    private JwtTokenProvider tokenProvider;
+
     @Autowired
     public UtenteService(IUtenteRepository repo){
         this.repository = repo;
     }
 
-    public void RegistrazioneUtente(User user){
+    public String RegistrazioneUtente(User user){
         ControlloCampiUse(user);
         PresenzaNomeEmailNelDB(user);
         this.repository.save(user);
-        //TODO creare token e auto log-in
+        //TODO creare token e auto log-in CONTROLLRE
+
+        String username = user.getUsername();
+        Ruolo ruolo = user.getRuolo();
+
+        return tokenProvider.createToken(username, ruolo);
     }
 
     private void PresenzaNomeEmailNelDB(User user) {
@@ -55,9 +64,15 @@ public class UtenteService {
         this.repository.deleteById(idUtente);
     }
 
-    public void LoginUtente(String username, String password){
+    public String LoginUtente(String username, String password){
         ConfrontoCredenzialiDB(username, password);
-        //TODO in caso affermativo creare token
+
+        User user = repository.findByUsername(username);
+        String token = tokenProvider.createToken(username, user.getRuolo());
+        //TODO in caso affermativo creare token CONTROLLARE
+
+        return token;
+
     }
 
     private void ConfrontoCredenzialiDB(String username, String password) {
