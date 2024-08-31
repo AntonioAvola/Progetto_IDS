@@ -33,8 +33,7 @@ public class User {
         this.comune = comune;
         this.username = username;
         this.ruolo = Ruolo.TURISTA_AUTENTICATO;
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
+        this.password = password;
     }
 
     //mapper using
@@ -42,9 +41,10 @@ public class User {
 
     }
 
-
-
-
+    public void CriptaPassword(){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(this.password);
+    }
 
     public Long getId() {
         return id;
