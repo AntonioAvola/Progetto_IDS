@@ -6,10 +6,10 @@ import com.unicam.Security.JwtTokenProvider;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.LoginDTO;
 import com.unicam.dto.LoginResponseDTO;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +24,7 @@ public class AuthController {
     private JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> Login(LoginDTO loginRequest) {
+    public ResponseEntity<LoginResponseDTO> Login(@RequestBody LoginDTO loginRequest) {
         LoginResponseDTO risposta = new LoginResponseDTO();
         risposta.setToken(servizioUtente.LoginUtente(loginRequest.getUsername(), loginRequest.getPassword()));
         risposta.setUsername(loginRequest.getUsername());
