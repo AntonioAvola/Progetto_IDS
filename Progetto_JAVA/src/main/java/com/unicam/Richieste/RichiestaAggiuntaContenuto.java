@@ -9,7 +9,7 @@ public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand
     private User user;
     private T contenuto;
 
-    public RichiestaAggiuntaContenuto(ContenutoService<T> contenutoService, User user, T contenuto) {
+    public RichiestaAggiuntaContenuto(ContenutoService<T> contenutoService, T contenuto) {
         this.contenutoService = contenutoService;
         this.user = user;
         this.contenuto = contenuto;
@@ -17,6 +17,6 @@ public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand
 
     @Override
     public void Execute() {
-        /*contenutoService.AggiungiContenuto(user.getId(), contenuto);*/
+        contenutoService.AggiungiContenuto(contenuto);
     }
 }

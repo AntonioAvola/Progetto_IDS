@@ -104,8 +104,17 @@ public class UtenteService {
     public Ruolo GetUtente(String username) {
         return repository.findByUsername(username).getRuolo();
     }
+    public User GetUtenteById(Long id){
+        return repository.getById(id);
+    }
 
     public Long GetIdByUsername(String username) {
         return this.repository.findByUsername(username).getId();
+    }
+
+    public void EliminaUtenteByUsername(String username) {
+        User utente = this.repository.findByUsername(username);
+        Long idUtente = utente.getId();
+        this.repository.deleteById(idUtente);
     }
 }

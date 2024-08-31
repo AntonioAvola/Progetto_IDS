@@ -40,7 +40,7 @@ public class PermessiEInserimentiTest {
         ContenutoService<Itinerario> service = new ContenutoService<>(repositoryContenuto, repositoryUtente);
 
         assertThrows(UnsupportedOperationException.class, () -> {
-            service.AggiungiContenuto(utente.getId(), itinerio);
+            service.AggiungiContenuto(itinerio);
         });
     }
 
@@ -63,7 +63,7 @@ public class PermessiEInserimentiTest {
 
         ContenutoService<Itinerario> service = new ContenutoService<>(repositoryContenuto, repositoryUtente);
 
-        service.AggiungiContenuto(utente.getId(), itinerio);
+        service.AggiungiContenuto(itinerio);
     }
 
 }

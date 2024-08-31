@@ -8,10 +8,7 @@ import com.unicam.dto.RegistrazioneDTO;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/utente")
@@ -33,6 +30,10 @@ public class UtenteController {
         return ResponseEntity.ok(login);
     }
 
+    @DeleteMapping("eliminaAccount")
+    public void EliminaAccount(@RequestBody String username){
+        this.servizio.EliminaUtenteByUsername(username);
+    }
     /*public void Login(LoginDTO login){
         this.servizio.LoginUtente(login.getUsername(), login.getPassword());
     }*/

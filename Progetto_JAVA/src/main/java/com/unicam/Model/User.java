@@ -32,7 +32,7 @@ public class User {
         this.email = email;
         this.comune = comune;
         this.username = username;
-        this.ruolo = Ruolo.TURISTA_AUTENTICATO;
+        this.ruolo = Ruolo.CONTRIBUTOR;
         this.password = password;
     }
 

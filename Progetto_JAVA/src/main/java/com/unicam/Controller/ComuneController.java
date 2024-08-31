@@ -21,15 +21,15 @@ public class ComuneController {
         this.servizio = servizio;
     }
 
-    @PostMapping
+    @PostMapping("richiestaAggiunta")
     public void RichiestaAggiunta(@RequestBody RichiestaComuneDTO richiesta){
     }
 
-    @GetMapping
+    @GetMapping("getProposteAnimatore")
     public void GetProposteAnimatore(){
     }
 
-    @PutMapping
+    @PutMapping("esitoProposta")
     public void EsitoProposta(){
     }
 }

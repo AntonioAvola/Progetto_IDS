@@ -20,8 +20,8 @@ public class ContenutoController {
         this.servizio = servizio;
     }
 
-    @PostMapping(path = "{id}/publica")
+    /*@PostMapping(path = "{id}/publica")
     public void pubblicaContenuto(@RequestBody Long id, Contenuto contenuto) {
         servizio.AggiungiContenuto(id, contenuto);
-    }
+    }*/
 }

@@ -2,12 +2,16 @@ package com.unicam.Service;
 
 import com.unicam.Authorization.AuthorizationService;
 import com.unicam.Model.Contenuto;
+import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.User;
 import com.unicam.Repository.IContenutoRepository;
 import com.unicam.Repository.IUtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ContenutoService <T extends Contenuto> {
@@ -25,14 +29,6 @@ public class ContenutoService <T extends Contenuto> {
     }
 
     public void AggiungiContenuto(T contenuto){
-        repo.save(contenuto);
-    }
-
-    public void AggiungiContenuto(Long id, T contenuto){
-        RicercaUtente(id);
-        User user = repoUser.getById(id);
-        VerificaAutorizzazioni(user);
-        System.out.println("Contenuto aggiunto");
         repo.save(contenuto);
     }
 
@@ -59,5 +55,17 @@ public class ContenutoService <T extends Contenuto> {
         if(!repo.existsById(id)){
             throw new IllegalArgumentException("L'utente non esiste");
         }
+    }
+
+    public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        for (String nome: nomiPunti) {
+            punti.add(GetPuntoByNome(nome));
+        }
+        return punti;
+    }
+
+    public PuntoGeolocalizzato GetPuntoByNome(String nome){
+        return this.repo.findByTitolo(nome);
     }
 }
