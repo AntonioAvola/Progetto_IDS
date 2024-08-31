@@ -3,6 +3,7 @@ package com.unicam.Controller;
 import com.unicam.Model.User;
 import com.unicam.Repository.IUtenteRepository;
 import com.unicam.Security.JwtTokenProvider;
+import com.unicam.Service.UtenteService;
 import com.unicam.dto.LoginDTO;
 import com.unicam.dto.LoginResponseDTO;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -17,34 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    private IUtenteRepository utenteRepository;
+    private UtenteService servizioUtente;
     //private
     @Autowired
     private JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginRequest) {
-        /*
-        User user = utenteRepository.findByUsername(loginRequest.getUsername());
+    public ResponseEntity<LoginResponseDTO> Login(LoginDTO loginRequest) {
+        LoginResponseDTO risposta = new LoginResponseDTO();
+        risposta.setToken(servizioUtente.LoginUtente(loginRequest.getUsername(), loginRequest.getPassword()));
+        risposta.setUsername(loginRequest.getUsername());
+        risposta.setRole(servizioUtente.GetUtente(loginRequest.getUsername()));
+        return ResponseEntity.ok(risposta);
 
-        if (user == null) {
-            throw new IllegalArgumentException("Invalid username or password");
-        }
-
-        if (!user.checkPassword(loginRequest.getPassword())) {
-            throw new IllegalArgumentException("Invalid username or password");
-        }
-
-        String token = tokenProvider.createToken(user.getUsername(), user.getRuolo());
-
-        LoginResponseDTO response = new LoginResponseDTO(
-                token, // Token
-                user.getUsername(), // Username
-                user.getRuolo() // Ruolo
-        );
-        */
-        //TODO implementare logica login da utente service
-
-        return null;
     }
 }

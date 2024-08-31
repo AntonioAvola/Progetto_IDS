@@ -1,6 +1,7 @@
 package com.unicam.Security;
 
 import com.unicam.Model.Ruolo;
+import com.unicam.Model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,12 +13,15 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String SECRET_JWT = "passordSegreta";
+    private final String SECRET_JWT = "passwordSegretaAbbastanzaLunga1234ProgettoIngegneriaDelSoftware";
     private final Long JWT_EXPIRATION_TIME = 3600L;
 
-    public String createToken(String username, Ruolo role) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("role", role);
+    public String createToken(User user) {
+        Claims claims = Jwts.claims();
+        claims.put("name", user.getName());
+        claims.put("username", user.getUsername());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRuolo());
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_TIME);
@@ -26,7 +30,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, SECRET_JWT)
+                .signWith(SignatureAlgorithm.HS256, SECRET_JWT)
                 .compact();
     }
 

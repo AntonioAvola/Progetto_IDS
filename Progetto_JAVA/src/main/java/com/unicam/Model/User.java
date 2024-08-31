@@ -33,7 +33,8 @@ public class User {
         this.comune = comune;
         this.username = username;
         this.ruolo = Ruolo.TURISTA_AUTENTICATO;
-        this.password = password;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
     }
 
     //mapper using
@@ -41,26 +42,8 @@ public class User {
 
     }
 
-    /**
-     * Imposta la password dell'utente.
-     *
-     * @param password dell'utente.
-     */
-    public void setPassword(String password) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
-    }
 
-    /**
-     * controlla la password dell'utente.
-     *
-     * @param rawPassword dell'utente.
-     */
 
-    public boolean checkPassword(String rawPassword) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-       return passwordEncoder.matches(rawPassword, this.password);
-    }
 
 
     public Long getId() {
