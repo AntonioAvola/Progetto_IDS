@@ -38,13 +38,6 @@ public class UtenteService {
     }
 
     private void PresenzaNomeEmailNelDB(User user) {
-        /*List<User> utenti = repository.findAll();
-        for (User utente: utenti) {
-            if(utente.getUsername() == user.getUsername())
-                throw new IllegalArgumentException("Username già in uso, sceglierne un altro");
-            if(utente.getEmail() == user.getEmail())
-                throw new IllegalArgumentException("L'email è già collegata ad un account esistente");
-        }*/
         User utentePresente = repository.findByUsername(user.getUsername());
         if (utentePresente != null)
             throw new IllegalArgumentException("L'username è già in uso");
@@ -110,5 +103,9 @@ public class UtenteService {
 
     public Ruolo GetUtente(String username) {
         return repository.findByUsername(username).getRuolo();
+    }
+
+    public Long GetIdByUsername(String username) {
+        return this.repository.findByUsername(username).getId();
     }
 }

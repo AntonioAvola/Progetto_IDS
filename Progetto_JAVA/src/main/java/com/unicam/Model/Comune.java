@@ -7,11 +7,12 @@ import jakarta.persistence.*;
 public class Comune {
 
     @Id
-    private int id;
+    private Long id;
     private String nome;
 
     @OneToOne
     private PuntoGeolocalizzato posizione;
+    private StatoContenuto statoRichiesta;
 
     public Comune(String nome, PuntoGeolocalizzato posizione){
         this.nome = nome;
@@ -35,5 +36,13 @@ public class Comune {
 
     public void setPosizione(PuntoGeolocalizzato posizione) {
         this.posizione = posizione;
+    }
+
+    public StatoContenuto getStatoRichiesta() {
+        return statoRichiesta;
+    }
+
+    public void setStatoRichiesta(StatoContenuto statoRichiesta) {
+        this.statoRichiesta = statoRichiesta;
     }
 }

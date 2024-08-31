@@ -8,4 +8,5 @@ public enum Ruolo {
     CONTRIBUTOR_AUTORIZZATO,
     CURATORE,
     ANIMATORE,
+    COMUNE
 }

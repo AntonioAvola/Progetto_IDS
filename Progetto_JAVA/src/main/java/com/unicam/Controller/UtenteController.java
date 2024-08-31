@@ -31,7 +31,6 @@ public class UtenteController {
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
         return ResponseEntity.ok(login);
-
     }
 
     /*public void Login(LoginDTO login){

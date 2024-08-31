@@ -24,6 +24,10 @@ public class ContenutoService <T extends Contenuto> {
         this.repo = repo;
     }
 
+    public void AggiungiContenuto(T contenuto){
+        repo.save(contenuto);
+    }
+
     public void AggiungiContenuto(Long id, T contenuto){
         RicercaUtente(id);
         User user = repoUser.getById(id);
