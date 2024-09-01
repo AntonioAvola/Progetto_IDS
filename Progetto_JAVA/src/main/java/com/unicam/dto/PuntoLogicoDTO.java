@@ -4,6 +4,8 @@ import com.unicam.Model.BuilderContenuto.Builder;
 import com.unicam.Model.BuilderContenuto.PuntoLogicoBuilder;
 import com.unicam.Model.PuntoLogico;
 
+import java.util.Locale;
+
 public class PuntoLogicoDTO {
 
     private String titolo;
@@ -42,7 +44,7 @@ public class PuntoLogicoDTO {
 
     public PuntoLogico ToEntity() {
         PuntoLogicoBuilder builder = new PuntoLogicoBuilder();
-        builder.BuildTitolo(getTitolo());
+        builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();
     }

@@ -6,6 +6,7 @@ import com.unicam.Model.Itinerario;
 import org.hibernate.dialect.function.IntegralTimestampaddFunction;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ItinerarioDTO {
 
@@ -45,7 +46,7 @@ public class ItinerarioDTO {
 
     public Itinerario ToEntity() {
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildTitolo(this.titolo);
+        builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(this.descrizione);
         return builder.Result();
     }

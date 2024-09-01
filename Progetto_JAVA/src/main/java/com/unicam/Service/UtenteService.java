@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UtenteService {
@@ -28,7 +29,7 @@ public class UtenteService {
 
     public String RegistrazioneUtente(RegistrazioneDTO registrazione){
         User user = new User(registrazione.getName(), registrazione.getEmail(),
-                registrazione.getPassword(), registrazione.getComune(),
+                registrazione.getPassword(), registrazione.getComune().toUpperCase(Locale.ROOT),
                 registrazione.getUsername());
         ControlloCampiUse(user);
         user.CriptaPassword();
@@ -97,7 +98,7 @@ public class UtenteService {
     }
 
     public String AccessoOspite(){
-        //TODO
+        //TODO fornire soltanto un username momentaneo, non salvaere nel database
         return "";
     }
 

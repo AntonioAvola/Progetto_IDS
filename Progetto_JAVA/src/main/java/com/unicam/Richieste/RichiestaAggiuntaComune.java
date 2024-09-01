@@ -9,6 +9,8 @@ import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.RichiestaComuneDTO;
 
+import java.util.Locale;
+
 /**
  * Il receiver (admin in questo caso) prende dal database
  * tutti i contenuti (PuntoGeolocalizzato o Comune) e decide
@@ -26,12 +28,12 @@ public class RichiestaAggiuntaComune implements ICommand{
     public RichiestaAggiuntaComune(UtenteService servizio, RichiestaComuneDTO richiesta){
         this.servizioUtente = servizio;
         builderPunto.BuildAutore(servizioUtente.GetIdByUsername(richiesta.getUsername()));
-        builderPunto.BuildTitolo(richiesta.getUsername());
+        builderPunto.BuildTitolo(richiesta.getUsername().toUpperCase(Locale.ROOT));
         builderPunto.BuildDescrizione(richiesta.getDescrizione());
         builderPunto.BuildSpecifica(richiesta.getLatitudine(), richiesta.getLongitudine());
         this.punto = builderPunto.Result();
         this.punto.setStato(StatoContenuto.ATTESA);
-        this.comune.setNome(richiesta.getNomeComune());
+        this.comune.setNome(richiesta.getNomeComune().toUpperCase(Locale.ROOT));
         this.comune.setPosizione(punto);
         this.comune.setStatoRichiesta(StatoContenuto.ATTESA);
     }

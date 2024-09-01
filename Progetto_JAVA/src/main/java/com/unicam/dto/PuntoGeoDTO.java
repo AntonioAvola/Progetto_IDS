@@ -4,6 +4,7 @@ import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
 import com.unicam.Model.PuntoGeolocalizzato;
 
 import java.util.List;
+import java.util.Locale;
 
 public class PuntoGeoDTO {
 
@@ -53,7 +54,7 @@ public class PuntoGeoDTO {
 
     public PuntoGeolocalizzato ToEntity() {
         PuntoGeoBuilder builder = new PuntoGeoBuilder();
-        builder.BuildTitolo(getTitolo());
+        builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getLatitutine(), getLongitudine());
         return builder.Result();
