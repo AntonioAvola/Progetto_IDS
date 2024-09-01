@@ -10,11 +10,14 @@ import com.unicam.dto.Provvisori.PuntoGeoProvvisorioDTO;
 import com.unicam.dto.Provvisori.PuntoLogicoProvvisorioDTO;
 import com.unicam.dto.PuntoLogicoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+/**
+ * I metodi di questa classe devono poter essere utilizzati da:
+ * CONTRIBUTOR
+ * CONTRIBUTOR_AUTORIZZATO
+ * CURATORE
+ */
 @RestController
 @RequestMapping(name = "Api/contributor")
 public class ContributorController<T extends Contenuto> {

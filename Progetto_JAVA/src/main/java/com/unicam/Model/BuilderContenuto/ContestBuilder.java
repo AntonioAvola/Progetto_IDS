@@ -1,6 +1,7 @@
 package com.unicam.Model.BuilderContenuto;
 
 import com.unicam.Model.Contest;
+import com.unicam.Model.Ruolo;
 import com.unicam.Model.Tempo;
 import com.unicam.Model.User;
 import com.unicam.dto.UtenteDTO;
@@ -30,12 +31,12 @@ public class ContestBuilder implements Builder{
         this.contest.setDescrizione(descrizione);
     }
 
-    public void BuildSpecifica(List<User> partecipanti, Tempo tempo){
+    public void BuildSpecifica(List<Ruolo> partecipanti, Tempo tempo){
         BuildPartecipanti(partecipanti);
         BuildDurata(tempo);
     }
 
-    private void BuildPartecipanti(List<User> partecipanti){
+    private void BuildPartecipanti(List<Ruolo> partecipanti){
         this.contest.setPartecipanti(partecipanti);
     }
 

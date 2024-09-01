@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Metodi disponibili solo agli animatori
+ */
 @RestController
 @RequestMapping(name = "api/animatore")
 public class AnimatoreController {
@@ -47,15 +50,7 @@ public class AnimatoreController {
     @PostMapping("api/animatore/proponiContest")
     public void ProponiContest(@RequestBody PropostaContestProvvisoriaDTO proposta){
         Contest contest = proposta.ToEntity();
-        contest.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
-        /**
-         * TODO il contest potrebbe avere, invece che una lista di utenti,
-         * una lista di ruoli, in cui vengono specificati quali utenti possono
-         * partecipare in base al ruolo che hanno.
-         * Esempio:
-         * un contest potrebbe essere reso disponibile solo per contributor e contributors
-         * autorizzati, quindi si associano i due ruoli al contest e chiunque ha quel ruolo
-         * può vedere sulla pagina del comune quali contest sono inseriti e partecipare
-         */
+        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
+        richiesta.Execute();
     }
 }
