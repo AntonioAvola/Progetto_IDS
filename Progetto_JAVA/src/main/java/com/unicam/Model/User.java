@@ -21,7 +21,7 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "utente"
     )
-    private Long id;
+    private long id;
     private String name;
     private String username;
     private String comune;
@@ -34,7 +34,6 @@ public class User {
         this.email = email;
         this.comune = comune;
         this.username = username;
-        this.ruolo = Ruolo.CONTRIBUTOR;
         this.password = password;
     }
 
@@ -48,7 +47,7 @@ public class User {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

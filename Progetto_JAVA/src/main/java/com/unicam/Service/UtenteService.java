@@ -28,9 +28,7 @@ public class UtenteService {
     }
 
     public String RegistrazioneUtente(RegistrazioneDTO registrazione){
-        User user = new User(registrazione.getName(), registrazione.getEmail(),
-                registrazione.getPassword(), registrazione.getComune().toUpperCase(Locale.ROOT),
-                registrazione.getUsername());
+        User user = registrazione.ToEntity();
         ControlloCampiUse(user);
         user.CriptaPassword();
         PresenzaNomeEmailNelDB(user);

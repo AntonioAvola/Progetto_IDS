@@ -1,18 +1,19 @@
-package com.unicam.dto;
+package com.unicam.dto.Provvisori;
 
-import com.unicam.Model.BuilderContenuto.Builder;
 import com.unicam.Model.BuilderContenuto.PuntoLogicoBuilder;
 import com.unicam.Model.PuntoLogico;
 
 import java.util.Locale;
 
-public class PuntoLogicoDTO {
+public class PuntoLogicoProvvisorioDTO {
 
+    private long idUtente;
     private String titolo;
     private String descrizione;
     private String nomePuntoGeo;
 
-    public PuntoLogicoDTO(String titolo, String descrizione, String nomePuntoGeo){
+    public PuntoLogicoProvvisorioDTO(long idUtente, String titolo, String descrizione, String nomePuntoGeo){
+        this.idUtente = idUtente;
         this.titolo = titolo;
         this.descrizione = descrizione;
         this.nomePuntoGeo = nomePuntoGeo.toUpperCase(Locale.ROOT);
@@ -42,8 +43,13 @@ public class PuntoLogicoDTO {
         this.nomePuntoGeo = nomePuntoGeo;
     }
 
+    public long getIdUtente() {
+        return idUtente;
+    }
+
     public PuntoLogico ToEntity() {
         PuntoLogicoBuilder builder = new PuntoLogicoBuilder();
+        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();

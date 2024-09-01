@@ -1,6 +1,7 @@
 package com.unicam.Richieste;
 
 import com.unicam.Model.Contenuto;
+import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.User;
 import com.unicam.Service.ContenutoService;
 
@@ -13,6 +14,7 @@ public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand
         this.contenutoService = contenutoService;
         this.user = user;
         this.contenuto = contenuto;
+        this.contenuto.setStato(StatoContenuto.ATTESA);
     }
 
     @Override

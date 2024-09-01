@@ -1,19 +1,25 @@
 package com.unicam.dto;
 
+import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
+import com.unicam.Model.Comune;
+import com.unicam.Model.PuntoGeolocalizzato;
+
+import java.util.Locale;
+
 public class RichiestaComuneDTO {
 
     private String nomeComune;
     private String descrizione;
-    private String username;
+    private long  idResponsabile;
     private double latitudine;
     private double longitudine;
 
 
     public RichiestaComuneDTO(){}
-    public RichiestaComuneDTO(String nome, String descrizione, String username, double lat, double lon){
+    public RichiestaComuneDTO(String nome, String descrizione, long id, double lat, double lon){
         this.nomeComune = nome;
         this.descrizione = descrizione;
-        this.username = username;
+        this.idResponsabile = id;
         this.latitudine = lat;
         this.longitudine = lon;
     }
@@ -34,12 +40,12 @@ public class RichiestaComuneDTO {
         this.descrizione = descrizione;
     }
 
-    public String getUsername() {
-        return username;
+    public long getIdResponsabile() {
+        return this.idResponsabile;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(long id) {
+        this.idResponsabile = id;
     }
 
     public double getLatitudine() {
@@ -56,5 +62,20 @@ public class RichiestaComuneDTO {
 
     public void setLongitudine(double longitudine) {
         this.longitudine = longitudine;
+    }
+
+    public Comune ToEntityComune(){
+        Comune comune = new Comune();
+        comune.setNome(getNomeComune().toUpperCase(Locale.ROOT));
+        return comune;
+    }
+
+    public PuntoGeolocalizzato ToEntityPunto() {
+        PuntoGeoBuilder builderPunto = new PuntoGeoBuilder();
+        builderPunto.BuildAutore(getIdResponsabile());
+        builderPunto.BuildTitolo(getNomeComune().toUpperCase(Locale.ROOT));
+        builderPunto.BuildDescrizione(getDescrizione());
+        builderPunto.BuildSpecifica(getLatitudine(), getLongitudine());
+        return builderPunto.Result();
     }
 }

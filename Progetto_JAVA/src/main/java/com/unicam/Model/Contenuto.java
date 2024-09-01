@@ -11,10 +11,10 @@ public abstract class  Contenuto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private String titolo;
     private String descrizione;
-    private Long autoreId;
+    private long autoreId;
     private StatoContenuto stato;
 
     public Contenuto(){}
@@ -26,11 +26,11 @@ public abstract class  Contenuto {
     }
 
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -50,11 +50,11 @@ public abstract class  Contenuto {
         this.descrizione = descrizione;
     }
 
-    public Long getAutoreId() {
+    public long getAutoreId() {
         return autoreId;
     }
 
-    public void setAutoreId(Long autoreId) {
+    public void setAutoreId(long autoreId) {
         this.autoreId = autoreId;
     }
 

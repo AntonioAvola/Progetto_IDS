@@ -25,16 +25,16 @@ public class PuntoGeoBuilder implements Builder{
         this.punto.setDescrizione(descrizione);
     }
 
-    public void BuildSpecifica(Double lat, Double lon){
+    public void BuildSpecifica(double lat, double lon){
         BuildLatitudine(lat);
         BuildLongitudine(lon);
     }
 
-    private void BuildLongitudine(Double lon) {
+    private void BuildLongitudine(double lon) {
         this.punto.setLongitudine(lon);
     }
 
-    private void BuildLatitudine(Double lat) {
+    private void BuildLatitudine(double lat) {
         this.punto.setLatitudine(lat);
     }
 

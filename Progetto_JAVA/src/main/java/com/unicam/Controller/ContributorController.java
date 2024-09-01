@@ -5,15 +5,15 @@ import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.ItinerarioDTO;
-import com.unicam.dto.PuntoGeoDTO;
+import com.unicam.dto.Provvisori.ItinerarioProvvisorioDTO;
+import com.unicam.dto.Provvisori.PuntoGeoProvvisorioDTO;
+import com.unicam.dto.Provvisori.PuntoLogicoProvvisorioDTO;
 import com.unicam.dto.PuntoLogicoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping(name = "Api/contributor")
@@ -35,14 +35,11 @@ public class ContributorController<T extends Contenuto> {
         this.serviceUtente = servizio;
     }
 
-
-
     @PostMapping("Api/Contributor/AggiungiItinerario")
-    public void AggiungiItinerario(@RequestBody Long idUtente, @RequestBody ItinerarioDTO richiesta){
+    public void AggiungiItinerario(@RequestBody ItinerarioProvvisorioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(idUtente);
+        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
         Itinerario itinerario = richiesta.ToEntity();
-        itinerario.setAutoreId(idUtente);
         itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
             RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, itinerario);
@@ -54,11 +51,10 @@ public class ContributorController<T extends Contenuto> {
     }
 
     @PostMapping("Api/Contributor/AggiungiPuntoGeo")
-    public void AggiungiPuntoGeolocalizzato(@RequestBody Long idUtente, @RequestBody PuntoGeoDTO richiesta){
+    public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoProvvisorioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(idUtente);
+        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
         PuntoGeolocalizzato punto = richiesta.ToEntity();
-        punto.setAutoreId(idUtente);
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
             RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
             aggiunta.Execute();
@@ -69,11 +65,10 @@ public class ContributorController<T extends Contenuto> {
     }
 
     @PostMapping("Api/Contributor/aggiungiPuntoLogico")
-    public void AggiungiPuntoLogico(@RequestBody Long idUtente, @RequestBody PuntoLogicoDTO richiesta){
+    public void AggiungiPuntoLogico(@RequestBody PuntoLogicoProvvisorioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(idUtente);
+        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
         PuntoLogico punto = richiesta.ToEntity();
-        punto.setAutoreId(idUtente);
         punto.setRiferimento(servicePuntoGeo.GetPuntoByNome(richiesta.getNomePuntoGeo()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
             RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, punto);
