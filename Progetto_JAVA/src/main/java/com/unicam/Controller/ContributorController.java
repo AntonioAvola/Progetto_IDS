@@ -35,6 +35,8 @@ public class ContributorController<T extends Contenuto> {
         this.serviceUtente = servizio;
     }
 
+
+
     @PostMapping("Api/Contributor/AggiungiItinerario")
     public void AggiungiItinerario(@RequestBody Long idUtente, @RequestBody ItinerarioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione

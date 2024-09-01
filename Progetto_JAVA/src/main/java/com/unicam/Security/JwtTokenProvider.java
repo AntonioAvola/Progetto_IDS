@@ -1,13 +1,14 @@
 package com.unicam.Security;
 
-import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 
 @Component
@@ -60,4 +61,6 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
+
 }
