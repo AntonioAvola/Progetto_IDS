@@ -2,6 +2,7 @@ package com.unicam.Controller;
 
 import com.unicam.Model.User;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.EliminaUtenteDTO;
 import com.unicam.dto.LoginDTO;
 import com.unicam.dto.LoginResponseDTO;
 import com.unicam.dto.RegistrazioneDTO;
@@ -21,7 +22,7 @@ public class UtenteController {
         this.servizio = servizio;
     }
 
-    @PostMapping("registrazioneUtente")
+    @PostMapping("Api/Utente/RegistrazioneUtente")
     public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneDTO registrazione){
         LoginResponseDTO login = new LoginResponseDTO();
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
@@ -30,11 +31,8 @@ public class UtenteController {
         return ResponseEntity.ok(login);
     }
 
-    @DeleteMapping("eliminaAccount")
-    public void EliminaAccount(@RequestBody String username){
-        this.servizio.EliminaUtenteByUsername(username);
+    @DeleteMapping("Api/Utente/EliminaAccount")
+    public void EliminaAccount(@RequestBody EliminaUtenteDTO userDeleted){
+        this.servizio.EliminaUtenteByUsername(userDeleted.getUsername());
     }
-    /*public void Login(LoginDTO login){
-        this.servizio.LoginUtente(login.getUsername(), login.getPassword());
-    }*/
 }

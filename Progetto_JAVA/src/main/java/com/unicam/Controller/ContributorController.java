@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping(name = "contributor")
+@RequestMapping(name = "Api/contributor")
 public class ContributorController<T extends Contenuto> {
 
     private UtenteService serviceUtente;
@@ -35,7 +35,7 @@ public class ContributorController<T extends Contenuto> {
         this.serviceUtente = servizio;
     }
 
-    @PostMapping("aggiungiItinerario")
+    @PostMapping("Api/Contributor/AggiungiItinerario")
     public void AggiungiItinerario(@RequestBody Long idUtente, @RequestBody ItinerarioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
         User utente = this.serviceUtente.GetUtenteById(idUtente);
@@ -51,7 +51,7 @@ public class ContributorController<T extends Contenuto> {
         }
     }
 
-    @PostMapping("aggiungiPuntoGeo")
+    @PostMapping("Api/Contributor/AggiungiPuntoGeo")
     public void AggiungiPuntoGeolocalizzato(@RequestBody Long idUtente, @RequestBody PuntoGeoDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
         User utente = this.serviceUtente.GetUtenteById(idUtente);
@@ -66,7 +66,7 @@ public class ContributorController<T extends Contenuto> {
         }
     }
 
-    @PostMapping("aggiungiPuntoLogico")
+    @PostMapping("Api/Contributor/aggiungiPuntoLogico")
     public void AggiungiPuntoLogico(@RequestBody Long idUtente, @RequestBody PuntoLogicoDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
         User utente = this.serviceUtente.GetUtenteById(idUtente);

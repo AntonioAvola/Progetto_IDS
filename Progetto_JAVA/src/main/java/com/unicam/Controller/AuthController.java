@@ -23,7 +23,7 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    @PostMapping("/login")
+    @PostMapping("Api/Auth/Login")
     public ResponseEntity<LoginResponseDTO> Login(@RequestBody LoginDTO loginRequest) {
         LoginResponseDTO risposta = new LoginResponseDTO();
         risposta.setToken(servizioUtente.LoginUtente(loginRequest.getUsername(), loginRequest.getPassword()));

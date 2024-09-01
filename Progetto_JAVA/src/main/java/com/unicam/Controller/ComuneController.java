@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * dell'animatore del comune
  */
 @RestController
-@RequestMapping(name = "/api/comune")
+@RequestMapping(name = "api/comune")
 public class ComuneController {
 
     private ComuneService servizio;
@@ -21,15 +21,15 @@ public class ComuneController {
         this.servizio = servizio;
     }
 
-    @PostMapping("richiestaAggiunta")
+    @PostMapping("Api/Comune/RichiestaAggiunta")
     public void RichiestaAggiunta(@RequestBody RichiestaComuneDTO richiesta){
     }
 
-    @GetMapping("getProposteAnimatore")
+    @GetMapping("Api/Comune/GetProposteAnimatore")
     public void GetProposteAnimatore(){
     }
 
-    @PutMapping("esitoProposta")
+    @PutMapping("Api/Comune/EsitoProposta")
     public void EsitoProposta(){
     }
 }
