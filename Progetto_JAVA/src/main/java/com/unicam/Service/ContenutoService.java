@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ContenutoService <T extends Contenuto> {
@@ -60,12 +61,12 @@ public class ContenutoService <T extends Contenuto> {
     public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
         List<PuntoGeolocalizzato> punti = new ArrayList<>();
         for (String nome: nomiPunti) {
-            punti.add(GetPuntoByNome(nome));
+            punti.add(GetPuntoByNome(nome.toUpperCase(Locale.ROOT)));
         }
         return punti;
     }
 
     public PuntoGeolocalizzato GetPuntoByNome(String nome){
-        return this.repo.findByTitolo(nome);
+        return this.repo.findByTitolo(nome.toUpperCase(Locale.ROOT));
     }
 }
