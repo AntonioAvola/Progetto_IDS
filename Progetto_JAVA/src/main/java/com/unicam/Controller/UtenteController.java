@@ -22,7 +22,7 @@ public class UtenteController {
         this.servizio = servizio;
     }
 
-    @PostMapping("Api/Utente/RegistrazioneUtente")
+    @PostMapping("/RegistrazioneUtente")
     public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneDTO registrazione){
         LoginResponseDTO login = new LoginResponseDTO();
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
@@ -31,7 +31,7 @@ public class UtenteController {
         return ResponseEntity.ok(login);
     }
 
-    @DeleteMapping("Api/Utente/EliminaAccount")
+    @DeleteMapping("/EliminaAccount")
     public void EliminaAccount(@RequestBody EliminaUtenteDTO userDeleted){
         this.servizio.EliminaUtenteByUsername(userDeleted.getUsername());
     }

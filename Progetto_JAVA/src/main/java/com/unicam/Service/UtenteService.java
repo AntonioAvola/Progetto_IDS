@@ -8,14 +8,18 @@ import com.unicam.Validator.EmailValidator;
 import com.unicam.Validator.PasswordValidator;
 import com.unicam.dto.RegistrazioneDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 @Service
-public class UtenteService {
+public class UtenteService implements UserDetailsService {
 
     private IUtenteRepository repository;
 
@@ -75,9 +79,8 @@ public class UtenteService {
         ConfrontoCredenzialiDB(username, password);
 
         User user = repository.findByUsername(username);
-        String token = tokenProvider.createToken(user);
 
-        return token;
+        return tokenProvider.createToken(user);
 
     }
 
@@ -115,5 +118,15 @@ public class UtenteService {
         User utente = this.repository.findByUsername(username);
         Long idUtente = utente.getId();
         this.repository.deleteById(idUtente);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = repository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        // Restituisci un'istanza di UserDetails personalizzata, o usa l'implementazione di Spring.
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 }
