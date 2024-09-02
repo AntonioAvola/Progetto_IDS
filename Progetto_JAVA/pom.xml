@@ -41,6 +41,11 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
@@ -48,6 +53,8 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>
+
+
 
 
 
@@ -66,6 +73,7 @@
         </dependency>
 
 
+        <!--Swagger-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -91,14 +99,14 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.11.5</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId> <!-- o 'jjwt-gson', se preferisci Gson a Jackson -->
+            <artifactId>jjwt-jackson</artifactId> <!-- oppure jjwt-gson se usi Gson -->
             <version>0.11.5</version>
-            <scope>runtime</scope>
         </dependency>
+
+
 
 
 
