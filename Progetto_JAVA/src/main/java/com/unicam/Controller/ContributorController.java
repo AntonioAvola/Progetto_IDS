@@ -10,6 +10,7 @@ import com.unicam.dto.Provvisori.PuntoGeoProvvisorioDTO;
 import com.unicam.dto.Provvisori.PuntoLogicoProvvisorioDTO;
 import com.unicam.dto.PuntoLogicoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -37,6 +38,7 @@ public class ContributorController<T extends Contenuto> {
         this.servicePuntoLogico = servicePL;
         this.serviceUtente = servizio;
     }
+
 
     @PostMapping("Api/Contributor/AggiungiItinerario")
     public void AggiungiItinerario(@RequestBody ItinerarioProvvisorioDTO richiesta){

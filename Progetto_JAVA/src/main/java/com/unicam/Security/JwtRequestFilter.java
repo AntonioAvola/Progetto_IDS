@@ -33,6 +33,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    private String SALT = "passwordSegretaAbbastanzaLunga1234ProgettoIngegneriaDelSoftware";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response, FilterChain filterChain)
@@ -44,7 +46,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String jwtToken = requestTokenHeader.substring(7);  // Rimuovi "Bearer "
 
             try {
-                // Assicurati che il token non contenga spazi
                 if (jwtToken.contains(" ")) {
                     logger.error("Token contiene spazi non validi");
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token non valido");
@@ -52,9 +53,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
 
                 Claims claims = Jwts.parser()
-                        .setSigningKey("passwordSegretaAbbastanzaLunga1234ProgettoIngegneriaDelSoftware")
+                        .setSigningKey(SALT)
                         .parseClaimsJws(jwtToken)
                         .getBody();
+
                 String username = claims.getSubject();
 
                 // Imposta l'autenticazione nel contesto di sicurezza

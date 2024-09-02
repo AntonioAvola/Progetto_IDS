@@ -24,6 +24,7 @@ public class JwtUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
+        //cambia in return user; se tutto va male
         return user;
     }
 }

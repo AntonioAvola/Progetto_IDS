@@ -1,10 +1,13 @@
 package com.unicam.Security;
 
+import com.unicam.Hadlers.CustomAccessNegatoHandler;
 import com.unicam.Service.UtenteService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(WHITE_LIST_URL).permitAll()  // Permetti l'accesso senza autenticazione al login
                         .anyRequest().authenticated()               // Richiedi autenticazione per tutte le altre richieste
 
+                ).exceptionHandling(exceptionHandling -> exceptionHandling
+                                .accessDeniedHandler(new CustomAccessNegatoHandler())
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Aggiungi il filtro JWT
 
