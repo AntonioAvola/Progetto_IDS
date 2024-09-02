@@ -7,6 +7,7 @@ import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.User;
 import com.unicam.Repository.IContenutoRepository;
 import com.unicam.Repository.IUtenteRepository;
+import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +69,9 @@ public class ContenutoService <T extends Contenuto> {
 
     public PuntoGeolocalizzato GetPuntoByNome(String nome){
         return this.repo.findByTitolo(nome.toUpperCase(Locale.ROOT));
+    }
+
+    public void SegnalaContenuto(SegnalazioneProvvisoriaDTO segnala) {
+        this.repo.findByTitolo(segnala.getNomeContenuto()).setStato(StatoContenuto.SEGNALATO);
     }
 }
