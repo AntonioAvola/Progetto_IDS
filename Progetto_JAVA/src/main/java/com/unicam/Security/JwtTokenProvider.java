@@ -89,7 +89,7 @@ public class JwtTokenProvider {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); // Rimuove "Bearer " e restituisce il token
         }
-        return null;
+        return bearerToken;
     }
 
 
