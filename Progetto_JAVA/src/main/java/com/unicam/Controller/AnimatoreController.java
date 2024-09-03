@@ -54,10 +54,10 @@ public class AnimatoreController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        Evento evento = proposta.ToEntity();
+        Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente));
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
         evento.setLuogo(this.servizioPunto.GetPuntoByNome(proposta.getNomeLuogo()));
-        RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, servizioUtente, evento, idUtente);
+        RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, evento);
         richiesta.Execute();
     }
 
@@ -73,8 +73,8 @@ public class AnimatoreController {
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
-        Contest contest = proposta.ToEntity();
-        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, servizioUtente, contest, idUtente);
+        Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente));
+        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
         richiesta.Execute();
     }
 }

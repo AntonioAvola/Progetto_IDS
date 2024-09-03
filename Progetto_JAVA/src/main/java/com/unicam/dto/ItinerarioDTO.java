@@ -1,9 +1,8 @@
 package com.unicam.dto;
 
-import com.unicam.Model.BuilderContenuto.Builder;
 import com.unicam.Model.BuilderContenuto.ItinerarioBuilder;
 import com.unicam.Model.Itinerario;
-import org.hibernate.dialect.function.IntegralTimestampaddFunction;
+import com.unicam.Model.User;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,10 +43,11 @@ public class ItinerarioDTO {
         this.nomiPunti = nomiPunti;
     }
 
-    public Itinerario ToEntity() {
+    public Itinerario ToEntity(User user) {
         ItinerarioBuilder builder = new ItinerarioBuilder();
+        builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
-        builder.BuildDescrizione(this.descrizione);
+        builder.BuildDescrizione(getDescrizione());
         return builder.Result();
     }
 }

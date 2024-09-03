@@ -2,6 +2,7 @@ package com.unicam.dto;
 
 import com.unicam.Model.BuilderContenuto.EventoBuilder;
 import com.unicam.Model.Evento;
+import com.unicam.Model.User;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -44,8 +45,9 @@ public class PropostaEventoDTO {
         return nomeLuogo;
     }
 
-    public Evento ToEntity(){
+    public Evento ToEntity(User user){
         EventoBuilder builder = new EventoBuilder();
+        builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();

@@ -3,6 +3,7 @@ package com.unicam.dto;
 import com.unicam.Model.BuilderContenuto.Builder;
 import com.unicam.Model.BuilderContenuto.PuntoLogicoBuilder;
 import com.unicam.Model.PuntoLogico;
+import com.unicam.Model.User;
 
 import java.util.Locale;
 
@@ -42,8 +43,9 @@ public class PuntoLogicoDTO {
         this.nomePuntoGeo = nomePuntoGeo;
     }
 
-    public PuntoLogico ToEntity() {
+    public PuntoLogico ToEntity(User user) {
         PuntoLogicoBuilder builder = new PuntoLogicoBuilder();
+        builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();

@@ -2,6 +2,7 @@ package com.unicam.dto;
 
 import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
 import com.unicam.Model.PuntoGeolocalizzato;
+import com.unicam.Model.User;
 
 import java.util.Locale;
 
@@ -51,8 +52,9 @@ public class PuntoGeoDTO {
         this.longitudine = longitudine;
     }
 
-    public PuntoGeolocalizzato ToEntity() {
+    public PuntoGeolocalizzato ToEntity(User user) {
         PuntoGeoBuilder builder = new PuntoGeoBuilder();
+        builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getLatitudine(), getLongitudine());

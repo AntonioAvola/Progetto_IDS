@@ -44,15 +44,14 @@ public class ComuneController {
         String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
         String idUtenteStr = authentication.getCredentials().toString();
-        Long idUtente = Long.parseLong(idUtenteStr);
+        long idUtente = Long.parseLong(idUtenteStr);
 
         if(!currentRole.equals(Ruolo.COMUNE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
-
-
-            RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente, servizioPunto, servizioComune, richiesta);
-            richiestaAggiunta.Execute();
+        RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
+                servizioPunto, servizioComune, richiesta, idUtente);
+        richiestaAggiunta.Execute();
 
     }
 

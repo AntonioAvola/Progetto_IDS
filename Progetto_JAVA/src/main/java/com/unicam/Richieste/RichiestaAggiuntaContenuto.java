@@ -8,18 +8,13 @@ import com.unicam.Service.UtenteService;
 
 public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand{
     private ContenutoService<T> contenutoService;
-    private UtenteService servizioUtente;
-    private User user;
     private T contenuto;
 
     public RichiestaAggiuntaContenuto(ContenutoService<T> contenutoService,
-                                      UtenteService servizioUtente,
-                                      T contenuto, long id) {
+                                      T contenuto) {
         this.contenutoService = contenutoService;
-        this.servizioUtente = servizioUtente;
         this.contenuto = contenuto;
         this.contenuto.setStato(StatoContenuto.ATTESA);
-        this.contenuto.setAutore(this.servizioUtente.GetUtenteById(id));
     }
 
     @Override

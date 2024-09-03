@@ -4,6 +4,7 @@ import com.unicam.Model.BuilderContenuto.ContestBuilder;
 import com.unicam.Model.Contest;
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.Tempo;
+import com.unicam.Model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,8 +68,9 @@ public class PropostaContestDTO {
         return turistaAutenticato;
     }
 
-    public Contest ToEntity(){
+    public Contest ToEntity(User user){
         ContestBuilder builder = new ContestBuilder();
+        builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(RuoliPartecipanti(), new Tempo(getInizio(), getFine()));
