@@ -43,14 +43,14 @@ public class AnimatoreController {
         Evento evento = proposta.ToEntity();
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
         evento.setLuogo(this.servizioPunto.GetPuntoByNome(proposta.getNomeLuogo()));
-        RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, evento);
+        RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, servizioUtente, evento, proposta.getIdUtente());
         richiesta.Execute();
     }
 
     @PostMapping("api/animatore/proponiContest")
     public void ProponiContest(@RequestBody PropostaContestProvvisoriaDTO proposta){
         Contest contest = proposta.ToEntity();
-        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
+        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, servizioUtente, contest, proposta.getIdUtente());
         richiesta.Execute();
     }
 }

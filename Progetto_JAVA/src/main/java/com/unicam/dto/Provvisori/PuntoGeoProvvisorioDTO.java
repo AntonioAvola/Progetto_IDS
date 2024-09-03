@@ -59,7 +59,6 @@ public class PuntoGeoProvvisorioDTO {
 
     public PuntoGeolocalizzato ToEntity() {
         PuntoGeoBuilder builder = new PuntoGeoBuilder();
-        builder.BuildAutore(idUtente);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getLatitudine(), getLongitudine());

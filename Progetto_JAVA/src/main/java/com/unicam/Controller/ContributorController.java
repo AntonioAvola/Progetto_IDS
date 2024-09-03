@@ -45,12 +45,14 @@ public class ContributorController<T extends Contenuto> {
         //TODO controlli che l'utente abbia l'autorizzazione
         User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
         Itinerario itinerario = richiesta.ToEntity();
+        itinerario.setAutore(this.serviceUtente.GetUtenteById(richiesta.getIdUtente()));
         itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, itinerario);
+            RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, serviceUtente, itinerario, richiesta.getIdUtente());
             aggiunta.Execute();
         }
         else{
+            itinerario.setStato(StatoContenuto.APPROVATO);
             serviceItinerario.AggiungiContenuto(itinerario);
         }
     }
@@ -58,13 +60,14 @@ public class ContributorController<T extends Contenuto> {
     @PostMapping("Api/Contributor/AggiungiPuntoGeo")
     public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoProvvisorioDTO richiesta){
         //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
+        //User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
         PuntoGeolocalizzato punto = richiesta.ToEntity();
-        if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
+        if(this.serviceUtente.GetUtenteById(richiesta.getIdUtente()).getRuolo() == Ruolo.CONTRIBUTOR){
+            RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, serviceUtente, punto, richiesta.getIdUtente());
             aggiunta.Execute();
         }
         else{
+            punto.setStato(StatoContenuto.APPROVATO);
             servicePuntoGeo.AggiungiContenuto(punto);
         }
     }
@@ -76,7 +79,7 @@ public class ContributorController<T extends Contenuto> {
         PuntoLogico punto = richiesta.ToEntity();
         punto.setRiferimento(servicePuntoGeo.GetPuntoByNome(richiesta.getNomePuntoGeo()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, punto);
+            RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, serviceUtente, punto, richiesta.getIdUtente());
             aggiunta.Execute();
         }
         else{

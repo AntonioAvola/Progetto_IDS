@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class Comune {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
 

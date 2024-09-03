@@ -1,10 +1,7 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,7 +10,13 @@ import java.util.ArrayList;
 @Table(name = "itinerario")
 public class Itinerario extends Contenuto{
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "itinerario_punto",
+            joinColumns = @JoinColumn(name = "itinerario_id"),
+            inverseJoinColumns = @JoinColumn(name = "punto_id")
+    )
+    //@JoinColumn(name = "itinerario_id", nullable = true)
     private List<PuntoGeolocalizzato> puntiDiInteresse = new ArrayList<PuntoGeolocalizzato>();
 
 

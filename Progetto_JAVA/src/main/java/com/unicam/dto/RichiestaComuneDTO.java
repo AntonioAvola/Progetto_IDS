@@ -44,7 +44,7 @@ public class RichiestaComuneDTO {
         return this.idResponsabile;
     }
 
-    public void setUsername(long id) {
+    public void setIdResponsabile(long id) {
         this.idResponsabile = id;
     }
 
@@ -72,7 +72,6 @@ public class RichiestaComuneDTO {
 
     public PuntoGeolocalizzato ToEntityPunto() {
         PuntoGeoBuilder builderPunto = new PuntoGeoBuilder();
-        builderPunto.BuildAutore(getIdResponsabile());
         builderPunto.BuildTitolo(getNomeComune().toUpperCase(Locale.ROOT));
         builderPunto.BuildDescrizione(getDescrizione());
         builderPunto.BuildSpecifica(getLatitudine(), getLongitudine());

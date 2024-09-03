@@ -1,6 +1,7 @@
 package com.unicam.Model.BuilderContenuto;
 
 import com.unicam.Model.PostTurista;
+import com.unicam.Model.User;
 
 public class PostTuristaBuilder implements Builder{
 
@@ -12,8 +13,8 @@ public class PostTuristaBuilder implements Builder{
 
 
     @Override
-    public void BuildAutore(Long autoreId) {
-        this.post.setAutoreId(autoreId);
+    public void BuildAutore(User autoreId) {
+        this.post.setAutore(autoreId);
     }
 
     @Override

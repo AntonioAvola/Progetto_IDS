@@ -50,7 +50,6 @@ public class ItinerarioProvvisorioDTO {
 
     public Itinerario ToEntity() {
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(this.descrizione);
         return builder.Result();

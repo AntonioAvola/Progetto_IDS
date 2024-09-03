@@ -4,6 +4,7 @@ import com.unicam.Model.Contest;
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.Tempo;
 import com.unicam.Model.User;
+import com.unicam.Service.UtenteService;
 import com.unicam.dto.UtenteDTO;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class ContestBuilder implements Builder{
     }
 
     @Override
-    public void BuildAutore(Long autoreId) {
-        this.contest.setAutoreId(autoreId);
+    public void BuildAutore(User autore) {
+        this.contest.setAutore(autore);
     }
 
     @Override

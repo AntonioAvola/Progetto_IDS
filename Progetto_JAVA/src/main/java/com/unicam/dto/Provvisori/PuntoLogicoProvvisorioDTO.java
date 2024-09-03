@@ -49,7 +49,6 @@ public class PuntoLogicoProvvisorioDTO {
 
     public PuntoLogico ToEntity() {
         PuntoLogicoBuilder builder = new PuntoLogicoBuilder();
-        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();

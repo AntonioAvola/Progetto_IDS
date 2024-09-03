@@ -4,23 +4,31 @@ import com.unicam.Model.BuilderContenuto.PostTuristaBuilder;
 import com.unicam.Model.PostTurista;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Service.ContenutoService;
+import com.unicam.Service.UtenteService;
+import com.unicam.dto.Provvisori.PostTuristaProvvisorioDTO;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class RichiestaAggiuntaPost implements ICommand{
 
     private PostTurista post;
     private ContenutoService<PostTurista> servizio;
+    private UtenteService servizioUTente;
 
     public RichiestaAggiuntaPost(ContenutoService<PostTurista> servizioPost,
-                                 PostTurista post){
+                                 UtenteService servizio,
+                                 PostTuristaProvvisorioDTO post) throws IOException {
         this.servizio = servizioPost;
-        PostTuristaBuilder builder = new PostTuristaBuilder();
-        builder.BuildAutore(post.getAutoreId());
+        this.servizioUTente = servizio;
+        this.post = post.ToEntity();
+        this.post.setAutore(this.servizioUTente.GetUtenteById(post.getIdUtente()));
+        /*PostTuristaBuilder builder = new PostTuristaBuilder();
+        builder.BuildAutore(this.servizioUTente.GetUtenteById(idUtente));
         builder.BuildTitolo(post.getTitolo());
         builder.BuildDescrizione(post.getDescrizione());
         builder.BuildSpecifica(post.getFileData());
-        this.post = builder.Result();
+        this.post = builder.Result();*/
         this.post.setStato(StatoContenuto.ATTESA);
     }
     @Override

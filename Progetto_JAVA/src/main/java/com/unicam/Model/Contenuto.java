@@ -1,10 +1,7 @@
 package com.unicam.Model;
 
 import com.unicam.dto.UtenteDTO;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 @MappedSuperclass
 public abstract class  Contenuto {
@@ -14,15 +11,18 @@ public abstract class  Contenuto {
     private long id;
     private String titolo;
     private String descrizione;
-    private long autoreId;
+    //private long autoreId;
+    @ManyToOne
+    @JoinColumn(name = "autore_id", nullable = false)
+    private User autore;
     private StatoContenuto stato;
 
     public Contenuto(){}
 
-    public Contenuto(String titolo, String descrizione, Long autore) {
+    public Contenuto(String titolo, String descrizione, User autore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
-        this.autoreId = autore;
+        this.autore = autore;
     }
 
 
@@ -50,12 +50,12 @@ public abstract class  Contenuto {
         this.descrizione = descrizione;
     }
 
-    public long getAutoreId() {
-        return autoreId;
+    public User getAutore() {
+        return autore;
     }
 
-    public void setAutoreId(long autoreId) {
-        this.autoreId = autoreId;
+    public void setAutore(User autore) {
+        this.autore = autore;
     }
 
     public StatoContenuto getStato() {
@@ -70,7 +70,7 @@ public abstract class  Contenuto {
     public String toString(){
         return "Titolo: " + titolo + "\n"
                 + "Descrizione: "+ descrizione + "\n"
-                + "Autore: " + autoreId + "\n"
+                + "Autore: " + autore + "\n"
                 + "Stato: " + stato;
     }
 

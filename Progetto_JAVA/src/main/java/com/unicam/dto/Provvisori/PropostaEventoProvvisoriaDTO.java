@@ -52,7 +52,6 @@ public class PropostaEventoProvvisoriaDTO {
 
     public Evento ToEntity(){
         EventoBuilder builder = new EventoBuilder();
-        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         return builder.Result();

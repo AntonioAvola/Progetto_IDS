@@ -39,7 +39,6 @@ public class PostTuristaProvvisorioDTO {
 
     public PostTurista ToEntity() throws IOException {
         PostTuristaBuilder builder = new PostTuristaBuilder();
-        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo());
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getData().getBytes());

@@ -75,7 +75,6 @@ public class PropostaContestProvvisoriaDTO {
 
     public Contest ToEntity(){
         ContestBuilder builder = new ContestBuilder();
-        builder.BuildAutore(getIdUtente());
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(RuoliPartecipanti(), new Tempo(getInizio(), getFine()));

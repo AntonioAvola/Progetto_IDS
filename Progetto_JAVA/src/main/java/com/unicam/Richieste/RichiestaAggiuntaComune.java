@@ -23,11 +23,17 @@ public class RichiestaAggiuntaComune implements ICommand{
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
     private PuntoGeolocalizzato punto;
-    private Comune comune = new Comune();
+    private Comune comune;
 
-    public RichiestaAggiuntaComune(UtenteService servizio, RichiestaComuneDTO richiesta){
+    public RichiestaAggiuntaComune(UtenteService servizio,
+                                   ContenutoService<PuntoGeolocalizzato> servizioPunto,
+                                   ComuneService servizioComune,
+                                   RichiestaComuneDTO richiesta){
         this.servizioUtente = servizio;
+        this.servizioContenuto = servizioPunto;
+        this.servizioComune = servizioComune;
         this.punto = richiesta.ToEntityPunto();
+        this.punto.setAutore(this.servizioUtente.GetUtenteById(richiesta.getIdResponsabile()));
         this.punto.setStato(StatoContenuto.ATTESA);
         this.comune = richiesta.ToEntityComune();
         this.comune.setPosizione(punto);
