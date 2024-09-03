@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static javax.crypto.Cipher.SECRET_KEY;
 
@@ -58,9 +61,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .getBody();
 
                 String username = claims.getSubject();
+                String userId = claims.get("id").toString();
+                String role = claims.get("role").toString();
 
+                // Crea una lista di authority
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority(role));
+
+
+                logger.info("utente autenticato: " + username + "con ruolo: " + role + "e id: " + userId);
                 // Imposta l'autenticazione nel contesto di sicurezza
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, userId, authorities);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (JwtException | IllegalArgumentException e) {

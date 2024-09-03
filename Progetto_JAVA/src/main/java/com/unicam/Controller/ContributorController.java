@@ -8,10 +8,17 @@ import com.unicam.dto.ItinerarioDTO;
 import com.unicam.dto.Provvisori.ItinerarioProvvisorioDTO;
 import com.unicam.dto.Provvisori.PuntoGeoProvvisorioDTO;
 import com.unicam.dto.Provvisori.PuntoLogicoProvvisorioDTO;
+import com.unicam.dto.PuntoGeoDTO;
 import com.unicam.dto.PuntoLogicoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * I metodi di questa classe devono poter essere utilizzati da:
@@ -23,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(name = "Api/contributor")
 public class ContributorController<T extends Contenuto> {
 
+    private final SecurityAutoConfiguration securityAutoConfiguration;
     private UtenteService serviceUtente;
     private ContenutoService<Itinerario> serviceItinerario;
     private ContenutoService<PuntoGeolocalizzato> servicePuntoGeo;
@@ -32,38 +40,64 @@ public class ContributorController<T extends Contenuto> {
     public ContributorController(ContenutoService<Itinerario> serviceIt,
                                  ContenutoService<PuntoGeolocalizzato> servicePG,
                                  ContenutoService<PuntoLogico> servicePL,
-                                 UtenteService servizio){
+                                 UtenteService servizio, SecurityAutoConfiguration securityAutoConfiguration){
         this.serviceItinerario = serviceIt;
         this.servicePuntoGeo = servicePG;
         this.servicePuntoLogico = servicePL;
         this.serviceUtente = servizio;
+        this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
 
     @PostMapping("Api/Contributor/AggiungiItinerario")
-    public void AggiungiItinerario(@RequestBody ItinerarioProvvisorioDTO richiesta){
-        //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
+    public ResponseEntity<String> AggiungiItinerario(@RequestBody ItinerarioDTO richiesta){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
+
+        String idUtenteStr = authentication.getCredentials().toString();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
+                !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
+                !currentRole.equals(Ruolo.CURATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        User utente = this.serviceUtente.GetUtenteById(idUtente);
         Itinerario itinerario = richiesta.ToEntity();
-        itinerario.setAutore(this.serviceUtente.GetUtenteById(richiesta.getIdUtente()));
+        itinerario.setAutore(utente);
         itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, serviceUtente, itinerario, richiesta.getIdUtente());
+            RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, serviceUtente, itinerario, idUtente);
             aggiunta.Execute();
         }
         else{
             itinerario.setStato(StatoContenuto.APPROVATO);
             serviceItinerario.AggiungiContenuto(itinerario);
         }
+        return ResponseEntity.ok("itinerario aggiunto con succeso!");
     }
 
     @PostMapping("Api/Contributor/AggiungiPuntoGeo")
-    public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoProvvisorioDTO richiesta){
-        //TODO controlli che l'utente abbia l'autorizzazione
-        //User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
+
+    public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoDTO richiesta){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
+
+        String idUtenteStr = authentication.getCredentials().toString();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
+                !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
+                !currentRole.equals(Ruolo.CURATORE.name()) &&
+                !currentRole.equals(Ruolo.ANIMATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
         PuntoGeolocalizzato punto = richiesta.ToEntity();
-        if(this.serviceUtente.GetUtenteById(richiesta.getIdUtente()).getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, serviceUtente, punto, richiesta.getIdUtente());
+        if(this.serviceUtente.GetUtenteById(idUtente).getRuolo() == Ruolo.CONTRIBUTOR || this.serviceUtente.GetUtenteById(idUtente).getRuolo() == Ruolo.ANIMATORE ){
+            RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, serviceUtente, punto, idUtente);
             aggiunta.Execute();
         }
         else{
@@ -73,13 +107,25 @@ public class ContributorController<T extends Contenuto> {
     }
 
     @PostMapping("Api/Contributor/aggiungiPuntoLogico")
-    public void AggiungiPuntoLogico(@RequestBody PuntoLogicoProvvisorioDTO richiesta){
-        //TODO controlli che l'utente abbia l'autorizzazione
-        User utente = this.serviceUtente.GetUtenteById(richiesta.getIdUtente());
+    public void AggiungiPuntoLogico(@RequestBody PuntoLogicoDTO richiesta){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
+
+        String idUtenteStr = authentication.getCredentials().toString();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
+                !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
+                !currentRole.equals(Ruolo.CURATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        User utente = this.serviceUtente.GetUtenteById(idUtente);
         PuntoLogico punto = richiesta.ToEntity();
         punto.setRiferimento(servicePuntoGeo.GetPuntoByNome(richiesta.getNomePuntoGeo()));
         if(utente.getRuolo() == Ruolo.CONTRIBUTOR){
-            RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, serviceUtente, punto, richiesta.getIdUtente());
+            RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, serviceUtente, punto, idUtente);
             aggiunta.Execute();
         }
         else{
@@ -88,9 +134,11 @@ public class ContributorController<T extends Contenuto> {
     }
 
     public void ModificaContenuto(){
+        //TODO implement
     }
 
     public void EliminaContenuto(){
+        //TODO implement
     }
 
 

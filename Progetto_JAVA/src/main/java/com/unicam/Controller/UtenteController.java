@@ -25,6 +25,8 @@ public class UtenteController {
     @PostMapping("/RegistrazioneUtente")
     public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneDTO registrazione){
         LoginResponseDTO login = new LoginResponseDTO();
+
+        login.setMessage("Registrazione avvenuta con successo!");
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
@@ -33,6 +35,7 @@ public class UtenteController {
 
     @DeleteMapping("/EliminaAccount")
     public void EliminaAccount(@RequestBody EliminaUtenteDTO userDeleted){
+        //TODO pensare come implementare l'eliminazione dell'account (tecnicamente un utente puo eliminare solo il suo account non quello di altri)
         this.servizio.EliminaUtenteByUsername(userDeleted.getUsername());
     }
 }

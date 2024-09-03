@@ -9,7 +9,11 @@ import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.RichiestaComuneDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Il rappresentante del comune, una volta fatto il log-in
@@ -35,13 +39,21 @@ public class ComuneController {
 
     @PostMapping("Api/Comune/RichiestaAggiunta")
     public void RichiestaAggiunta(@RequestBody RichiestaComuneDTO richiesta){
-        if(this.servizioUtente.GetUtenteById(richiesta.getIdResponsabile()).getRuolo() == Ruolo.COMUNE){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
+
+        String idUtenteStr = authentication.getCredentials().toString();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        if(!currentRole.equals(Ruolo.COMUNE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+
             RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente, servizioPunto, servizioComune, richiesta);
             richiestaAggiunta.Execute();
-        }
-        else{
-            throw new IllegalArgumentException("Non si può richiedere di aggiungere un comune");
-        }
+
     }
 
     @GetMapping("Api/Comune/GetProposteAnimatore")

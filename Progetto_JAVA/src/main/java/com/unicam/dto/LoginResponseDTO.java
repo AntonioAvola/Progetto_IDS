@@ -6,6 +6,7 @@ public class LoginResponseDTO {
     private String token;
     private String username;
     private Ruolo role;
+    private String message;
 
     // Costruttore vuoto per la deserializzazione
     public LoginResponseDTO() {}
@@ -38,5 +39,13 @@ public class LoginResponseDTO {
 
     public void setRole(Ruolo role) {
         this.role = role;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

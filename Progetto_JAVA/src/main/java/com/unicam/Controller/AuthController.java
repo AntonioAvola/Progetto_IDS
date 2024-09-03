@@ -26,6 +26,9 @@ public class AuthController {
     @PostMapping("/Login")
     public ResponseEntity<LoginResponseDTO> Login(@RequestBody LoginDTO loginRequest) {
         LoginResponseDTO risposta = new LoginResponseDTO();
+
+        risposta.setMessage("Login avvenuto con successo!");
+
         risposta.setToken(servizioUtente.LoginUtente(loginRequest.getUsername(), loginRequest.getPassword()));
         risposta.setUsername(loginRequest.getUsername());
         risposta.setRole(servizioUtente.GetUtente(loginRequest.getUsername()));
