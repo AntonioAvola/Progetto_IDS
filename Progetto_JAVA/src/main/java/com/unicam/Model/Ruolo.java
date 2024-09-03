@@ -1,6 +1,6 @@
 package com.unicam.Model;
 
-public enum Ruolo {
+public enum Ruolo{
 
     ADMIN,
     TURISTA_AUTENTICATO,
