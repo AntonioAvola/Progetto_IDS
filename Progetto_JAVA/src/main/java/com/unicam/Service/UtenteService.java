@@ -102,7 +102,7 @@ public class UtenteService implements UserDetailsService {
     }
 
     public Ruolo GetUtente(String username) {
-        return repository.findByUsername(username).getRuolo();
+        return repository.findByUsername(username).getRuoloComune();
     }
     public User GetUtenteById(Long id){
         return repository.getById(id);

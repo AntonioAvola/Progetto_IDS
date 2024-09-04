@@ -24,14 +24,14 @@ public class PermessiEInserimentiTest {
     public void testAggiuntaContenutoFallita(){
         User utente = new User("Eleonora", "ele.car@gmail.com", "EleCar3",
                 "Santa Vittoria", "ele-3-car");
-        utente.setRuolo(Ruolo.CONTRIBUTOR);
-        UtenteDTO autore = new UtenteDTO(utente.getName(), utente.getComune(), utente.getRuolo());
+        utente.setRuoloComune(Ruolo.CONTRIBUTOR);
+        UtenteDTO autore = new UtenteDTO(utente.getName(), utente.getComune(), utente.getRuoloComune());
 
         List<PuntoGeolocalizzato> punti = new ArrayList<PuntoGeolocalizzato>();
         punti.add(new PuntoGeolocalizzato());
 
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildAutore(utente.getId());
+        //builder.BuildAutore(utente.getId());
         builder.BuildTitolo("Corsa");
         builder.BuildDescrizione("Corsetta semplice in mezzo alla natura");
         builder.BuildSpecifica(punti);
@@ -48,14 +48,14 @@ public class PermessiEInserimentiTest {
     public void testAggiuntaContenuto(){
         User utente = new User("Antonio", "anto.avo@gmail.com", "AntoAvo2",
                 "Castelfidardo", "anto-2-avo");
-        utente.setRuolo(Ruolo.CONTRIBUTOR_AUTORIZZATO);
-        UtenteDTO autore = new UtenteDTO(utente.getName(), utente.getComune(), utente.getRuolo());
+        utente.setRuoloComune(Ruolo.CONTRIBUTOR_AUTORIZZATO);
+        UtenteDTO autore = new UtenteDTO(utente.getName(), utente.getComune(), utente.getRuoloComune());
 
         List<PuntoGeolocalizzato> punti = new ArrayList<PuntoGeolocalizzato>();
         punti.add(new PuntoGeolocalizzato());
 
         ItinerarioBuilder builder = new ItinerarioBuilder();
-        builder.BuildAutore(utente.getId());
+        //builder.BuildAutore(utente.getId());
         builder.BuildTitolo("Corsa");
         builder.BuildDescrizione("Corsetta semplice in mezzo alla natura");
         builder.BuildSpecifica(punti);

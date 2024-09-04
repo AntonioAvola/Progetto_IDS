@@ -75,6 +75,7 @@ public class RichiestaComuneDTO {
         builderPunto.BuildTitolo(nomeComune);
         builderPunto.BuildDescrizione(getDescrizione());
         builderPunto.BuildSpecifica(getLatitudine(), getLongitudine());
+        builderPunto.BuildComune(nomeComune);
         return builderPunto.Result();
     }
 }

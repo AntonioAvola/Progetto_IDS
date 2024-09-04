@@ -18,4 +18,8 @@ public class ComuneService {
     public void AggiungiComune(Comune comune) {
         this.repository.save(comune);
     }
+
+    public boolean ContainComune(String nome) {
+        return this.repository.existsByNome(nome);
+    }
 }

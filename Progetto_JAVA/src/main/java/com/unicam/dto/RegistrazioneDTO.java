@@ -70,13 +70,14 @@ public class RegistrazioneDTO {
         User utente = new User(getName(), getEmail(),
                 getPassword(), getComune(), getUsername());
         if (isCuratore())
-            utente.setRuolo(Ruolo.CURATORE);
+            utente.setRuoloComune(Ruolo.CURATORE);
         else if (isAnimatore())
-            utente.setRuolo(Ruolo.ANIMATORE);
+            utente.setRuoloComune(Ruolo.ANIMATORE);
         else if (isRappresentanteComune())
-            utente.setRuolo(Ruolo.COMUNE);
+            utente.setRuoloComune(Ruolo.COMUNE);
         else
-            utente.setRuolo(Ruolo.CONTRIBUTOR);
+            utente.setRuoloComune(Ruolo.CONTRIBUTOR);
+        utente.setRuoloEsterno(Ruolo.TURISTA_AUTENTICATO);
         return utente;
     }
 }

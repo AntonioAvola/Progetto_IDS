@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IComuneRepository extends JpaRepository<Comune, Long> {
+    boolean existsByNome(String nome);
 }

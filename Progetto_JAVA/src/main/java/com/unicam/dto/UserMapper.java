@@ -9,7 +9,7 @@ public class UserMapper {
         if (user == null) {
             return null;
         }
-        return new UtenteDTO(user.getUsername(), user.getComune(), user.getRuolo());
+        return new UtenteDTO(user.getUsername(), user.getComune(), user.getRuoloComune());
     }
 
     // Metodo per convertire da UtenteDTO a User
@@ -20,7 +20,7 @@ public class UserMapper {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setComune(dto.getNomeComune());
-        user.setRuolo(dto.getRuolo());
+        user.setRuoloComune(dto.getRuolo());
         // Nota: campi come 'name', 'email' e 'password' non sono presenti nel DTO e dovrebbero essere gestiti separatamente.
         return user;
     }

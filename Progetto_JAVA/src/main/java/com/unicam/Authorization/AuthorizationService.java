@@ -2,7 +2,6 @@ package com.unicam.Authorization;
 
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
-import com.unicam.dto.UtenteDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,7 +21,7 @@ public class AuthorizationService {
     }
 
     public boolean VerificaPermesso(User utente, String azione){
-        Set<String> permessiPresenti = autorizzazioni.get(utente.getRuolo());
+        Set<String> permessiPresenti = autorizzazioni.get(utente.getRuoloComune());
         return permessiPresenti != null && permessiPresenti.contains(azione);
     }
 

@@ -2,18 +2,12 @@ package com.unicam.Security;
 
 import com.unicam.Model.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Function;
 
 
@@ -29,7 +23,7 @@ public class JwtTokenProvider {
         claims.put("name", user.getName());
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
-        claims.put("role", user.getRuolo());
+        claims.put("role", user.getRuoloComune());
         claims.put("comune", user.getComune());
 
         Date now = new Date();

@@ -31,7 +31,8 @@ public class User implements UserDetails {
     private String comune;
     private String email;
     private String password;
-    protected Ruolo ruolo;
+    protected Ruolo ruoloComune;
+    private Ruolo ruoloEsterno;
 
     public User(String name, String email, String password, String comune, String username) {
         this.name = name;
@@ -42,9 +43,7 @@ public class User implements UserDetails {
     }
 
     //mapper using
-    public User(){
-
-    }
+    public User(){}
 
     public void CriptaPassword(){
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -168,17 +167,17 @@ public class User implements UserDetails {
      *
      * @return ruolo.
      */
-    public Ruolo getRuolo(){
-        return ruolo;
+    public Ruolo getRuoloComune(){
+        return ruoloComune;
     }
 
     /**
      * Imposta il ruolo dell'utente.
      *
-     * @param ruolo dell'utente.
+     * @param ruoloComune dell'utente.
      */
-    public void setRuolo(Ruolo ruolo){
-        this.ruolo = ruolo;
+    public void setRuoloComune(Ruolo ruoloComune){
+        this.ruoloComune = ruoloComune;
     }
 
     /**
@@ -194,7 +193,7 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", comune='" + comune + '\'' +
                 ", email='" + email + '\'' +
-                ", ruolo=" + ruolo +
+                ", ruolo=" + ruoloComune +
                 '}';
     }
 
@@ -226,5 +225,11 @@ public class User implements UserDetails {
     }
 
 
+    public Ruolo getRuoloEsterno() {
+        return ruoloEsterno;
+    }
 
+    public void setRuoloEsterno(Ruolo ruoloEsterno) {
+        this.ruoloEsterno = ruoloEsterno;
+    }
 }

@@ -1,20 +1,25 @@
 package com.unicam.Controller;
 
-import com.unicam.Model.Comune;
-import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.Ruolo;
+import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.RichiestaComuneDTO;
+import com.unicam.dto.Risposte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Il rappresentante del comune, una volta fatto il log-in
@@ -26,16 +31,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class ComuneController {
 
     private ComuneService servizioComune;
-    private ContenutoService<PuntoGeolocalizzato> servizioPunto;
     private UtenteService servizioUtente;
+    @Autowired
+    private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
+    @Autowired
+    private ContenutoService<PuntoLogico> servizioPuntoLo;
+    @Autowired
+    private ContenutoService<Itinerario> servizioIti;
+    @Autowired
+    private ContenutoService<Evento> servizioEv;
+    @Autowired
+    private ContenutoService<Contest> servizioCon;
 
     @Autowired
     public ComuneController(ComuneService servizio,
-                            UtenteService service,
-                            ContenutoService<PuntoGeolocalizzato> servizioPunto){
+                            UtenteService service){
         this.servizioComune = servizio;
         this.servizioUtente = service;
-        this.servizioPunto = servizioPunto;
     }
 
     @PostMapping("Api/Comune/RichiestaAggiunta")
@@ -57,7 +69,7 @@ public class ComuneController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
-                servizioPunto, servizioComune, richiesta, idUtente);
+                servizioPuntoGeo, servizioComune, richiesta, idUtente);
         richiestaAggiunta.Execute();
 
     }
