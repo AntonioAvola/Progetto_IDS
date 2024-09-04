@@ -77,7 +77,7 @@ public class RegistrazioneDTO {
             utente.setRuoloComune(Ruolo.COMUNE);
         else
             utente.setRuoloComune(Ruolo.CONTRIBUTOR);
-        utente.setRuoloEsterno(Ruolo.TURISTA_AUTENTICATO);
+        utente.setComuneVisitato(getComune());
         return utente;
     }
 }

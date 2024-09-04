@@ -2,6 +2,7 @@ package com.unicam.Controller;
 
 import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaPost;
+import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.PostService;
 import com.unicam.Service.UtenteService;
@@ -12,6 +13,8 @@ import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -40,9 +43,23 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     }
 
     @PostMapping(value = "/aggiuntaPost")
-    public void AggiungiPost(@RequestParam("file") PostTurista UserFile) throws IOException {
+    public void AggiungiPost(@RequestParam("file") PostTuristaDTO UserFile) throws IOException {
 
+        /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune){
+            throw new IllegalArgumentException("Non hai i permessi per inserire un post");
+        }
+        RichiestaAggiuntaPost richiesta = new RichiestaAggiuntaPost(servizioPost, servizioUtente, UserFile, this.servizioUtente.GetUtenteById(idUtente));
+        return ResponseEntity.ok("Post inserito");*/
     }
 
     @PutMapping("/segnalaContenuto")

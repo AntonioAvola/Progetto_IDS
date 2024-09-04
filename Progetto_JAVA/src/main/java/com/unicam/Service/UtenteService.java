@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Service
 public class UtenteService implements UserDetailsService {
@@ -77,6 +78,8 @@ public class UtenteService implements UserDetailsService {
         ConfrontoCredenzialiDB(username, password);
 
         User user = repository.findByUsername(username);
+        user.setComuneVisitato(user.getComune());
+        this.repository.save(user);
 
         return tokenProvider.createToken(user);
 
@@ -130,5 +133,11 @@ public class UtenteService implements UserDetailsService {
 
     public String GetComuneByUsername(String username) {
         return this.repository.findByUsername(username).getComune();
+    }
+
+    public void AggiornaComuneVisitato(Long idUtente, String nome) {
+        User utente = this.repository.getById(idUtente);
+        utente.setComuneVisitato(nome.toUpperCase(Locale.ROOT));
+        this.repository.save(utente);
     }
 }

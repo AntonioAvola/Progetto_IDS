@@ -9,6 +9,7 @@ import com.unicam.Service.UtenteService;
 import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.RichiestaComuneDTO;
 import com.unicam.dto.Risposte.*;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,42 @@ public class ComuneController {
         richiestaAggiunta.Execute();
 
     }
+
+    @GetMapping("Api/Comune/RicercaComune")
+    public ResponseEntity<RicercaComuneResponseDTO> RicercaComune(RicercaComuneDTO ricerca){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(!this.servizioComune.ContainComune(ricerca.getNome().toUpperCase(Locale.ROOT)))
+            throw new NullPointerException("Il comune cercato non è presente");
+
+        this.servizioUtente.AggiornaComuneVisitato(idUtente, ricerca.getNome());
+        RicercaComuneResponseDTO ricercaComune = new RicercaComuneResponseDTO();
+
+        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(ricerca.getNome());
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(ricerca.getNome());
+        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(ricerca.getNome());
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(ricerca.getNome());
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(ricerca.getNome(), Ruolo.TURISTA_AUTENTICATO);
+
+
+        ricercaComune.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
+        ricercaComune.getContenutiComune().put("punti logici / avvisi", puntiLogici);
+        ricercaComune.getContenutiComune().put("itinerari", itinerari);
+        ricercaComune.getContenutiComune().put("eventi", eventi);
+        ricercaComune.getContenutiComune().put("contest", contest);
+        return ResponseEntity.ok(ricercaComune);
+
+    }
+
 
     @GetMapping("Api/Comune/GetProposteAnimatore")
     public void GetProposteAnimatore(){

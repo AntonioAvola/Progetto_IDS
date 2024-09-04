@@ -3,6 +3,7 @@ package com.unicam.Richieste;
 import com.unicam.Model.BuilderContenuto.PostTuristaBuilder;
 import com.unicam.Model.PostTurista;
 import com.unicam.Model.StatoContenuto;
+import com.unicam.Model.User;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.PostTuristaDTO;
@@ -19,10 +20,10 @@ public class RichiestaAggiuntaPost implements ICommand{
 
     public RichiestaAggiuntaPost(ContenutoService<PostTurista> servizioPost,
                                  UtenteService servizio,
-                                 PostTuristaDTO post) throws IOException {
+                                 PostTuristaDTO post, User user) throws IOException {
         this.servizio = servizioPost;
         this.servizioUTente = servizio;
-        this.post = post.ToEntity();
+        this.post = post.ToEntity(user);
 
         /*PostTuristaBuilder builder = new PostTuristaBuilder();
         builder.BuildAutore(this.servizioUTente.GetUtenteById(idUtente));

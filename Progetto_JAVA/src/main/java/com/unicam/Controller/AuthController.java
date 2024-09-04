@@ -47,6 +47,7 @@ public class AuthController {
         risposta.setRole(servizioUtente.GetUtente(loginRequest.getUsername()));
 
 
+
         /*List<PuntoGeolocalizzato> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
         List<PuntoLogico> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
         List<Itinerario> itinerari = this.servizioIti.GetItinerariByComune(comune);

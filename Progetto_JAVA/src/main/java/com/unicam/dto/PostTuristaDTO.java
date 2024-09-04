@@ -2,6 +2,7 @@ package com.unicam.dto;
 
 import com.unicam.Model.BuilderContenuto.PostTuristaBuilder;
 import com.unicam.Model.PostTurista;
+import com.unicam.Model.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,11 +33,12 @@ public class PostTuristaDTO {
         return data;
     }
 
-    public PostTurista ToEntity() throws IOException {
+    public PostTurista ToEntity(User user) throws IOException {
         PostTuristaBuilder builder = new PostTuristaBuilder();
         builder.BuildTitolo(getTitolo());
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getData().getBytes());
+        builder.BuildAutore(user);
         return builder.Result();
     }
 }

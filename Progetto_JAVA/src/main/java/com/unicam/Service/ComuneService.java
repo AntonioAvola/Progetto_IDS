@@ -5,6 +5,8 @@ import com.unicam.Repository.IComuneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ComuneService {
 
@@ -21,5 +23,9 @@ public class ComuneService {
 
     public boolean ContainComune(String nome) {
         return this.repository.existsByNome(nome);
+    }
+
+    public List<Comune> GetAll() {
+        return this.repository.findAll();
     }
 }

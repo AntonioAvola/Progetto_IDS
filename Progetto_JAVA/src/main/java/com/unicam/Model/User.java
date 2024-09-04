@@ -29,10 +29,10 @@ public class User implements UserDetails {
     private String name;
     private String username;
     private String comune;
+    private String comuneVisitato;
     private String email;
     private String password;
     protected Ruolo ruoloComune;
-    private Ruolo ruoloEsterno;
 
     public User(String name, String email, String password, String comune, String username) {
         this.name = name;
@@ -224,12 +224,11 @@ public class User implements UserDetails {
         return Objects.hash(email,username);
     }
 
-
-    public Ruolo getRuoloEsterno() {
-        return ruoloEsterno;
+    public String getComuneVisitato() {
+        return comuneVisitato;
     }
 
-    public void setRuoloEsterno(Ruolo ruoloEsterno) {
-        this.ruoloEsterno = ruoloEsterno;
+    public void setComuneVisitato(String comuneVisitato) {
+        this.comuneVisitato = comuneVisitato;
     }
 }
