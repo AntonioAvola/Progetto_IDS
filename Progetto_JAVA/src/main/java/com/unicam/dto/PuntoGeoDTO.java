@@ -52,12 +52,13 @@ public class PuntoGeoDTO {
         this.longitudine = longitudine;
     }
 
-    public PuntoGeolocalizzato ToEntity(User user) {
+    public PuntoGeolocalizzato ToEntity(User user, String comune) {
         PuntoGeoBuilder builder = new PuntoGeoBuilder();
         builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(getLatitudine(), getLongitudine());
+        builder.BuildComune(comune);
         return builder.Result();
     }
 }

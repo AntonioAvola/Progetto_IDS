@@ -15,8 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class UtenteService implements UserDetailsService {
@@ -128,5 +126,9 @@ public class UtenteService implements UserDetailsService {
         }
         // Restituisci un'istanza di UserDetails personalizzata, o usa l'implementazione di Spring.
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+    }
+
+    public String GetComuneByUsername(String username) {
+        return this.repository.findByUsername(username).getComune();
     }
 }

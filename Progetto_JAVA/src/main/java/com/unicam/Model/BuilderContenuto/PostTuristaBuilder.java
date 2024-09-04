@@ -1,5 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
+import com.unicam.Model.Comune;
 import com.unicam.Model.PostTurista;
 import com.unicam.Model.User;
 
@@ -25,6 +26,11 @@ public class PostTuristaBuilder implements Builder{
     @Override
     public void BuildDescrizione(String descrizione) {
         this.post.setDescrizione(descrizione);
+    }
+
+    @Override
+    public void BuildComune(String comune) {
+        this.post.setComune(comune);
     }
 
     public void BuildSpecifica(byte[] data){

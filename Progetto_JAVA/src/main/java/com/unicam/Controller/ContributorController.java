@@ -38,11 +38,12 @@ public class ContributorController<T extends Contenuto> {
     public ContributorController(ContenutoService<Itinerario> serviceIt,
                                  ContenutoService<PuntoGeolocalizzato> servicePG,
                                  ContenutoService<PuntoLogico> servicePL,
-                                 UtenteService servizio, SecurityAutoConfiguration securityAutoConfiguration){
+                                 UtenteService servizioUtente,
+                                 SecurityAutoConfiguration securityAutoConfiguration){
         this.serviceItinerario = serviceIt;
         this.servicePuntoGeo = servicePG;
         this.servicePuntoLogico = servicePL;
-        this.serviceUtente = servizio;
+        this.serviceUtente = servizioUtente;
         this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
@@ -68,7 +69,7 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        Itinerario itinerario = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente));
+        Itinerario itinerario = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaContenuto<Itinerario> aggiunta =
@@ -104,7 +105,7 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente));
+        PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta =
                     new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
@@ -137,7 +138,7 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        PuntoLogico punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente));
+        PuntoLogico punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         punto.setRiferimento(this.servicePuntoGeo.GetPuntoByNome(richiesta.getNomePuntoGeo()));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaContenuto<PuntoLogico> aggiunta =

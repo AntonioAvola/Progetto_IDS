@@ -26,7 +26,7 @@ public class RegistrazioneDTO {
                             boolean rappresentante){
         this.name = name;
         this.username = username;
-        this.comune = comune;
+        this.comune = comune.toUpperCase(Locale.ROOT);
         this.email = email;
         this.password = password;
         this.curatore = curatore;
@@ -68,7 +68,7 @@ public class RegistrazioneDTO {
 
     public User ToEntity(){
         User utente = new User(getName(), getEmail(),
-                getPassword(), getComune().toUpperCase(Locale.ROOT), getUsername());
+                getPassword(), getComune(), getUsername());
         if (isCuratore())
             utente.setRuolo(Ruolo.CURATORE);
         else if (isAnimatore())

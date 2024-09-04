@@ -43,11 +43,12 @@ public class PuntoLogicoDTO {
         this.nomePuntoGeo = nomePuntoGeo;
     }
 
-    public PuntoLogico ToEntity(User user) {
+    public PuntoLogico ToEntity(User user, String comune) {
         PuntoLogicoBuilder builder = new PuntoLogicoBuilder();
         builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
+        builder.BuildComune(comune);
         return builder.Result();
     }
 }

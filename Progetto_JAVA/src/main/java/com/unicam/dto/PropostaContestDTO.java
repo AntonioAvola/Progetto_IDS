@@ -68,12 +68,13 @@ public class PropostaContestDTO {
         return turistaAutenticato;
     }
 
-    public Contest ToEntity(User user){
+    public Contest ToEntity(User user, String comune){
         ContestBuilder builder = new ContestBuilder();
         builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
         builder.BuildSpecifica(RuoliPartecipanti(), new Tempo(getInizio(), getFine()));
+        builder.BuildComune(comune);
         return builder.Result();
     }
 

@@ -1,5 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
+import com.unicam.Model.Comune;
 import com.unicam.Model.Itinerario;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.User;
@@ -27,6 +28,11 @@ public class ItinerarioBuilder implements Builder{
     @Override
     public void BuildDescrizione(String descrizione) {
         this.itinerario.setDescrizione(descrizione);
+    }
+
+    @Override
+    public void BuildComune(String comune) {
+        this.itinerario.setComune(comune);
     }
 
     public void BuildSpecifica(List<PuntoGeolocalizzato> interessi) {

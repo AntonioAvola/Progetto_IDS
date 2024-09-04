@@ -1,5 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
+import com.unicam.Model.Comune;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.PuntoLogico;
 import com.unicam.Model.User;
@@ -25,6 +26,11 @@ public class PuntoLogicoBuilder implements Builder{
     @Override
     public void BuildDescrizione(String descrizione) {
         this.punto.setDescrizione(descrizione);
+    }
+
+    @Override
+    public void BuildComune(String comune) {
+        this.punto.setComune(comune);
     }
 
     public void BuildSpecifica(PuntoGeolocalizzato punto){

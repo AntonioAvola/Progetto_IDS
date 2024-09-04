@@ -17,6 +17,8 @@ public abstract class  Contenuto {
     private User autore;
     private StatoContenuto stato;
 
+    private String comune;
+
     public Contenuto(){}
 
     public Contenuto(String titolo, String descrizione, User autore) {
@@ -66,6 +68,14 @@ public abstract class  Contenuto {
         this.stato = stato;
     }
 
+    public String getComune() {
+        return comune;
+    }
+
+    public void setComune(String comune) {
+        this.comune = comune;
+    }
+
     @Override
     public String toString(){
         return "Titolo: " + titolo + "\n"
@@ -73,6 +83,4 @@ public abstract class  Contenuto {
                 + "Autore: " + autore + "\n"
                 + "Stato: " + stato;
     }
-
-
 }
