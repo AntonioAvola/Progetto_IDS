@@ -43,11 +43,12 @@ public class ItinerarioDTO {
         this.nomiPunti = nomiPunti;
     }
 
-    public Itinerario ToEntity(User user) {
+    public Itinerario ToEntity(User user, String comune) {
         ItinerarioBuilder builder = new ItinerarioBuilder();
         builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
+        builder.BuildComune(comune);
         return builder.Result();
     }
 }

@@ -26,6 +26,11 @@ public class EventoBuilder implements Builder{
         this.evento.setDescrizione(descrizione);
     }
 
+    @Override
+    public void BuildComune(String comune) {
+        this.evento.setComune(comune);
+    }
+
     public void BuildSpecifica(Tempo tempo, PuntoGeolocalizzato punto){
         BuildInizioFine(tempo);
         BuildLuogo(punto);

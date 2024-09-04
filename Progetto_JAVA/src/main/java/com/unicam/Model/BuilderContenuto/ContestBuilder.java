@@ -1,9 +1,6 @@
 package com.unicam.Model.BuilderContenuto;
 
-import com.unicam.Model.Contest;
-import com.unicam.Model.Ruolo;
-import com.unicam.Model.Tempo;
-import com.unicam.Model.User;
+import com.unicam.Model.*;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.UtenteDTO;
 
@@ -30,6 +27,11 @@ public class ContestBuilder implements Builder{
     @Override
     public void BuildDescrizione(String descrizione) {
         this.contest.setDescrizione(descrizione);
+    }
+
+    @Override
+    public void BuildComune(String comune) {
+        this.contest.setComune(comune);
     }
 
     public void BuildSpecifica(List<Ruolo> partecipanti, Tempo tempo){

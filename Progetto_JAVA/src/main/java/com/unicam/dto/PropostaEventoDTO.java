@@ -45,11 +45,12 @@ public class PropostaEventoDTO {
         return nomeLuogo;
     }
 
-    public Evento ToEntity(User user){
+    public Evento ToEntity(User user, String comune){
         EventoBuilder builder = new EventoBuilder();
         builder.BuildAutore(user);
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
+        builder.BuildComune(comune);
         return builder.Result();
     }
 }

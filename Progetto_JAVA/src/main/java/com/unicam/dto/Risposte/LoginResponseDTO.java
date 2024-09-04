@@ -1,12 +1,20 @@
-package com.unicam.dto;
+package com.unicam.dto.Risposte;
 
 import com.unicam.Model.Ruolo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LoginResponseDTO {
     private String token;
     private String username;
     private Ruolo role;
     private String message;
+
+    //aggiunta attributo Map<String, List<?>> per i contenuti inerenti a un comune
+    private Map<String, List<?>> contenutiComune = new HashMap<>();
 
     // Costruttore vuoto per la deserializzazione
     public LoginResponseDTO() {}
@@ -47,5 +55,13 @@ public class LoginResponseDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Map<String, List<?>> getContenutiComune() {
+        return contenutiComune;
+    }
+
+    public void setContenutiComune(Map<String, List<?>> contenutiComune) {
+        this.contenutiComune = contenutiComune;
     }
 }
