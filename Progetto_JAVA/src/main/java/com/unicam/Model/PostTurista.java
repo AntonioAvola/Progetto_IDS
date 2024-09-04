@@ -9,10 +9,33 @@ import jakarta.persistence.Table;
 public class PostTurista extends Contenuto{
 
     @Lob
+    private Long fileLenght;
+    private String fileName;
+    private boolean isEmpty;
     private byte[] fileData;
 
-    public PostTurista(){
-        super();
+    public Long getFileLenght() {
+        return fileLenght;
+    }
+
+    public void setFileLenght(Long fileLenght) {
+        this.fileLenght = fileLenght;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public boolean isEmpty() {
+        return isEmpty;
+    }
+
+    public void setEmpty(boolean empty) {
+        isEmpty = empty;
     }
 
     public byte[] getFileData() {

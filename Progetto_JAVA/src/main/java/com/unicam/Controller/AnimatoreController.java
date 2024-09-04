@@ -2,6 +2,7 @@ package com.unicam.Controller;
 
 import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
+import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.PropostaContestDTO;
@@ -45,10 +46,16 @@ public class AnimatoreController {
     public void ProponiEvento(@RequestBody PropostaEventoDTO proposta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
@@ -65,10 +72,16 @@ public class AnimatoreController {
     public void ProponiContest(@RequestBody PropostaContestDTO proposta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");

@@ -30,6 +30,7 @@ public class JwtTokenProvider {
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRuolo());
+        claims.put("comune", user.getComune());
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_TIME);

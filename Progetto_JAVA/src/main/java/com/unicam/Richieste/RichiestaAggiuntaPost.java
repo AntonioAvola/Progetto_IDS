@@ -5,6 +5,7 @@ import com.unicam.Model.PostTurista;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.PostTuristaDTO;
 import com.unicam.dto.Provvisori.PostTuristaProvvisorioDTO;
 
 import javax.swing.*;
@@ -18,11 +19,11 @@ public class RichiestaAggiuntaPost implements ICommand{
 
     public RichiestaAggiuntaPost(ContenutoService<PostTurista> servizioPost,
                                  UtenteService servizio,
-                                 PostTuristaProvvisorioDTO post) throws IOException {
+                                 PostTuristaDTO post) throws IOException {
         this.servizio = servizioPost;
         this.servizioUTente = servizio;
         this.post = post.ToEntity();
-        this.post.setAutore(this.servizioUTente.GetUtenteById(post.getIdUtente()));
+
         /*PostTuristaBuilder builder = new PostTuristaBuilder();
         builder.BuildAutore(this.servizioUTente.GetUtenteById(idUtente));
         builder.BuildTitolo(post.getTitolo());

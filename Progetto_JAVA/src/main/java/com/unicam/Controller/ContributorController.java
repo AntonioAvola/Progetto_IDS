@@ -2,12 +2,10 @@ package com.unicam.Controller;
 
 import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
+import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.ItinerarioDTO;
-import com.unicam.dto.Provvisori.ItinerarioProvvisorioDTO;
-import com.unicam.dto.Provvisori.PuntoGeoProvvisorioDTO;
-import com.unicam.dto.Provvisori.PuntoLogicoProvvisorioDTO;
 import com.unicam.dto.PuntoGeoDTO;
 import com.unicam.dto.PuntoLogicoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +51,16 @@ public class ContributorController<T extends Contenuto> {
     public ResponseEntity<String> AggiungiItinerario(@RequestBody ItinerarioDTO richiesta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
@@ -82,10 +86,16 @@ public class ContributorController<T extends Contenuto> {
 
     public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoDTO richiesta){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
@@ -110,10 +120,16 @@ public class ContributorController<T extends Contenuto> {
     public void AggiungiPuntoLogico(@RequestBody PuntoLogicoDTO richiesta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
-        long idUtente = Long.parseLong(idUtenteStr);
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&

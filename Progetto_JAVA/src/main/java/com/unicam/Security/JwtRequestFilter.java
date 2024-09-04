@@ -60,18 +60,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .parseClaimsJws(jwtToken)
                         .getBody();
 
-                String username = claims.getSubject();
+                String username = claims.get("username").toString();
                 String userId = claims.get("id").toString();
                 String role = claims.get("role").toString();
+                String comune = claims.get("comune").toString();
 
                 // Crea una lista di authority
                 List<GrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority(role));
 
 
+                UserCustomDetails userCustomDetails = new UserCustomDetails(username, userId, role, comune);
+
                 logger.info("utente autenticato: " + username + "con ruolo: " + role + "e id: " + userId);
+
+
                 // Imposta l'autenticazione nel contesto di sicurezza
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, userId, authorities);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userCustomDetails, null, userCustomDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 

@@ -4,6 +4,7 @@ import com.unicam.Model.Comune;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.Ruolo;
 import com.unicam.Richieste.RichiestaAggiuntaComune;
+import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
@@ -41,10 +42,16 @@ public class ComuneController {
     public void RichiestaAggiunta(@RequestBody RichiestaComuneDTO richiesta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentRole = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String idUtenteStr = authentication.getCredentials().toString();
-        long idUtente = Long.parseLong(idUtenteStr);
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.COMUNE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
