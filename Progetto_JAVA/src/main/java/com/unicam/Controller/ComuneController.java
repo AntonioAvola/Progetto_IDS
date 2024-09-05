@@ -5,8 +5,8 @@ import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.AccettaRifiutaContenutoDTO;
 import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.RichiestaComuneDTO;
 import com.unicam.dto.Risposte.*;
@@ -108,7 +108,7 @@ public class ComuneController {
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(ricerca.getNome());
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(ricerca.getNome());
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(ricerca.getNome());
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(ricerca.getNome());
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(ricerca.getNome());
         List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(ricerca.getNome(), Ruolo.TURISTA_AUTENTICATO);
 
 
@@ -123,10 +123,55 @@ public class ComuneController {
 
 
     @GetMapping("Api/Comune/GetProposteAnimatore")
-    public void GetProposteAnimatore(){
+    public ResponseEntity<RicercaContenutiResponseDTO> RicercaProposteAnimatore(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(!currentRole.equals(Ruolo.COMUNE.name()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(comune, StatoContenuto.ATTESA);
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestStatoByComune(comune, StatoContenuto.ATTESA);
+
+        contenuti.getContenutiPresenti().put("eventi", eventi);
+        contenuti.getContenutiPresenti().put("contest", contest);
+        return ResponseEntity.ok(contenuti);
     }
 
     @PutMapping("Api/Comune/EsitoProposta")
-    public void EsitoProposta(){
+    public void EsitoProposta(@RequestBody AccettaRifiutaContenutoDTO contenuto){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(!currentRole.equals(Ruolo.COMUNE.name()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(contenuto.getTipoContenuto().equals("eventi"))
+            this.servizioEv.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+        else if(contenuto.getTipoContenuto().equals("contest"))
+            this.servizioCon.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+        else
+            throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
 }

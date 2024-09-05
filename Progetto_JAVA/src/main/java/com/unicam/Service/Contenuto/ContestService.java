@@ -2,7 +2,6 @@ package com.unicam.Service.Contenuto;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.ContestRepository;
-import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.ContestResponseDTO;
 import org.springframework.stereotype.Service;
@@ -51,5 +50,33 @@ public class ContestService {
             }
         }
         return contests;
+    }
+
+    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
+        Contest contest = this.repoContest.findContestByTitolo(nomeContenuto);
+        contest.getIdUtenteContenutoPreferito().add(idUtente);
+        this.repoContest.save(contest);
+    }
+
+    public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato) {
+        List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
+        List<ContestResponseDTO> contests = new ArrayList<>();
+        for (Contest contest : contestPresenti) {
+            if (contest.getStato() == stato) {
+                contests.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
+                        contest.getDurata(), contest.getAutore().getUsername()));
+            }
+        }
+        return contests;
+    }
+
+    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
+        Contest contest = this.repoContest.findContestByTitolo(nomeContenuto);
+        if(stato == StatoContenuto.RIFIUTATO)
+            this.repoContest.delete(contest);
+        else{
+            contest.setStato(stato);
+            this.repoContest.save(contest);
+        }
     }
 }

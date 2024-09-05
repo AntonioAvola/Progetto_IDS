@@ -3,7 +3,7 @@ package com.unicam.Controller;
 import com.unicam.Model.*;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ContenutoService;
+import com.unicam.dto.AccettaRifiutaContenutoDTO;
 import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import com.unicam.dto.Risposte.PuntoLogicoResponseDTO;
@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -51,8 +49,8 @@ public class CuratoreController {
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
-        String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);
+        /*String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);*/
 
         String currentRole = userDetails.getRole();
 
@@ -62,23 +60,79 @@ public class CuratoreController {
         if(!currentRole.equals(Ruolo.CURATORE.name()))
             throw new IllegalArgumentException("Non hai i permessi per effettuare la ricerca");
 
-        RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
+        /*RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
+        ContenutiTrovati(comune, StatoContenuto.ATTESA);
+        List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoStatoByComune(comune, StatoContenuto.ATTESA);
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciStatoByComune(comune, StatoContenuto.ATTESA);
+        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariAttesaByComune(comune, StatoContenuto.ATTESA);
 
-        List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoAttesaByComune(comune);
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciAttesaByComune(comune);
-        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariAttesaByComune(comune);
+        contenuti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
+        contenuti.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
+        contenuti.getContenutiPresenti().put("itinerari", itinerari);*/
+        return ResponseEntity.ok(ContenutiTrovati(comune, StatoContenuto.ATTESA));
+    }
+
+    private RicercaContenutiResponseDTO ContenutiTrovati(String comune, StatoContenuto stato) {
+        RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
+        List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoStatoByComune(comune, stato);
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciStatoByComune(comune, stato);
+        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariStatoByComune(comune, stato);
 
         contenuti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
         contenuti.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
         contenuti.getContenutiPresenti().put("itinerari", itinerari);
-        return ResponseEntity.ok(contenuti);
+        //TODO da aggiungere i post del turista autenticato
+        return contenuti;
     }
 
-    public void RicervaSegnalazioni(){
+    @GetMapping("Api/Comune/SegnalazioniDiContenuti")
+    public ResponseEntity<RicercaContenutiResponseDTO> RicercaSegnalazioni(){
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        /*String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);*/
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(!currentRole.equals(Ruolo.CURATORE.name()))
+            throw new IllegalArgumentException("Non hai i permessi per effettuare la ricerca");
+
+        return ResponseEntity.ok(ContenutiTrovati(comune, StatoContenuto.SEGNALATO));
     }
 
-    public void AccettaORifiuta(){
+    @PutMapping("Api/Curatore/AccettaORifiutaContenuti")
+    public void AccettaORifiuta(@RequestBody AccettaRifiutaContenutoDTO contenuto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        //prendo il comune dell'utente
+        String comune = userDetails.getComune();
+
+        if(!currentRole.equals(Ruolo.CURATORE.name()))
+            throw new IllegalArgumentException("Non hai i permessi per accettare o rifiutare contenuti");
+
+        if(contenuto.getTipoContenuto().equals("punti geolocalizzati"))
+            this.servizioPuntoGeo.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+        else if(contenuto.getTipoContenuto().equals("punti logici")
+                || contenuto.getTipoContenuto().equals("avvisi")
+                || contenuto.getTipoContenuto().equals("punti logici / avvisi"))
+            this.servizioPuntoLo.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+        else if(contenuto.getTipoContenuto().equals("itinerari"))
+            this.servizioIti.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+        //TODO aggiungere i post del turista autenticato
+        else
+            throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
 }

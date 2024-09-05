@@ -1,8 +1,6 @@
 package com.unicam.Controller;
 
-import com.unicam.Model.*;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.EliminaUtenteDTO;
 import com.unicam.dto.Risposte.*;
@@ -72,7 +70,7 @@ public class UtenteController {
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(registrazione.getComune());
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(registrazione.getComune());
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(registrazione.getComune());
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(registrazione.getComune());
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(registrazione.getComune());
         List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole());
 
 

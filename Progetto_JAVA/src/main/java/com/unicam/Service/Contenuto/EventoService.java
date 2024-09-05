@@ -2,7 +2,6 @@ package com.unicam.Service.Contenuto;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.EventoRepository;
-import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.EventoResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
@@ -44,7 +43,7 @@ public class EventoService {
         return this.repoEvento.findEventoByTitolo(nome.toUpperCase(Locale.ROOT));
     }
 
-    public List<EventoResponseDTO> GetEventiByComune(String comune) {
+    public List<EventoResponseDTO> GetEventiStatoByComune(String comune) {
         List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(comune);
         List<EventoResponseDTO> eventi = new ArrayList<>();
         for (Evento evento : eventiPresenti) {
@@ -60,5 +59,35 @@ public class EventoService {
 
     private LuogoDTO ConvertiInLuogoDTO(PuntoGeolocalizzato riferimento) {
         return new LuogoDTO(riferimento.getTitolo(), riferimento.getLatitudine(), riferimento.getLongitudine());
+    }
+
+    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
+        Evento evento = this.repoEvento.findEventoByTitolo(nomeContenuto);
+        evento.getIdUtenteContenutoPreferito().add(idUtente);
+        this.repoEvento.save(evento);
+    }
+
+    public List<EventoResponseDTO> GetEventiStatoByComune(String comune, StatoContenuto stato) {
+        List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(comune);
+        List<EventoResponseDTO> eventi = new ArrayList<>();
+        for (Evento evento : eventiPresenti) {
+            if (evento.getStato() == stato) {
+                EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(),
+                        evento.getDescrizione(), evento.getDurata(), evento.getAutore().getUsername());
+                nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
+                eventi.add(nuovo);
+            }
+        }
+        return eventi;
+    }
+
+    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
+        Evento evento = this.repoEvento.findEventoByTitolo(nomeContenuto);
+        if(stato == StatoContenuto.RIFIUTATO)
+            this.repoEvento.delete(evento);
+        else{
+            evento.setStato(stato);
+            this.repoEvento.save(evento);
+        }
     }
 }

@@ -8,7 +8,6 @@ import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.LuogoDTO;
 import com.unicam.dto.Risposte.PuntoLogicoResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,11 +62,11 @@ public class PuntoLogicoService {
         return new LuogoDTO(riferimento.getTitolo(), riferimento.getLatitudine(), riferimento.getLongitudine());
     }
 
-    public List<PuntoLogicoResponseDTO> GetPuntiLogiciAttesaByComune(String comune) {
+    public List<PuntoLogicoResponseDTO> GetPuntiLogiciStatoByComune(String comune, StatoContenuto stato) {
         List<PuntoLogico> puntiPresenti = this.repoPunto.findPuntoLogicoByComune(comune);
         List<PuntoLogicoResponseDTO> punti = new ArrayList<>();
         for (PuntoLogico punto : puntiPresenti) {
-            if (punto.getStato() == StatoContenuto.ATTESA) {
+            if (punto.getStato() == stato) {
                 PuntoLogicoResponseDTO nuovo =
                         new PuntoLogicoResponseDTO(punto.getTitolo(), punto.getDescrizione(), punto.getAutore().getUsername());
                 nuovo.setLuogo(ConvertiInLuogoDTO(punto.getRiferimento()));
@@ -75,5 +74,27 @@ public class PuntoLogicoService {
             }
         }
         return punti;
+    }
+
+    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
+        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
+        punto.getIdUtenteContenutoPreferito().add(idUtente);
+        this.repoPunto.save(punto);
+    }
+
+    public void SegnalaContenuto(String nomeContenuto, long idCreatore) {
+        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
+        punto.setStato(StatoContenuto.SEGNALATO);
+        this.repoPunto.save(punto);
+    }
+
+    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
+        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
+        if(stato == StatoContenuto.RIFIUTATO)
+            this.repoPunto.delete(punto);
+        else{
+            punto.setStato(stato);
+            this.repoPunto.save(punto);
+        }
     }
 }

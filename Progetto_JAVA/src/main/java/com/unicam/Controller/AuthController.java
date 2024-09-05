@@ -1,9 +1,7 @@
 package com.unicam.Controller;
 
-import com.unicam.Model.*;
 import com.unicam.Security.JwtTokenProvider;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.LoginDTO;
 import com.unicam.dto.Risposte.*;
@@ -71,7 +69,7 @@ public class AuthController {
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune);
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(comune);
         List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, risposta.getRole());
 
         risposta.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);

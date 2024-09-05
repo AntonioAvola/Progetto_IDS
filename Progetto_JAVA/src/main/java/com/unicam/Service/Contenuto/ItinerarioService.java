@@ -3,11 +3,9 @@ package com.unicam.Service.Contenuto;
 import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.ItinerarioRepository;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
-import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
-import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -85,11 +83,11 @@ public class ItinerarioService {
         return new LuogoDTO(riferimento.getTitolo(), riferimento.getLatitudine(), riferimento.getLongitudine());
     }
 
-    public List<ItinerarioResponseDTO> GetItinerariAttesaByComune(String comune) {
+    public List<ItinerarioResponseDTO> GetItinerariStatoByComune(String comune, StatoContenuto stato) {
         List<Itinerario> itinerariPresenti = this.repoItinerario.findItinerarioByComune(comune);
         List<ItinerarioResponseDTO> itinerari = new ArrayList<>();
         for (Itinerario itinerario : itinerariPresenti) {
-            if (itinerario.getStato() == StatoContenuto.ATTESA) {
+            if (itinerario.getStato() == stato) {
                 ItinerarioResponseDTO nuovo = new ItinerarioResponseDTO(itinerario.getTitolo(),
                         itinerario.getDescrizione(), itinerario.getAutore().getUsername());
                 nuovo.setLuoghi(ConvertiInListaDiLuoghiDTO(itinerario.getPuntiDiInteresse()));
@@ -97,5 +95,27 @@ public class ItinerarioService {
             }
         }
         return itinerari;
+    }
+
+    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+        itinerario.getIdUtenteContenutoPreferito().add(idUtente);
+        this.repoItinerario.save(itinerario);
+    }
+
+    public void SegnalaContenuto(String nomeContenuto, long idCreatore) {
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+        itinerario.setStato(StatoContenuto.SEGNALATO);
+        this.repoItinerario.save(itinerario);
+    }
+
+    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+        if(stato == StatoContenuto.RIFIUTATO)
+            this.repoItinerario.delete(itinerario);
+        else {
+            itinerario.setStato(stato);
+            this.repoItinerario.save(itinerario);
+        }
     }
 }
