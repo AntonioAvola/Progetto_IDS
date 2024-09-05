@@ -43,7 +43,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     }
 
     @PostMapping(value = "/aggiuntaPost")
-    public void AggiungiPost(@RequestBody PostTuristaDTO UserFile /*, @RequestParam("file") MultipartFile file*/) throws IOException {
+    public void AggiungiPost(@RequestBody PostTuristaDTO UserFile, @RequestParam("contenutoMultimediale") MultipartFile file) throws IOException {
 /**
  *  TODO REVIEW
  */
