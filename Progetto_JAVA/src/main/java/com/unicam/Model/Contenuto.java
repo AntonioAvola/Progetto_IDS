@@ -3,6 +3,9 @@ package com.unicam.Model;
 import com.unicam.dto.UtenteDTO;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @MappedSuperclass
 public abstract class  Contenuto {
 
@@ -16,8 +19,8 @@ public abstract class  Contenuto {
     @JoinColumn(name = "autore_id", nullable = false)
     private User autore;
     private StatoContenuto stato;
-
     private String comune;
+    private List<Long> idUtenteContenutoPreferito = new ArrayList<>();
 
     public Contenuto(){}
 
@@ -82,5 +85,13 @@ public abstract class  Contenuto {
                 + "Descrizione: "+ descrizione + "\n"
                 + "Autore: " + autore + "\n"
                 + "Stato: " + stato;
+    }
+
+    public List<Long> getIdUtenteContenutoPreferito() {
+        return idUtenteContenutoPreferito;
+    }
+
+    public void setIdUtenteContenutoPreferito(List<Long> idUtenteContenutoPreferito) {
+        this.idUtenteContenutoPreferito = idUtenteContenutoPreferito;
     }
 }

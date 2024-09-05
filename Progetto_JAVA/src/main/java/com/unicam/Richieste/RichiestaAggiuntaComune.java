@@ -5,7 +5,7 @@ import com.unicam.Model.Comune;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Service.ComuneService;
-import com.unicam.Service.ContenutoService;
+import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.RichiestaComuneDTO;
 
@@ -19,14 +19,15 @@ import java.util.Locale;
 public class RichiestaAggiuntaComune implements ICommand{
 
     private PuntoGeoBuilder builderPunto = new PuntoGeoBuilder();
-    private ContenutoService<PuntoGeolocalizzato> servizioContenuto;
+    //private ContenutoService<PuntoGeolocalizzato> servizioContenuto;
+    private PuntoGeoService servizioContenuto;
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
     private PuntoGeolocalizzato punto;
     private Comune comune;
 
     public RichiestaAggiuntaComune(UtenteService servizio,
-                                   ContenutoService<PuntoGeolocalizzato> servizioPunto,
+                                   PuntoGeoService servizioPunto,
                                    ComuneService servizioComune,
                                    RichiestaComuneDTO richiesta,
                                    long id){

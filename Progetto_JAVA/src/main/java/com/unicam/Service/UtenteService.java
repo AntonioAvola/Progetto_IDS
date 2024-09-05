@@ -2,7 +2,7 @@ package com.unicam.Service;
 
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
-import com.unicam.Repository.IUtenteRepository;
+import com.unicam.Repository.UtenteRepository;
 import com.unicam.Security.JwtTokenProvider;
 import com.unicam.Validator.EmailValidator;
 import com.unicam.Validator.PasswordValidator;
@@ -20,13 +20,13 @@ import java.util.Locale;
 @Service
 public class UtenteService implements UserDetailsService {
 
-    private IUtenteRepository repository;
+    private UtenteRepository repository;
 
 
     private JwtTokenProvider tokenProvider = new JwtTokenProvider();
 
     @Autowired
-    public UtenteService(IUtenteRepository repo){
+    public UtenteService(UtenteRepository repo){
         this.repository = repo;
     }
 

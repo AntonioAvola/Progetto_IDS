@@ -6,7 +6,7 @@ import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.Ruolo;
 import com.unicam.Model.User;
 import com.unicam.Repository.IContenutoRepository;
-import com.unicam.Repository.IUtenteRepository;
+import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ContenutoService;
 import com.unicam.dto.UtenteDTO;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class PermessiEInserimentiTest {
 
     private IContenutoRepository repositoryContenuto;
 
-    private IUtenteRepository repositoryUtente;
+    private UtenteRepository repositoryUtente;
     @Test
     public void testAggiuntaContenutoFallita(){
         User utente = new User("Eleonora", "ele.car@gmail.com", "EleCar3",

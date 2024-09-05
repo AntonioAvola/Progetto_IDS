@@ -1,8 +1,14 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
+import com.unicam.Richieste.Contenuto.RichiestaAggiuntaItinerario;
+import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoGeo;
+import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
+import com.unicam.Service.Contenuto.ItinerarioService;
+import com.unicam.Service.Contenuto.PuntoGeoService;
+import com.unicam.Service.Contenuto.PuntoLogicoService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.ItinerarioDTO;
@@ -12,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
@@ -30,7 +35,7 @@ public class ContributorController<T extends Contenuto> {
 
     private final SecurityAutoConfiguration securityAutoConfiguration;
     private UtenteService serviceUtente;
-    private ContenutoService<Itinerario> serviceItinerario;
+    /*private ContenutoService<Itinerario> serviceItinerario;
     private ContenutoService<PuntoGeolocalizzato> servicePuntoGeo;
     private ContenutoService<PuntoLogico> servicePuntoLogico;
 
@@ -38,6 +43,23 @@ public class ContributorController<T extends Contenuto> {
     public ContributorController(ContenutoService<Itinerario> serviceIt,
                                  ContenutoService<PuntoGeolocalizzato> servicePG,
                                  ContenutoService<PuntoLogico> servicePL,
+                                 UtenteService servizioUtente,
+                                 SecurityAutoConfiguration securityAutoConfiguration){
+        this.serviceItinerario = serviceIt;
+        this.servicePuntoGeo = servicePG;
+        this.servicePuntoLogico = servicePL;
+        this.serviceUtente = servizioUtente;
+        this.securityAutoConfiguration = securityAutoConfiguration;
+    }*/
+
+    private ItinerarioService serviceItinerario;
+    private PuntoGeoService servicePuntoGeo;
+    private PuntoLogicoService servicePuntoLogico;
+
+    @Autowired
+    public ContributorController(ItinerarioService serviceIt,
+                                 PuntoGeoService servicePG,
+                                 PuntoLogicoService servicePL,
                                  UtenteService servizioUtente,
                                  SecurityAutoConfiguration securityAutoConfiguration){
         this.serviceItinerario = serviceIt;
@@ -72,8 +94,8 @@ public class ContributorController<T extends Contenuto> {
         Itinerario itinerario = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            RichiestaAggiuntaContenuto<Itinerario> aggiunta =
-                    new RichiestaAggiuntaContenuto<>(serviceItinerario, itinerario);
+            //RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, itinerario);
+            RichiestaAggiuntaItinerario aggiunta = new RichiestaAggiuntaItinerario(serviceItinerario, itinerario);
             aggiunta.Execute();
         }
         else{
@@ -107,8 +129,8 @@ public class ContributorController<T extends Contenuto> {
 
         PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta =
-                    new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
+            //RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
+            RichiestaAggiuntaPuntoGeo aggiunta = new RichiestaAggiuntaPuntoGeo(servicePuntoGeo, punto);
             aggiunta.Execute();
         }
         else{
@@ -139,10 +161,10 @@ public class ContributorController<T extends Contenuto> {
         }
 
         PuntoLogico punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
-        punto.setRiferimento(this.servicePuntoGeo.GetPuntoByNome(richiesta.getNomePuntoGeo()));
+        punto.setRiferimento(this.servicePuntoGeo.GetPuntoGeoByNome(richiesta.getNomePuntoGeo()));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            RichiestaAggiuntaContenuto<PuntoLogico> aggiunta =
-                    new RichiestaAggiuntaContenuto<>(servicePuntoLogico, punto);
+            //RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, punto);
+            RichiestaAggiuntaPuntoLogico aggiunta = new RichiestaAggiuntaPuntoLogico(servicePuntoLogico, punto);
             aggiunta.Execute();
         }
         else{

@@ -1,14 +1,18 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
+import com.unicam.Repository.Contenuto.EventoRepository;
+import com.unicam.Richieste.Contenuto.RichiestaAggiuntaContest;
+import com.unicam.Richieste.Contenuto.RichiestaAggiuntaEvento;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
+import com.unicam.Service.Contenuto.ContestService;
+import com.unicam.Service.Contenuto.EventoService;
+import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.PropostaContestDTO;
 import com.unicam.dto.PropostaEventoDTO;
-import com.unicam.dto.Provvisori.PropostaContestProvvisoriaDTO;
-import com.unicam.dto.Provvisori.PropostaEventoProvvisoriaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -27,7 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AnimatoreController {
 
     private UtenteService servizioUtente;
-    private ContenutoService<Evento> servizioEvento;
+    /*private ContenutoService<Evento> servizioEvento;
     private ContenutoService<Contest> servizioContest;
     private ContenutoService<PuntoGeolocalizzato> servizioPunto;
 
@@ -36,6 +40,20 @@ public class AnimatoreController {
                                ContenutoService<Evento> servizioEvento,
                                ContenutoService<Contest> servizioContest,
                                ContenutoService<PuntoGeolocalizzato> servizioPunto){
+        this.servizioUtente = servizioUtente;
+        this.servizioEvento = servizioEvento;
+        this.servizioContest = servizioContest;
+        this.servizioPunto = servizioPunto;
+    }*/
+    private EventoService servizioEvento;
+    private ContestService servizioContest;
+    private PuntoGeoService servizioPunto;
+
+    @Autowired
+    public AnimatoreController(UtenteService servizioUtente,
+                               EventoService servizioEvento,
+                               ContestService servizioContest,
+                               PuntoGeoService servizioPunto){
         this.servizioUtente = servizioUtente;
         this.servizioEvento = servizioEvento;
         this.servizioContest = servizioContest;
@@ -63,8 +81,9 @@ public class AnimatoreController {
 
         Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
-        evento.setLuogo(this.servizioPunto.GetPuntoByNome(proposta.getNomeLuogo()));
-        RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, evento);
+        evento.setLuogo(this.servizioPunto.GetPuntoGeoByNome(proposta.getNomeLuogo()));
+        //RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, evento);
+        RichiestaAggiuntaEvento richiesta = new RichiestaAggiuntaEvento(servizioEvento, evento);
         richiesta.Execute();
     }
 
@@ -87,7 +106,8 @@ public class AnimatoreController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
         Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
-        RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
+        //RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
+        RichiestaAggiuntaContest richiesta = new RichiestaAggiuntaContest(servizioContest, contest);
         richiesta.Execute();
     }
 }

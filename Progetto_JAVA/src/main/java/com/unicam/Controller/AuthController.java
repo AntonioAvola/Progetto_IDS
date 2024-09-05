@@ -2,6 +2,7 @@ package com.unicam.Controller;
 
 import com.unicam.Model.*;
 import com.unicam.Security.JwtTokenProvider;
+import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.LoginDTO;
@@ -25,7 +26,7 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    @Autowired
+    /*@Autowired
     private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
     @Autowired
     private ContenutoService<PuntoLogico> servizioPuntoLo;
@@ -34,7 +35,18 @@ public class AuthController {
     @Autowired
     private ContenutoService<Evento> servizioEv;
     @Autowired
-    private ContenutoService<Contest> servizioCon;
+    private ContenutoService<Contest> servizioCon;*/
+
+    @Autowired
+    private PuntoGeoService servizioPuntoGeo;
+    @Autowired
+    private PuntoLogicoService servizioPuntoLo;
+    @Autowired
+    private ItinerarioService servizioIti;
+    @Autowired
+    private EventoService servizioEv;
+    @Autowired
+    private ContestService servizioCon;
 
     @PostMapping("/Login")
     public ResponseEntity<LoginResponseDTO> Login(@RequestBody LoginDTO loginRequest) {
