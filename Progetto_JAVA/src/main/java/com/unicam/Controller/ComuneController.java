@@ -4,12 +4,12 @@ import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
+import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.RichiestaComuneDTO;
 import com.unicam.dto.Risposte.*;
-import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Il rappresentante del comune, una volta fatto il log-in
@@ -33,7 +32,7 @@ public class ComuneController {
 
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
-    @Autowired
+    /*@Autowired
     private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
     @Autowired
     private ContenutoService<PuntoLogico> servizioPuntoLo;
@@ -42,7 +41,18 @@ public class ComuneController {
     @Autowired
     private ContenutoService<Evento> servizioEv;
     @Autowired
-    private ContenutoService<Contest> servizioCon;
+    private ContenutoService<Contest> servizioCon;*/
+
+    @Autowired
+    private PuntoGeoService servizioPuntoGeo;
+    @Autowired
+    private PuntoLogicoService servizioPuntoLo;
+    @Autowired
+    private ItinerarioService servizioIti;
+    @Autowired
+    private EventoService servizioEv;
+    @Autowired
+    private ContestService servizioCon;
 
     @Autowired
     public ComuneController(ComuneService servizio,
@@ -76,7 +86,7 @@ public class ComuneController {
     }
 
     @GetMapping("Api/Comune/RicercaComune")
-    public ResponseEntity<RicercaComuneResponseDTO> RicercaComune(RicercaComuneDTO ricerca){
+    public ResponseEntity<RicercaContenutiResponseDTO> RicercaComune(RicercaComuneDTO ricerca){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -92,7 +102,8 @@ public class ComuneController {
             throw new NullPointerException("Il comune cercato non è presente");
 
         this.servizioUtente.AggiornaComuneVisitato(idUtente, ricerca.getNome());
-        RicercaComuneResponseDTO ricercaComune = new RicercaComuneResponseDTO();
+
+        RicercaContenutiResponseDTO ricercaComune = new RicercaContenutiResponseDTO();
 
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(ricerca.getNome());
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(ricerca.getNome());
@@ -101,11 +112,11 @@ public class ComuneController {
         List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(ricerca.getNome(), Ruolo.TURISTA_AUTENTICATO);
 
 
-        ricercaComune.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
-        ricercaComune.getContenutiComune().put("punti logici / avvisi", puntiLogici);
-        ricercaComune.getContenutiComune().put("itinerari", itinerari);
-        ricercaComune.getContenutiComune().put("eventi", eventi);
-        ricercaComune.getContenutiComune().put("contest", contest);
+        ricercaComune.getContenutiPresenti().put("punti geolocalizzati", puntiGeolocalizzati);
+        ricercaComune.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
+        ricercaComune.getContenutiPresenti().put("itinerari", itinerari);
+        ricercaComune.getContenutiPresenti().put("eventi", eventi);
+        ricercaComune.getContenutiPresenti().put("contest", contest);
         return ResponseEntity.ok(ricercaComune);
 
     }

@@ -1,20 +1,18 @@
 package com.unicam.Service;
 
 import com.unicam.Model.User;
-import com.unicam.Repository.IUtenteRepository;
+import com.unicam.Repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private IUtenteRepository userRepository;
+    private UtenteRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

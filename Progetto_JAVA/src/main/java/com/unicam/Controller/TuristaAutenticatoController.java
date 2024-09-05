@@ -6,10 +6,12 @@ import com.unicam.Richieste.RichiestaAggiuntaPost;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.AggiungiPreferitoDTO;
 import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.PostTuristaProvvisorioDTO;
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(name = "api/turistaAutenticato")
@@ -27,6 +30,10 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     private ContenutoService<Itinerario> serviceItinerario;
     private ContenutoService<PuntoGeolocalizzato> servicePuntoGeo;
     private ContenutoService<PuntoLogico> servicePuntoLogico;
+    @Autowired
+    private ContenutoService<Evento> serviceEv;
+    @Autowired
+    private ContenutoService<Contest> serviceCon;
     private ContenutoService<PostTurista> servizioPost;
     private UtenteService servizioUtente;
 
@@ -72,7 +79,6 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     }
 
 
-
     @PutMapping("/segnalaContenuto")
     public void SegnalaContenuto(@RequestBody SegnalazioneProvvisoriaDTO segnala){
         if(segnala.getTipo().toUpperCase() == "ITINERARIO")
@@ -83,5 +89,5 @@ public class TuristaAutenticatoController<T extends Contenuto> {
             this.servicePuntoLogico.SegnalaContenuto(segnala);
         else
             throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto");
-    }
+    }*/
 }

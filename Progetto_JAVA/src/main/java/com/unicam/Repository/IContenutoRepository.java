@@ -9,7 +9,11 @@ import java.util.List;
 @Repository
 public interface IContenutoRepository<T extends Contenuto> extends JpaRepository<T, Long>{
 
-    PuntoGeolocalizzato findByTitolo(String nome);
+    PuntoGeolocalizzato findGeoByTitolo(String nome);
+    PuntoLogico findLogicoByTitolo(String toUpperCase);
+    Itinerario findItinerarioByTitolo(String toUpperCase);
+    Evento findEventoByTitolo(String toUpperCase);
+    Contest findContestByTitolo(String toUpperCase);
 
     List<PuntoGeolocalizzato> findPuntoGeoByComune(String comune);
 

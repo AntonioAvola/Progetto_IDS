@@ -1,6 +1,7 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
+import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.EliminaUtenteDTO;
@@ -17,7 +18,7 @@ import java.util.List;
 public class UtenteController {
 
     private UtenteService servizio;
-    private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
+    /*private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
     private ContenutoService<PuntoLogico> servizioPuntoLo;
     private ContenutoService<Itinerario> servizioIti;
     private ContenutoService<Evento> servizioEv;
@@ -36,6 +37,27 @@ public class UtenteController {
         this.servizioIti = servizioIti;
         this.servizioEv = servizioEv;
         this.servizioCon = servizioCon;
+    }*/
+
+    private PuntoGeoService servizioPuntoGeo;
+    private PuntoLogicoService servizioPuntoLo;
+    private ItinerarioService servizioIti;
+    private EventoService servizioEv;
+    private ContestService servizioCon;
+
+    @Autowired
+    public UtenteController(UtenteService servizio,
+                            PuntoGeoService servizioPuntoGeo,
+                            PuntoLogicoService servizioPuntoLo,
+                            ItinerarioService servizioIti,
+                            EventoService servizioEv,
+                            ContestService servizioCon){
+        this.servizio = servizio;
+        this.servizioPuntoGeo = servizioPuntoGeo;
+        this.servizioPuntoLo = servizioPuntoLo;
+        this.servizioIti = servizioIti;
+        this.servizioEv = servizioEv;
+        this.servizioCon = servizioCon;
     }
 
     @PostMapping("/RegistrazioneUtente")
@@ -46,12 +68,6 @@ public class UtenteController {
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
-
-        /*List<PuntoGeolocalizzato> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(registrazione.getComune());
-        List<PuntoLogico> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(registrazione.getComune());
-        List<Itinerario> itinerari = this.servizioIti.GetItinerariByComune(registrazione.getComune());
-        List<Evento> eventi = this.servizioEv.GetEventiByComune(registrazione.getComune());
-        List<Contest> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole());*/
 
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(registrazione.getComune());
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(registrazione.getComune());
