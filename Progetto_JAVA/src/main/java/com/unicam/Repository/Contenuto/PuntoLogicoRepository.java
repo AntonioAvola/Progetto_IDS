@@ -1,6 +1,7 @@
 package com.unicam.Repository.Contenuto;
 
 import com.unicam.Model.PuntoLogico;
+import com.unicam.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,6 @@ public interface PuntoLogicoRepository extends JpaRepository<PuntoLogico, Long> 
     PuntoLogico findLogicoByTitolo(String toUpperCase);
 
     List<PuntoLogico> findPuntoLogicoByComune(String comune);
+
+    List<PuntoLogico> findByAutore(User user);
 }

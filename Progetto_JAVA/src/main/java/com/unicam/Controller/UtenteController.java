@@ -1,12 +1,15 @@
 package com.unicam.Controller;
 
+import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.EliminaUtenteDTO;
 import com.unicam.dto.Risposte.*;
-import com.unicam.dto.RegistrazioneDTO;
+import com.unicam.dto.RegistrazioneUtentiDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,7 +62,7 @@ public class UtenteController {
     }
 
     @PostMapping("/RegistrazioneUtente")
-    public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneDTO registrazione){
+    public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneUtentiDTO registrazione){
         LoginResponseDTO login = new LoginResponseDTO();
 
         login.setMessage("Registrazione avvenuta con successo!");
@@ -83,8 +86,16 @@ public class UtenteController {
     }
 
     @DeleteMapping("/EliminaAccount")
-    public void EliminaAccount(@RequestBody EliminaUtenteDTO userDeleted){
+    public void EliminaAccount(){
         //TODO pensare come implementare l'eliminazione dell'account (tecnicamente un utente puo eliminare solo il suo account non quello di altri)
-        this.servizio.EliminaUtenteByUsername(userDeleted.getUsername());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        this.servizio.EliminaUtente(idUtente);
     }
 }

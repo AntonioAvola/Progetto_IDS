@@ -5,7 +5,7 @@ import com.unicam.Model.User;
 
 import java.util.Locale;
 
-public class RegistrazioneDTO {
+public class RegistrazioneUtentiDTO {
 
     private String name;
     private String username;
@@ -16,14 +16,14 @@ public class RegistrazioneDTO {
     private boolean animatore;
     private boolean rappresentanteComune;
 
-    public RegistrazioneDTO(String name,
-                            String username,
-                            String comune,
-                            String email,
-                            String password,
-                            boolean curatore,
-                            boolean animatore,
-                            boolean rappresentante){
+    public RegistrazioneUtentiDTO(String name,
+                                  String username,
+                                  String comune,
+                                  String email,
+                                  String password,
+                                  boolean curatore,
+                                  boolean animatore,
+                                  boolean rappresentante){
         this.name = name;
         this.username = username;
         this.comune = comune.toUpperCase(Locale.ROOT);

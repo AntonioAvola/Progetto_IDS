@@ -1,6 +1,7 @@
 package com.unicam.Repository.Contenuto;
 
 import com.unicam.Model.PuntoGeolocalizzato;
+import com.unicam.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,6 @@ public interface PuntoGeoRepository extends JpaRepository<PuntoGeolocalizzato, L
     PuntoGeolocalizzato findGeoByTitolo(String nome);
 
     List<PuntoGeolocalizzato> findPuntoGeoByComune(String comune);
+
+    List<PuntoGeolocalizzato> findByAutore(User user);
 }
