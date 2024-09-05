@@ -11,13 +11,13 @@ public class PostTuristaDTO {
 
     private String titolo;
     private String descrizione;
-    private MultipartFile data;
+    private MultipartFile contenutoMultimediale;
 
     public PostTuristaDTO(long id, String titolo,
-                                     String descrizione, MultipartFile data){
+                                     String descrizione, MultipartFile contenutoMultimediale){
         this.titolo = titolo;
         this.descrizione = descrizione;
-        this.data = data;
+        this.contenutoMultimediale = contenutoMultimediale;
     }
 
 
@@ -25,19 +25,27 @@ public class PostTuristaDTO {
         return titolo;
     }
 
+    public void setTitolo(String titolo) {
+        this.titolo = titolo;
+    }
+
     public String getDescrizione() {
         return descrizione;
     }
 
-    public MultipartFile getData() {
-        return data;
+    public MultipartFile getContenutoMultimediale() {
+        return contenutoMultimediale;
     }
 
-    public PostTurista ToEntity(User user) throws IOException {
+    public void setContenutoMultimediale(MultipartFile contenutoMultimediale) {
+        this.contenutoMultimediale = contenutoMultimediale;
+    }
+
+    public PostTurista ToEntity(User user, String comune) throws IOException {
         PostTuristaBuilder builder = new PostTuristaBuilder();
         builder.BuildTitolo(getTitolo());
         builder.BuildDescrizione(getDescrizione());
-        builder.BuildSpecifica(getData().getBytes());
+        builder.BuildSpecifica(getContenutoMultimediale().getBytes());
         builder.BuildAutore(user);
         return builder.Result();
     }

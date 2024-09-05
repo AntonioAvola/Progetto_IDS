@@ -1,10 +1,10 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
+import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Richieste.RichiestaAggiuntaPost;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ContenutoService;
-import com.unicam.Service.PostService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AggiungiPreferitoDTO;
 import com.unicam.dto.PostTuristaDTO;
@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -49,26 +50,36 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     }
 
     @PostMapping(value = "/aggiuntaPost")
-    public void AggiungiPost(@RequestParam("file") PostTuristaDTO UserFile) throws IOException {
-
-        /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public void AggiungiPost(@RequestBody PostTuristaDTO UserFile /*, @RequestParam("file") MultipartFile file*/) throws IOException {
+/**
+ *  TODO REVIEW
+ */
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        //prendo il comune dell'utente
+        String currentRole = userDetails.getRole();
+
         String comune = userDetails.getComune();
 
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune){
-            throw new IllegalArgumentException("Non hai i permessi per inserire un post");
+        PostTurista post = UserFile.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
+
+        if(currentRole.equals(Ruolo.CONTRIBUTOR.name()) ||currentRole.equals(Ruolo.TURISTA_AUTENTICATO.name())){
+            RichiestaAggiuntaContenuto<PostTurista> aggiunta =
+                    new RichiestaAggiuntaContenuto<>(servizioPost, post);
+            aggiunta.Execute();
         }
-        RichiestaAggiuntaPost richiesta = new RichiestaAggiuntaPost(servizioPost, servizioUtente, UserFile, this.servizioUtente.GetUtenteById(idUtente));
-        return ResponseEntity.ok("Post inserito");*/
+
+
+        post.setStato(StatoContenuto.APPROVATO);
+        servizioPost.AggiungiContenuto(post);
     }
 
-    /*@PutMapping("/segnalaContenuto")
+
+    @PutMapping("/segnalaContenuto")
     public void SegnalaContenuto(@RequestBody SegnalazioneProvvisoriaDTO segnala){
         if(segnala.getTipo().toUpperCase() == "ITINERARIO")
             this.serviceItinerario.SegnalaContenuto(segnala);

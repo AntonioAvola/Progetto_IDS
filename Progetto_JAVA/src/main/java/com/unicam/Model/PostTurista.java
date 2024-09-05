@@ -1,5 +1,6 @@
 package com.unicam.Model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
@@ -9,40 +10,14 @@ import jakarta.persistence.Table;
 public class PostTurista extends Contenuto{
 
     @Lob
-    private Long fileLenght;
-    private String fileName;
-    private boolean isEmpty;
-    private byte[] fileData;
+    @Column(name = "file_data")
+    private byte[] contenutoMultimediale; // per memorizzare il file multimediale
 
-    public Long getFileLenght() {
-        return fileLenght;
+    public byte[] getContenutoMultimediale() {
+        return contenutoMultimediale;
     }
 
-    public void setFileLenght(Long fileLenght) {
-        this.fileLenght = fileLenght;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public boolean isEmpty() {
-        return isEmpty;
-    }
-
-    public void setEmpty(boolean empty) {
-        isEmpty = empty;
-    }
-
-    public byte[] getFileData() {
-        return fileData;
-    }
-
-    public void setFileData(byte[] fileData) {
-        this.fileData = fileData;
+    public void setContenutoMultimediale(byte[] contenutoMultimediale) {
+        this.contenutoMultimediale = contenutoMultimediale;
     }
 }
