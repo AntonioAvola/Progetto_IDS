@@ -89,5 +89,5 @@ public class TuristaAutenticatoController<T extends Contenuto> {
             this.servicePuntoLogico.SegnalaContenuto(segnala);
         else
             throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto");
-    }*/
+    }
 }
