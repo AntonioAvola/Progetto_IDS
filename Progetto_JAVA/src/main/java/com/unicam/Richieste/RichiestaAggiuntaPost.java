@@ -20,17 +20,11 @@ public class RichiestaAggiuntaPost implements ICommand{
 
     public RichiestaAggiuntaPost(ContenutoService<PostTurista> servizioPost,
                                  UtenteService servizio,
-                                 PostTuristaDTO post, User user) throws IOException {
+                                 PostTuristaDTO post, User user, String comune) throws IOException {
         this.servizio = servizioPost;
         this.servizioUTente = servizio;
-        this.post = post.ToEntity(user);
+        this.post = post.ToEntity(user,comune);
 
-        /*PostTuristaBuilder builder = new PostTuristaBuilder();
-        builder.BuildAutore(this.servizioUTente.GetUtenteById(idUtente));
-        builder.BuildTitolo(post.getTitolo());
-        builder.BuildDescrizione(post.getDescrizione());
-        builder.BuildSpecifica(post.getFileData());
-        this.post = builder.Result();*/
         this.post.setStato(StatoContenuto.ATTESA);
     }
     @Override

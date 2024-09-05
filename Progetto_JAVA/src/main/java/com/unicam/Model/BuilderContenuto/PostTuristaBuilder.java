@@ -34,7 +34,7 @@ public class PostTuristaBuilder implements Builder{
     }
 
     public void BuildSpecifica(byte[] data){
-        this.post.setFileData(data);
+        this.post.setContenutoMultimediale(data);
     }
 
     public PostTurista Result(){
