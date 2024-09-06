@@ -2,6 +2,7 @@ package com.unicam.Controller;
 
 import com.unicam.Model.Ruolo;
 import com.unicam.Service.AdminService;
+import com.unicam.dto.LoginDTO;
 import com.unicam.dto.RegistrazioneAdminDTO;
 import com.unicam.dto.Risposte.LoginResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ public class GestorePiattaformaController {
     private AdminService servizioAdmin;
 
     @PostMapping("Api/GestorePiattaforma/Registrazione")
-    public void RegistrazioneGestorePiattaforma(@RequestBody RegistrazioneAdminDTO registrazione){
+    public ResponseEntity<LoginResponseDTO> RegistrazioneGestorePiattaforma(@RequestBody LoginDTO registrazione){
         //TODO
+
+
         /*LoginResponseDTO login = new LoginResponseDTO();
 
         login.setMessage("Registrazione avvenuta con successo!");
@@ -28,5 +31,6 @@ public class GestorePiattaformaController {
         login.setRole(Ruolo.ADMIN);
         login.setUsername(registrazione.getUsername());
         return ResponseEntity.ok(login);*/
+        return null;
     }
 }

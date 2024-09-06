@@ -2,6 +2,7 @@ package com.unicam.Security;
 
 import com.unicam.Hadlers.CustomAccessNegatoHandler;
 import com.unicam.Service.UtenteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,9 +26,11 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs",
             "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
             "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/api/auth/**",
-            "/api/test/**", "/authenticate", "/api/utente/RegistrazioneUtente" };
+            "/api/test/**", "/authenticate", "/api/utente/RegistrazioneUtente", "/Api/GestorePiattaforma/Registrazione" };
 
+    @Autowired
     private final JwtRequestFilter jwtRequestFilter;
+    @Autowired
     private final UtenteService servizioUtente;
 
     public SecurityConfig(JwtRequestFilter jwtRequestFilter, UtenteService servizioUtente) {

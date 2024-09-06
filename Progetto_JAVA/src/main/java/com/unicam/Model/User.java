@@ -180,6 +180,10 @@ public class User implements UserDetails {
         this.ruoloComune = ruoloComune;
     }
 
+    public void setPassword(String password){
+        this.password = password;
+    }
+
     /**
      * Restituisce una rappresentazione in formato stringa dell'oggetto User.
      * Questa rappresentazione include il nome, l'email e il comune dell'utente.
