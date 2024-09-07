@@ -77,4 +77,9 @@ public class ComuneService {
     public Comune GetComuneByNome(String comune) {
         return this.repository.findByNome(comune);
     }
+
+    public List<ComuneResponseDTO> GetAllPresenti() {
+        List<Comune> comuni = this.repository.findAllByStatoRichiesta(StatoContenuto.APPROVATO);
+        return ConvertiInResponse(comuni);
+    }
 }

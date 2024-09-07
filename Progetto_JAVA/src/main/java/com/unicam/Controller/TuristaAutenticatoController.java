@@ -3,6 +3,7 @@ package com.unicam.Controller;
 import com.unicam.Model.*;
 import com.unicam.Richieste.RichiestaAggiuntaPost;
 import com.unicam.Security.UserCustomDetails;
+import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.PostService;
 import com.unicam.Service.UtenteService;
@@ -10,14 +11,18 @@ import com.unicam.dto.AggiungiPreferitoDTO;
 import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
+import com.unicam.dto.RicercaComuneDTO;
+import com.unicam.dto.Risposte.ComuneResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(name = "api/turistaAutenticato")
@@ -47,7 +52,8 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         this.servizioPost = servizioPost;
         this.servizioUtente = servizioUtente;
     }*/
-
+    @Autowired
+    private ComuneService servizioComune;
     private ItinerarioService serviceItinerario;
     private PuntoGeoService servicePuntoGeo;
     private PuntoLogicoService servicePuntoLogico;
@@ -98,6 +104,19 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         aggiunta.Execute();
         /*post.setStato(StatoContenuto.APPROVATO);
         servizioPost.AggiungiContenuto(post);*/
+    }
+
+    @GetMapping("Api/Utente/TuttiIComuni")
+    public ResponseEntity<List<ComuneResponseDTO>> RicercaComuniPresenti(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String currentRole = userDetails.getRole();
+
+        return ResponseEntity.ok(this.servizioComune.GetAllPresenti());
+
     }
 
     @PutMapping("Api/Turista/AggiungiAPreferiti")

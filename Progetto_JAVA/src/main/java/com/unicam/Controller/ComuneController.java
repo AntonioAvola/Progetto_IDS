@@ -83,8 +83,14 @@ public class ComuneController {
         if(!currentRole.equals(Ruolo.COMUNE.name()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
-        if(this.servizioComune.ContainComune(comune.toUpperCase(Locale.ROOT)))
-            throw new IllegalArgumentException("Il comune è già stato inserito nel sistema");
+        if(this.servizioComune.ContainComune(comune)) {
+            List<ComuneResponseDTO> approvati = this.servizioComune.GetComuneByStato(StatoContenuto.APPROVATO);
+            for(ComuneResponseDTO comuneTrovato : approvati){
+                if(comuneTrovato.getNome().equals(comune))
+                    throw new IllegalArgumentException("Il comune è già stato inserito nel sistema");
+            }
+            throw new IllegalArgumentException("La richiesta di aggiunta del comune è già stata inoltrata");
+        }
 
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
                 servizioPuntoGeo, servizioComune, richiesta, idUtente);
