@@ -87,7 +87,6 @@ public class UtenteController {
 
     @DeleteMapping("/EliminaAccount")
     public void EliminaAccount(){
-        //TODO pensare come implementare l'eliminazione dell'account (tecnicamente un utente puo eliminare solo il suo account non quello di altri)
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -97,5 +96,9 @@ public class UtenteController {
         Long idUtente = Long.parseLong(idUtenteStr);
 
         this.servizio.EliminaUtente(idUtente);
+    }
+
+    public void PartecipaAlContest(){
+        //TODO implementare
     }
 }

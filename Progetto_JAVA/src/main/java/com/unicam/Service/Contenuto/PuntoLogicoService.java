@@ -4,6 +4,7 @@ import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.PuntoLogico;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.User;
+import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.LuogoDTO;
@@ -18,15 +19,39 @@ import java.util.Locale;
 public class PuntoLogicoService {
 
     private final PuntoLogicoRepository repoPunto;
+    private final PuntoGeoRepository repoGeo;
     private final UtenteRepository repoUtente;
 
     public PuntoLogicoService(PuntoLogicoRepository repoPunto,
+                              PuntoGeoRepository repoGeo,
                               UtenteRepository repoUtente){
         this.repoPunto = repoPunto;
+        this.repoGeo = repoGeo;
         this.repoUtente = repoUtente;
     }
 
+    /**
+     * Insersci un nuovo PuntoLogico. Il nuovo punto viene salvato nel database solo se non esistono
+     * punti approvati con lo stesso riferimento. Nel caso sia già presente un punto nel database
+     * con lo stesso riferimento, il contenuto viene salvato solo se entrambi sono in stato di attesa.
+     * Più punti logici possono avere uno stesso riferimento, Ma devono avere un titolo differente.
+     * La presenza di contenuti ripetuti in attesa verrà gestita al momento dell'approvazione di uno
+     * degli oggetti presenti più volte.
+     *
+     * @param contenuto         punto da inserire nel database
+     * @exception IllegalArgumentException se è gia stato approvato un punto con lo stesso riferimento
+     *                                       del punto che si sta provando ad aggiungere
+     */
     public void AggiungiContenuto(PuntoLogico contenuto) {
+        if(this.repoPunto.existsByTitoloAndComune(contenuto.getTitolo(), contenuto.getComune())){
+            List<PuntoLogico> puntiApprovati = this.repoPunto.findByTitoloAndComune(contenuto.getTitolo(), contenuto.getComune());
+            for (PuntoLogico puntoTrovato: puntiApprovati) {
+                if(puntoTrovato.getRiferimento() == contenuto.getRiferimento()  /*&& puntoTrovato.getRiferimento() == contenuto.getRiferimento()*/){
+                    if(puntoTrovato.getStato() != StatoContenuto.ATTESA)
+                        throw new IllegalArgumentException("Nel sistema è già presente questo avviso per questo specifico punto");
+                }
+            }
+        }
         this.repoPunto.save(contenuto);
     }
 
@@ -88,13 +113,34 @@ public class PuntoLogicoService {
         this.repoPunto.save(punto);
     }
 
-    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
-        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
+    public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
+        if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
+            throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
+                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+        List<PuntoLogico> punti = this.repoPunto.findByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA);
+        PuntoLogico punto = punti.get(0);
+        punti.remove(punto);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoPunto.delete(punto);
         else{
             punto.setStato(stato);
             this.repoPunto.save(punto);
+            if(!punti.isEmpty())
+                EliminaDoppioni(punti, punto);
         }
+    }
+
+    private void EliminaDoppioni(List<PuntoLogico> punti, PuntoLogico punto) {
+        for(PuntoLogico puntoTrovato: punti){
+            if(puntoTrovato.getRiferimento().equals(punto.getRiferimento()))
+                this.repoPunto.delete(puntoTrovato);
+        }
+    }
+
+    public void EliminaContenutiAttesaDoppioni(PuntoLogico punto) {
+        List<PuntoLogico> puntiTrovati = new ArrayList<>();
+        puntiTrovati.addAll(this.repoPunto.findByTitoloAndComuneAndRiferimentoAndStato(punto.getTitolo(),
+                punto.getComune(), punto.getRiferimento(), StatoContenuto.ATTESA));
+        this.repoPunto.deleteAll(puntiTrovati);
     }
 }

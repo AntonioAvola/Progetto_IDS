@@ -11,6 +11,7 @@ import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping(name = "api/turistaAutenticato")
 public class TuristaAutenticatoController<T extends Contenuto> {
+
+    private final SecurityAutoConfiguration securityAutoConfiguration;
 
     private UtenteService servizioUtente;
 
@@ -58,19 +61,21 @@ public class TuristaAutenticatoController<T extends Contenuto> {
                                         ItinerarioService serviceIt,
                                         PuntoGeoService servicePG,
                                         PuntoLogicoService servicePL,
-                                        UtenteService servizioUtente){
+                                        UtenteService servizioUtente,
+                                        SecurityAutoConfiguration securityAutoConfiguration){
         this.serviceItinerario = serviceIt;
         this.servicePuntoGeo = servicePG;
         this.servicePuntoLogico = servicePL;
         this.servizioPost = servizioPost;
         this.servizioUtente = servizioUtente;
+        this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
     @PostMapping(value = "/aggiuntaPost")
     public void AggiungiPost(@RequestBody PostTuristaDTO UserFile, @RequestParam("contenutoMultimediale") MultipartFile file) throws IOException {
-/**
- *  TODO REVIEW ele vedi la modifica?
- */
+        /**
+         *  TODO REVIEW
+         */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -95,6 +100,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         servizioPost.AggiungiContenuto(post);*/
     }
 
+    @PutMapping("Api/Turista/AggiungiAPreferiti")
     public void AggiungiPreferito(@RequestBody AggiungiPreferitoDTO preferito){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -111,17 +117,17 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune)
             throw new IllegalArgumentException("Non hai i permessi per inserire un post");
 
-        if(preferito.getTipoContenuto() == "punti geolocalizzati")
+        if(preferito.getTipoContenuto().equals("punti geolocalizzati"))
             this.servicePuntoGeo.AggiuntiPreferito(preferito.getNomeContenuto(), idUtente);
-        else if(preferito.getTipoContenuto() == "punti logici"
-                || preferito.getTipoContenuto() == "avvisi"
-                || preferito.getTipoContenuto() == "punti logici / avvisi")
+        else if(preferito.getTipoContenuto().equals("punti logici")
+                || preferito.getTipoContenuto().equals("avvisi")
+                || preferito.getTipoContenuto().equals("punti logici / avvisi"))
             this.servicePuntoLogico.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
-        else if(preferito.getTipoContenuto() == "itinerari")
+        else if(preferito.getTipoContenuto().equals("itinerari"))
             this.serviceItinerario.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
-        else if(preferito.getTipoContenuto() == "eventi")
+        else if(preferito.getTipoContenuto().equals("eventi"))
             this.serviceEv.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
-        else if(preferito.getTipoContenuto() == "contest")
+        else if(preferito.getTipoContenuto().equals("contest"))
             this.serviceCon.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
@@ -144,13 +150,18 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune)
             throw new IllegalArgumentException("Non hai i permessi per inserire un post");
 
-        if(segnala.getTipo().toUpperCase() == "ITINERARIO")
+        if(segnala.getTipo().toUpperCase().equals("ITINERARIO"))
             this.serviceItinerario.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
-        else if(segnala.getTipo().toUpperCase() == "PUNTO GEOLOCALIZZATO")
+        else if(segnala.getTipo().toUpperCase().equals("PUNTO GEOLOCALIZZATO"))
             this.servicePuntoGeo.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
-        else if(segnala.getTipo().toUpperCase() == "PUNTO LOGICO")
+        else if(segnala.getTipo().toUpperCase().equals("PUNTO LOGICO"))
             this.servicePuntoLogico.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
         else
             throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto");
+    }
+
+    @GetMapping("Api/Turista/TuttiIPreferiti")
+    public void TuttiMieiPreferiti(){
+        //TODO
     }
 }

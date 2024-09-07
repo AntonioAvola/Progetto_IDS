@@ -6,6 +6,7 @@ import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoGeo;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
+import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.ItinerarioService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.Contenuto.PuntoLogicoService;
@@ -22,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 /**
  * I metodi di questa classe devono poter essere utilizzati da:
@@ -55,6 +58,8 @@ public class ContributorController<T extends Contenuto> {
     private ItinerarioService serviceItinerario;
     private PuntoGeoService servicePuntoGeo;
     private PuntoLogicoService servicePuntoLogico;
+    @Autowired
+    private ComuneService serviceComune;
 
     @Autowired
     public ContributorController(ItinerarioService serviceIt,
@@ -82,7 +87,6 @@ public class ContributorController<T extends Contenuto> {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
@@ -91,18 +95,31 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        ControlloPresenzaComune(comune);
+
         Itinerario itinerario = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
-        itinerario.setPuntiDiInteresse(serviceItinerario.GetPuntiByListaNomi(richiesta.getNomiPunti()));
+        itinerario.setPuntiDiInteresse(ControllaPuntiDiInteresse(richiesta.getNomiPunti(), comune));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            //RichiestaAggiuntaContenuto<Itinerario> aggiunta = new RichiestaAggiuntaContenuto<>(serviceItinerario, itinerario);
             RichiestaAggiuntaItinerario aggiunta = new RichiestaAggiuntaItinerario(serviceItinerario, itinerario);
             aggiunta.Execute();
         }
         else{
             itinerario.setStato(StatoContenuto.APPROVATO);
             serviceItinerario.AggiungiContenuto(itinerario);
+            this.serviceItinerario.EliminaItinerariCheSiRipetonoPerNomeOPunti(itinerario);
         }
         return ResponseEntity.ok("itinerario aggiunto con succeso!");
+    }
+
+    private List<PuntoGeolocalizzato> ControllaPuntiDiInteresse(List<String> nomiPunti, String comune) {
+        return this.servicePuntoGeo.GetPuntiByListaNomiAndComuneAndStato(nomiPunti, comune);
+    }
+
+    private void ControlloPresenzaComune(String comune) {
+        if(!this.serviceComune.ContainComune(comune))
+            throw new NullPointerException("Non è stata ancora fatta richiesta di inserimento del comune nel sistema");
+        if(this.serviceComune.GetComuneByNome(comune).getStatoRichiesta() == StatoContenuto.ATTESA)
+            throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
     }
 
     @PostMapping("Api/Contributor/AggiungiPuntoGeo")
@@ -117,7 +134,6 @@ public class ContributorController<T extends Contenuto> {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
@@ -127,15 +143,17 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        ControlloPresenzaComune(comune);
+
         PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            //RichiestaAggiuntaContenuto<PuntoGeolocalizzato> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoGeo, punto);
             RichiestaAggiuntaPuntoGeo aggiunta = new RichiestaAggiuntaPuntoGeo(servicePuntoGeo, punto);
             aggiunta.Execute();
         }
         else{
             punto.setStato(StatoContenuto.APPROVATO);
             servicePuntoGeo.AggiungiContenuto(punto);
+            this.servicePuntoGeo.EliminaContenutiAttesaDoppioni(punto);
         }
     }
 
@@ -151,7 +169,6 @@ public class ContributorController<T extends Contenuto> {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
@@ -160,25 +177,30 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        ControlloPresenzaComune(comune);
+
+
         PuntoLogico punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
-        punto.setRiferimento(this.servicePuntoGeo.GetPuntoGeoByNome(richiesta.getNomePuntoGeo()));
+        punto.setRiferimento(ControlloPresenzaPuntoGeo(richiesta.getNomePuntoGeo(), comune));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
-            //RichiestaAggiuntaContenuto<PuntoLogico> aggiunta = new RichiestaAggiuntaContenuto<>(servicePuntoLogico, punto);
             RichiestaAggiuntaPuntoLogico aggiunta = new RichiestaAggiuntaPuntoLogico(servicePuntoLogico, punto);
             aggiunta.Execute();
         }
         else{
             punto.setStato(StatoContenuto.APPROVATO);
             servicePuntoLogico.AggiungiContenuto(punto);
+            this.servicePuntoLogico.EliminaContenutiAttesaDoppioni(punto);
         }
     }
 
-    public void ModificaContenuto(){
-        //TODO implement
+    private PuntoGeolocalizzato ControlloPresenzaPuntoGeo(String nomePuntoGeo, String comune) {
+        return this.servicePuntoGeo.GetPuntoGeoByNomeAndComuneAndStato(nomePuntoGeo, comune);
     }
 
+    public void ModificaContenuto(){}
+
     public void EliminaContenuto(){
-        //TODO implement
+        //TODO implementare
     }
 
 

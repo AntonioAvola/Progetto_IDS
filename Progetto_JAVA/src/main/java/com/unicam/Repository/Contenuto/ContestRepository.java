@@ -15,4 +15,8 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     List<Contest> findContestByComune(String comune);
 
     List<Contest> findByAutore(User user);
+
+    boolean existsByTitoloAndComune(String titolo, String comune);
+
+    Contest findContestByTitoloAndComune(String nomeContenuto, String comune);
 }

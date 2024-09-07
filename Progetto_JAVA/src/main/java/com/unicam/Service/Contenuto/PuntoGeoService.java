@@ -27,7 +27,32 @@ public class PuntoGeoService {
         this.repoUtente = repoUtente;
     }
 
+    /**
+     * Insersci un nuovo PuntoGeolocalizzato. Il nuovo punto viene salvato nel database solo se non esistono
+     * punti approvati con le stesse coordinate o stesso nome. Nel caso sia già presente un punto nel database
+     * con stesso nome e/o stesse coordinate, il contenuto viene salvato solo se entrambi sono in stato di attesa.
+     * La presenza di contenuti ripetuti in attesa verrà gestita al momento dell'approvazione di uno
+     * degli oggetti presenti più volte.
+     *
+     * @param contenuto         punto da inserire nel database
+     * @exception IllegalArgumentException se è gia stato approvato un punto con le stesse coordinate
+     *                                      del punto che si sta provando ad aggiungere oppure se è già
+     *                                      stato approvato un punto con lo stesso nome del punto passato
+     *                                      ma con differenti coordinate
+     */
     public void AggiungiContenuto(PuntoGeolocalizzato contenuto) {
+        List<PuntoGeolocalizzato> puntiPresenti = this.repoPunto.findByComune(contenuto.getComune());
+        for (PuntoGeolocalizzato puntoTrovato: puntiPresenti) {
+            if(puntoTrovato.getStato() != StatoContenuto.ATTESA) {
+                if ((puntoTrovato.getLatitudine().equals(contenuto.getLatitudine()))
+                        && (puntoTrovato.getLongitudine().equals(contenuto.getLongitudine())))
+                    throw new IllegalArgumentException("Esiste già un punto con quelle coordinate");
+                if((puntoTrovato.getTitolo().equals(contenuto.getTitolo()))
+                        && (puntoTrovato.getComune().equals(contenuto.getComune())))
+                    throw new IllegalArgumentException("Esiste già un punto geolocalizzato con quel nome. " +
+                            "Prova ad essere più specifico/a");
+            }
+        }
         this.repoPunto.save(contenuto);
     }
 
@@ -43,6 +68,10 @@ public class PuntoGeoService {
 
     public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {
         return this.repoPunto.findGeoByTitolo(nome.toUpperCase(Locale.ROOT));
+    }
+
+    public PuntoGeolocalizzato GetPuntoGeoByNomeAndComune(String nome, String comune) {
+        return this.repoPunto.findGeoByTitoloAndComune(nome, comune);
     }
 
     public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
@@ -87,13 +116,56 @@ public class PuntoGeoService {
         this.repoPunto.save(punto);
     }
 
-    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
-        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitolo(nomeContenuto);
+    public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
+        if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
+            throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
+                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+        List<PuntoGeolocalizzato> punti = this.repoPunto.findByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA);
+        PuntoGeolocalizzato punto = punti.get(0);
+        punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
+        punti.remove(punto);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoPunto.delete(punto);
         else{
             punto.setStato(stato);
             this.repoPunto.save(punto);
+            if(!punti.isEmpty())
+                EliminaDoppioni(punti, punto);
         }
+    }
+
+    private void EliminaDoppioni(List<PuntoGeolocalizzato> punti, PuntoGeolocalizzato punto) {
+        for(PuntoGeolocalizzato puntoTrovato: punti){
+            if(puntoTrovato.getLatitudine().equals(punto.getLatitudine()) &&
+                    puntoTrovato.getLongitudine().equals(punto.getLongitudine()))
+                this.repoPunto.delete(puntoTrovato);
+            else if(puntoTrovato.getTitolo().equals(punto.getTitolo()))
+                this.repoPunto.delete(puntoTrovato);
+        }
+    }
+
+    public void EliminaContenutiAttesaDoppioni(PuntoGeolocalizzato punto) {
+        List<PuntoGeolocalizzato> puntiTrovati = new ArrayList<>();
+        puntiTrovati.addAll(this.repoPunto.findByLatitudineAndLongitudineAndStato(punto.getLatitudine(), punto.getLongitudine(),StatoContenuto.ATTESA));
+        this.repoPunto.deleteAll(puntiTrovati);
+    }
+
+    public PuntoGeolocalizzato GetPuntoGeoByNomeAndComuneAndStato(String nomePuntoGeo, String comune) {
+        if (this.repoPunto.existsByTitoloAndComune(nomePuntoGeo, comune)) {
+            List<PuntoGeolocalizzato> punti = this.repoPunto.findByTitoloAndComune(nomePuntoGeo, comune);
+            for(PuntoGeolocalizzato punto : punti){
+                if(punto.getStato() != StatoContenuto.ATTESA)
+                    return punto;
+            }
+        }
+        throw new IllegalArgumentException("Il punto non è ancora stato approvato");
+    }
+
+    public List<PuntoGeolocalizzato> GetPuntiByListaNomiAndComuneAndStato(List<String> nomiPunti, String comune) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        for(String nome: nomiPunti){
+            punti.add(this.GetPuntoGeoByNomeAndComuneAndStato(nome.toUpperCase(Locale.ROOT), comune));
+        }
+        return punti;
     }
 }

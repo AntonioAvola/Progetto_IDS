@@ -8,8 +8,8 @@ import jakarta.persistence.*;
 @Table(name = "puntoLogico")
 public class PuntoLogico extends Contenuto{
 
-    @OneToOne
-    @JoinColumn(name = "posizione_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "posizione_id")
     private PuntoGeolocalizzato riferimento;
 
     public PuntoLogico(){

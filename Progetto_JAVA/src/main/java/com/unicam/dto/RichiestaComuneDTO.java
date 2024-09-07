@@ -9,43 +9,25 @@ import java.util.Locale;
 public class RichiestaComuneDTO {
 
     //private String nomeComune;
-    private String descrizione;
+    //private String descrizione;
     //private long  idResponsabile;
     private double latitudine;
     private double longitudine;
 
 
     public RichiestaComuneDTO(){}
-    public RichiestaComuneDTO(/*String nome,*/ String descrizione, /*long id,*/ double lat, double lon){
-        //this.nomeComune = nome;
-        this.descrizione = descrizione;
-        //this.idResponsabile = id;
+    public RichiestaComuneDTO(/*String descrizione,*/ double lat, double lon){
+        //this.descrizione = descrizione;
         this.latitudine = lat;
         this.longitudine = lon;
     }
 
-    /*public String getNomeComune() {
-        return nomeComune;
-    }
-
-    public void setNomeComune(String nomeComune) {
-        this.nomeComune = nomeComune;
-    }*/
-
-    public String getDescrizione() {
+    /*public String getDescrizione() {
         return descrizione;
     }
 
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
-    }
-
-    /*public long getIdResponsabile() {
-        return this.idResponsabile;
-    }
-
-    public void setIdResponsabile(long id) {
-        this.idResponsabile = id;
     }*/
 
     public double getLatitudine() {
@@ -72,8 +54,8 @@ public class RichiestaComuneDTO {
 
     public PuntoGeolocalizzato ToEntityPunto(String nomeComune) {
         PuntoGeoBuilder builderPunto = new PuntoGeoBuilder();
-        builderPunto.BuildTitolo(nomeComune);
-        builderPunto.BuildDescrizione(getDescrizione());
+        builderPunto.BuildTitolo("COMUNE");
+        builderPunto.BuildDescrizione("comune");
         builderPunto.BuildSpecifica(getLatitudine(), getLongitudine());
         builderPunto.BuildComune(nomeComune);
         return builderPunto.Result();

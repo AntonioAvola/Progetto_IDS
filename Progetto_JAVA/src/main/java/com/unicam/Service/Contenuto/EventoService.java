@@ -25,7 +25,41 @@ public class EventoService {
         this.repoUtente = repoUtente;
     }
 
+    /**
+     * Inserimento di un evento. Il nuovo evento viene salvato nel database solo se non esistono
+     * eventi approvati nello stesso luogo. Nel caso sia presente nel database un evento con lo
+     * stesso luogo, l'evento viene salvato nel database solo se entrambi sono in stato di attesa.
+     * La presenza di contenuti ripetuti in attesa verrà gestita al momento dell'approvazione di uno
+     * degli oggetti presenti più volte.
+     *
+     * @param contenuto        evento da inserire nel database
+     * @exception IllegalArgumentException se è gia stato approvato un evento con lo stesso luogo
+     *                                       dell'evento che si sta provando ad aggiungere. L'eccezione
+     *                                       viene scatenata se si accavallano gli orari di inizio e/o fine
+     */
     public void AggiungiContenuto(Evento contenuto) {
+        List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(contenuto.getComune());
+        for(Evento eventoTrovato : eventiPresenti){
+            if(eventoTrovato.getStato() != StatoContenuto.ATTESA && eventoTrovato.getLuogo().equals(contenuto.getLuogo())){
+                if((contenuto.getDurata().getInizio().isBefore(eventoTrovato.getDurata().getFine())
+                        && contenuto.getDurata().getInizio().isAfter(eventoTrovato.getDurata().getInizio())))
+                    throw new IllegalArgumentException("Non è possibile proporre l'evento, dato che è gia stato approvato " +
+                            "un evento che inizia il "+ eventoTrovato.getDurata().getInizio().getDayOfMonth());
+                if(contenuto.getDurata().getFine().isAfter(eventoTrovato.getDurata().getInizio())
+                        && contenuto.getDurata().getFine().isBefore(eventoTrovato.getDurata().getFine()))
+                    throw new IllegalArgumentException("Non è possibile proporre l'evento, dato che è gia stato approvato " +
+                            "un evento che finisce il "+ eventoTrovato.getDurata().getFine().getDayOfMonth());
+                if(contenuto.getDurata().getInizio().isBefore(eventoTrovato.getDurata().getInizio())
+                        && contenuto.getDurata().getFine().isAfter(eventoTrovato.getDurata().getFine()))
+                    throw new IllegalArgumentException("Non è possibile proporre l'evento, dato che è gia stato approvato " +
+                            "un evento che inizia il "+ eventoTrovato.getDurata().getInizio().getDayOfMonth() + " e finisce il " +
+                            eventoTrovato.getDurata().getFine().getDayOfMonth());
+                if(eventoTrovato.getTitolo().equals(contenuto.getTitolo()))
+                    throw new IllegalArgumentException("Esiste già un evento con questo nome. Si prega di cambiarlo");
+            }
+            if(eventoTrovato.getTitolo().equals(contenuto.getTitolo()))
+                throw new IllegalArgumentException("Esiste già un evento con questo nome. Si prega di cambiarlo");
+        }
         this.repoEvento.save(contenuto);
     }
 
@@ -81,13 +115,39 @@ public class EventoService {
         return eventi;
     }
 
-    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
-        Evento evento = this.repoEvento.findEventoByTitolo(nomeContenuto);
+    public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
+        if(!this.repoEvento.existsByTitoloAndComune(nomeContenuto, comune))
+            throw new IllegalArgumentException("L'evento non è presente tra le richieste. " +
+                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+        Evento evento = this.repoEvento.findEventoByTitoloAndComune(nomeContenuto, comune);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoEvento.delete(evento);
         else{
             evento.setStato(stato);
             this.repoEvento.save(evento);
+            EliminaProposteEventiCheSiAccavallano(evento);
+        }
+    }
+
+    private void EliminaProposteEventiCheSiAccavallano(Evento evento) {
+        List<Evento> eventiAttesa = this.repoEvento.findEventoByComuneAndStato(evento.getComune(), StatoContenuto.ATTESA);
+        if(eventiAttesa != null){
+            for(Evento eventoTrovato : eventiAttesa){
+                if(eventoTrovato.getLuogo().equals(evento.getLuogo())){
+                    if((eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getFine())
+                            && eventoTrovato.getDurata().getInizio().isAfter(evento.getDurata().getInizio())))
+                        this.repoEvento.delete(eventoTrovato);
+                    if(eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getInizio())
+                            && eventoTrovato.getDurata().getFine().isBefore(evento.getDurata().getFine()))
+                        this.repoEvento.delete(eventoTrovato);
+                    if(eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getInizio())
+                            && eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getFine()))
+                        this.repoEvento.delete(eventoTrovato);
+                    if(eventoTrovato.getDurata().getInizio().isEqual(evento.getDurata().getInizio())
+                            || eventoTrovato.getDurata().getFine().isEqual(evento.getDurata().getFine()))
+                        this.repoEvento.delete(eventoTrovato);
+                }
+            }
         }
     }
 }

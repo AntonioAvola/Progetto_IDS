@@ -11,6 +11,7 @@ import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.RichiestaComuneDTO;
 import com.unicam.dto.Risposte.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,6 +31,8 @@ import java.util.Locale;
 @RequestMapping(name = "api/comune")
 public class ComuneController {
 
+    private final SecurityAutoConfiguration securityAutoConfiguration;
+    private ComuneService getServizioComune;
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
     /*@Autowired
@@ -56,9 +59,11 @@ public class ComuneController {
 
     @Autowired
     public ComuneController(ComuneService servizio,
-                            UtenteService service){
+                            UtenteService service,
+                            SecurityAutoConfiguration securityAutoConfiguration){
         this.servizioComune = servizio;
         this.servizioUtente = service;
+        this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
     @PostMapping("Api/Comune/RichiestaAggiunta")
@@ -73,12 +78,14 @@ public class ComuneController {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
-        if(!currentRole.equals(Ruolo.COMUNE.name())){
+        if(!currentRole.equals(Ruolo.COMUNE.name()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
-        }
+
+        if(this.servizioComune.ContainComune(comune.toUpperCase(Locale.ROOT)))
+            throw new IllegalArgumentException("Il comune è già stato inserito nel sistema");
+
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
                 servizioPuntoGeo, servizioComune, richiesta, idUtente);
         richiestaAggiunta.Execute();
@@ -86,8 +93,9 @@ public class ComuneController {
     }
 
     @GetMapping("Api/Comune/RicercaComune")
-    public ResponseEntity<RicercaContenutiResponseDTO> RicercaComune(RicercaComuneDTO ricerca){
+    public ResponseEntity<RicercaContenutiResponseDTO> RicercaComune(@RequestBody RicercaComuneDTO ricerca){
 
+        //TODO rivedere
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -95,11 +103,7 @@ public class ComuneController {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        //prendo il comune dell'utente
-        String comune = userDetails.getComune();
-
-        if(!this.servizioComune.ContainComune(ricerca.getNome().toUpperCase(Locale.ROOT)))
-            throw new NullPointerException("Il comune cercato non è presente");
+        ControlloPresenzaComune(ricerca.getNome());
 
         this.servizioUtente.AggiornaComuneVisitato(idUtente, ricerca.getNome());
 
@@ -121,6 +125,13 @@ public class ComuneController {
 
     }
 
+    private void ControlloPresenzaComune(String comune) {
+        if(!this.servizioComune.ContainComune(comune))
+            throw new NullPointerException("Non è stata ancora fatta richiesta di inserimento del comune nel sistema");
+        if(this.servizioComune.GetComuneByNome(comune).getStatoRichiesta() == StatoContenuto.ATTESA)
+            throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
+    }
+
 
     @GetMapping("Api/Comune/GetProposteAnimatore")
     public ResponseEntity<RicercaContenutiResponseDTO> RicercaProposteAnimatore(){
@@ -129,12 +140,8 @@ public class ComuneController {
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
-        String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);
-
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.COMUNE.name()))
@@ -161,16 +168,15 @@ public class ComuneController {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.COMUNE.name()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         if(contenuto.getTipoContenuto().equals("eventi"))
-            this.servizioEv.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+            this.servizioEv.AccettaORifiuta(contenuto.getNomeContenuto().toUpperCase(Locale.ROOT), comune, contenuto.getStato());
         else if(contenuto.getTipoContenuto().equals("contest"))
-            this.servizioCon.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+            this.servizioCon.AccettaORifiuta(contenuto.getNomeContenuto().toUpperCase(Locale.ROOT), comune, contenuto.getStato());
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }

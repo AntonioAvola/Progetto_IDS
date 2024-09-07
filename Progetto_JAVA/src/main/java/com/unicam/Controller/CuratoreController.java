@@ -49,26 +49,13 @@ public class CuratoreController {
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
-        /*String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);*/
-
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CURATORE.name()))
             throw new IllegalArgumentException("Non hai i permessi per effettuare la ricerca");
 
-        /*RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
-        ContenutiTrovati(comune, StatoContenuto.ATTESA);
-        List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoStatoByComune(comune, StatoContenuto.ATTESA);
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciStatoByComune(comune, StatoContenuto.ATTESA);
-        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariAttesaByComune(comune, StatoContenuto.ATTESA);
-
-        contenuti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
-        contenuti.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
-        contenuti.getContenutiPresenti().put("itinerari", itinerari);*/
         return ResponseEntity.ok(ContenutiTrovati(comune, StatoContenuto.ATTESA));
     }
 
@@ -92,12 +79,8 @@ public class CuratoreController {
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
-        /*String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);*/
-
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CURATORE.name()))
@@ -108,6 +91,8 @@ public class CuratoreController {
 
     @PutMapping("Api/Curatore/AccettaORifiutaContenuti")
     public void AccettaORifiuta(@RequestBody AccettaRifiutaContenutoDTO contenuto){
+
+        //TODO da modificare (al momento per punti geolocalizzati, punti logici, itinerari, eventi e contest)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -117,20 +102,19 @@ public class CuratoreController {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.CURATORE.name()))
             throw new IllegalArgumentException("Non hai i permessi per accettare o rifiutare contenuti");
 
         if(contenuto.getTipoContenuto().equals("punti geolocalizzati"))
-            this.servizioPuntoGeo.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+            this.servizioPuntoGeo.AccettaORifiuta(contenuto.getNomeContenuto(), comune, contenuto.getStato());
         else if(contenuto.getTipoContenuto().equals("punti logici")
                 || contenuto.getTipoContenuto().equals("avvisi")
                 || contenuto.getTipoContenuto().equals("punti logici / avvisi"))
-            this.servizioPuntoLo.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+            this.servizioPuntoLo.AccettaORifiuta(contenuto.getNomeContenuto(), comune, contenuto.getStato());
         else if(contenuto.getTipoContenuto().equals("itinerari"))
-            this.servizioIti.AccettaORifiuta(contenuto.getNomeContenuto(), idUtente, contenuto.getStato());
+            this.servizioIti.AccettaORifiuta(contenuto.getNomeContenuto(), comune, contenuto.getStato());
         //TODO aggiungere i post del turista autenticato
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");

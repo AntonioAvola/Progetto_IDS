@@ -22,6 +22,15 @@ public class ContestService {
         this.repoUtente = repoUtente;
     }
 
+    /**
+     * Inserimento di un contest. Il contest viene salvato nel database solo se
+     * non ci sono altri contest salvati nel database con lo stesso nome.
+     * Possono essere presenti più contest nello stesso arco di tempo o accavallati
+     * gli uni con gli altri.
+     *
+     * @param contenuto        contest da inserire nel database
+     * @exception IllegalArgumentException se è gia presente un contest con lo stesso nome
+     */
     public void AggiungiContenuto(Contest contenuto) {
         this.repoContest.save(contenuto);
     }
@@ -70,13 +79,21 @@ public class ContestService {
         return contests;
     }
 
-    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
-        Contest contest = this.repoContest.findContestByTitolo(nomeContenuto);
+    public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
+        if(!this.repoContest.existsByTitoloAndComune(nomeContenuto, comune))
+            throw new IllegalArgumentException("Il contest non è presente tra le richieste. " +
+                    "Si prega di controllare di aver inserito correttamente il nome e riprovare");
+        Contest contest = this.repoContest.findContestByTitoloAndComune(nomeContenuto, comune);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoContest.delete(contest);
         else{
             contest.setStato(stato);
             this.repoContest.save(contest);
         }
+    }
+
+    public void ControllaPresenzaNome(String titolo, String comune) {
+        if(this.repoContest.existsByTitoloAndComune(titolo, comune))
+            throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
     }
 }

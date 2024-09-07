@@ -12,8 +12,8 @@ public class Evento extends Contenuto{
     @Embedded
     private Tempo durata;
 
-    @OneToOne
-    @JoinColumn(name = "posizione_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "posizione_id")
     private PuntoGeolocalizzato luogo;
 
     public Evento(){

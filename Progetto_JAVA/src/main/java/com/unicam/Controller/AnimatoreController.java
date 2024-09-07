@@ -6,6 +6,7 @@ import com.unicam.Richieste.Contenuto.RichiestaAggiuntaContest;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaEvento;
 import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
+import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.ContestService;
 import com.unicam.Service.Contenuto.EventoService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Locale;
+
 /**
  * Metodi disponibili solo agli animatori
  */
@@ -30,6 +33,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(name = "api/animatore")
 public class AnimatoreController {
 
+    @Autowired
+    private ComuneService servizioComune;
     private UtenteService servizioUtente;
     /*private ContenutoService<Evento> servizioEvento;
     private ContenutoService<Contest> servizioContest;
@@ -72,19 +77,31 @@ public class AnimatoreController {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        ControlloPresenzaComune(comune);
+
         Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
-        evento.setLuogo(this.servizioPunto.GetPuntoGeoByNome(proposta.getNomeLuogo()));
-        //RichiestaAggiuntaContenuto<Evento> richiesta = new RichiestaAggiuntaContenuto<>(servizioEvento, evento);
+        //evento.setLuogo(this.servizioPunto.GetPuntoGeoByNomeAndComune(proposta.getNomeLuogo().toUpperCase(Locale.ROOT), comune.toUpperCase(Locale.ROOT)));
+        evento.setLuogo(ControlloPresenzaPuntoGeo(proposta.getNomeLuogo(), comune));
         RichiestaAggiuntaEvento richiesta = new RichiestaAggiuntaEvento(servizioEvento, evento);
         richiesta.Execute();
+    }
+
+    private PuntoGeolocalizzato ControlloPresenzaPuntoGeo(String nomeLuogo, String comune) {
+        return this.servizioPunto.GetPuntoGeoByNomeAndComuneAndStato(nomeLuogo.toUpperCase(Locale.ROOT), comune);
+    }
+
+    private void ControlloPresenzaComune(String comune) {
+        if(!this.servizioComune.ContainComune(comune))
+            throw new NullPointerException("Non è stata ancora fatta richiesta di inserimento del comune nel sistema");
+        if(this.servizioComune.GetComuneByNome(comune).getStatoRichiesta() == StatoContenuto.ATTESA)
+            throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
     }
 
     @PostMapping("api/animatore/proponiContest")
@@ -99,15 +116,18 @@ public class AnimatoreController {
 
         String currentRole = userDetails.getRole();
 
-        //prendo il comune dell'utente
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
         Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
-        //RichiestaAggiuntaContenuto<Contest> richiesta = new RichiestaAggiuntaContenuto<>(servizioContest, contest);
+        ControllaNomeContest(contest.getTitolo(), contest.getComune());
         RichiestaAggiuntaContest richiesta = new RichiestaAggiuntaContest(servizioContest, contest);
         richiesta.Execute();
+    }
+
+    private void ControllaNomeContest(String titolo, String comune) {
+        this.servizioContest.ControllaPresenzaNome(titolo.toUpperCase(Locale.ROOT), comune);
     }
 }

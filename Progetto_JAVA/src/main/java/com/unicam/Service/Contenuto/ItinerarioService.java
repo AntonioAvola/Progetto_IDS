@@ -27,8 +27,41 @@ public class ItinerarioService {
         this.repoUtente = repoUtente;
     }
 
+    /**
+     * Insersci un nuovo Itinerario. Il nuovo itinerario viene salvato nel database solo se non esistono
+     * itinerari approvati con la stessa identica lista di punti di interesse. Nel caso sia già presente
+     * un itinerario nel database con la stessa lista di punti, l'itinerario viene salvato solo se entrambi
+     * sono in stato di attesa.
+     * La presenza di contenuti ripetuti in attesa verrà gestita al momento dell'approvazione di uno
+     * degli oggetti presenti più volte.
+     *
+     * @param contenuto         itinerario da inserire nel database
+     * @exception IllegalArgumentException se è gia stato approvato un itinerario con gli stessi punti di interesse
+     *                                      dell'itinerario che si sta provando ad aggiungere
+     */
     public void AggiungiContenuto(Itinerario contenuto) {
+        //TODO controllare che i punti selezionati siano approvati
+        List<Itinerario> itinerari = ItinerariApprovati(contenuto.getComune());
+        for (Itinerario itinerario : itinerari) {
+            if(itinerario.getPuntiDiInteresse().containsAll(contenuto.getPuntiDiInteresse())
+                    && itinerario.getPuntiDiInteresse().size() == contenuto.getPuntiDiInteresse().size())
+                throw new IllegalArgumentException("Esiste già un itinerario con questi punti di interesse");
+            if(itinerario.getTitolo().equals(contenuto.getTitolo()))
+                throw new IllegalArgumentException("Esiste già un itinerario con questo nome. Si presa di cambiarlo");
+        }
         this.repoItinerario.save(contenuto);
+    }
+
+    private List<Itinerario> ItinerariApprovati(String comune) {
+        List<Itinerario> itinerari = new ArrayList<>();
+        List<Itinerario> presenti = this.repoItinerario.findItinerarioByComune(comune);
+        if(presenti != null){
+            for (Itinerario itinerario: presenti) {
+                if(!(itinerario.getStato() == StatoContenuto.ATTESA))
+                    itinerari.add(itinerario);
+            }
+        }
+        return itinerari;
     }
 
     public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
@@ -109,13 +142,54 @@ public class ItinerarioService {
         this.repoItinerario.save(itinerario);
     }
 
-    public void AccettaORifiuta(String nomeContenuto, Long idUtente, StatoContenuto stato) {
-        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+    public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
+        if(!this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
+            throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
+                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+        List<Itinerario> itinerari = this.repoItinerario.findItinerariByTitoloAndComune(nomeContenuto, comune);
+        Itinerario itinerario = itinerari.get(0);
+        itinerari.remove(itinerario);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoItinerario.delete(itinerario);
         else {
             itinerario.setStato(stato);
             this.repoItinerario.save(itinerario);
+            if(!itinerari.isEmpty())
+                EliminaDoppioni(itinerari, itinerario);
+            }
         }
+
+    private void EliminaDoppioni(List<Itinerario> itinerari, Itinerario itinerario) {
+        for(Itinerario itinerarioTrovato : itinerari) {
+            if(itinerario.getPuntiDiInteresse().containsAll(itinerarioTrovato.getPuntiDiInteresse()) &&
+                    itinerario.getPuntiDiInteresse().size() == itinerarioTrovato.getPuntiDiInteresse().size())
+                this.repoItinerario.delete(itinerarioTrovato);
+            else if(itinerario.getTitolo().equals(itinerarioTrovato.getTitolo()))
+                this.repoItinerario.delete(itinerarioTrovato);
+        }
+    }
+
+
+    public List<PuntoGeolocalizzato> GetPuntiByListaNomiAndComune(List<String> nomiPunti, String comune) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        for (String punto: nomiPunti) {
+            punti.add(this.repoPunto.findGeoByTitoloAndComune(punto.toUpperCase(Locale.ROOT),comune.toUpperCase(Locale.ROOT)));
+        }
+        return punti;
+    }
+
+    public void EliminaItinerariCheSiRipetonoPerNomeOPunti(Itinerario itinerario) {
+        List<Itinerario> itinerari = this.repoItinerario.findByComuneAndStato(itinerario.getComune(), StatoContenuto.ATTESA);
+        if(itinerari != null){
+            for(Itinerario itinerarioTrovato : itinerari) {
+                if(itinerarioTrovato.getTitolo().equals(itinerario.getTitolo()))
+                    this.repoItinerario.delete(itinerarioTrovato);
+                else if(itinerario.getPuntiDiInteresse().containsAll(itinerarioTrovato.getPuntiDiInteresse()) &&
+                        itinerario.getPuntiDiInteresse().size() == itinerarioTrovato.getPuntiDiInteresse().size())
+                    this.repoItinerario.delete(itinerarioTrovato);
+            }
+        }
+
+
     }
 }
