@@ -1,7 +1,7 @@
 package com.unicam.Security;
 
-import com.unicam.Model.Ruolo;
-import com.unicam.Model.User;
+import com.unicam.Model.*;
+import com.unicam.Repository.IComuneRepository;
 import com.unicam.Repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +14,8 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private UtenteRepository repoUente;
 
+    private IComuneRepository repoComune;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 
@@ -21,6 +23,9 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if(repoUente.count() == 0){
             CreateSuperADMIN();
+            CreateGestoreComune();
+            CreateCuratore();
+            CreateAnimatore();
         }
     }
 
@@ -40,4 +45,47 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Admin creato con successo");
 
     }
+
+    private void CreateGestoreComune(){
+        User GestoreUser = new User();
+        GestoreUser.setName("gestore comune");
+        GestoreUser.setUsername("gestore");
+        GestoreUser.setEmail("gestore@gestore.com");
+        GestoreUser.setPassword(bCryptPasswordEncoder.encode("Gestore111!"));
+        GestoreUser.setRuoloComune(Ruolo.COMUNE);
+        GestoreUser.setComune("Castelfidardo");
+
+        repoUente.save(GestoreUser);
+
+        System.out.println("Gestore comune di :" + GestoreUser.getComune() + "creato");
+    }
+
+    private void CreateCuratore(){
+
+        User CuratoreUser = new User();
+        CuratoreUser.setName("curatore");
+        CuratoreUser.setUsername("curatore");
+        CuratoreUser.setEmail("curatore@curatore.com");
+        CuratoreUser.setPassword(bCryptPasswordEncoder.encode("Curatore111!"));
+        CuratoreUser.setRuoloComune(Ruolo.CURATORE);
+        CuratoreUser.setComune("Castelfidardo");
+
+        repoUente.save(CuratoreUser);
+        System.out.println("Curatore creato con successo");
+
+    }
+
+    private void CreateAnimatore(){
+        User AnimatoreUser = new User();
+        AnimatoreUser.setName("animatore");
+        AnimatoreUser.setUsername("animatore");
+        AnimatoreUser.setEmail("animatore@animatore.com");
+        AnimatoreUser.setPassword(bCryptPasswordEncoder.encode("Animatore111!"));
+        AnimatoreUser.setRuoloComune(Ruolo.ANIMATORE);
+        AnimatoreUser.setComune("Castelfidardo");
+
+        repoUente.save(AnimatoreUser);
+        System.out.println("Animatore creato con successo");
+    }
+
 }
