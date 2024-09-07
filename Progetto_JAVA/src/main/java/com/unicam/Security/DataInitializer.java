@@ -53,11 +53,11 @@ public class DataInitializer implements CommandLineRunner {
         GestoreUser.setEmail("gestore@gestore.com");
         GestoreUser.setPassword(bCryptPasswordEncoder.encode("Gestore111!"));
         GestoreUser.setRuoloComune(Ruolo.COMUNE);
-        GestoreUser.setComune("Castelfidardo");
+        GestoreUser.setComune("CASTELFIDARDO");
 
         repoUente.save(GestoreUser);
 
-        System.out.println("Gestore comune di :" + GestoreUser.getComune() + "creato");
+        System.out.println(GestoreUser.getComune() + ": RAPPRESENTANTE " + GestoreUser.getRuoloComune() + " --> creato con successo");
     }
 
     private void CreateCuratore(){
@@ -68,10 +68,10 @@ public class DataInitializer implements CommandLineRunner {
         CuratoreUser.setEmail("curatore@curatore.com");
         CuratoreUser.setPassword(bCryptPasswordEncoder.encode("Curatore111!"));
         CuratoreUser.setRuoloComune(Ruolo.CURATORE);
-        CuratoreUser.setComune("Castelfidardo");
+        CuratoreUser.setComune("CASTELFIDARDO");
 
         repoUente.save(CuratoreUser);
-        System.out.println("Curatore creato con successo");
+        System.out.println(CuratoreUser.getComune() + ": " + CuratoreUser.getRuoloComune() + " --> creato con successo");
 
     }
 
@@ -82,10 +82,10 @@ public class DataInitializer implements CommandLineRunner {
         AnimatoreUser.setEmail("animatore@animatore.com");
         AnimatoreUser.setPassword(bCryptPasswordEncoder.encode("Animatore111!"));
         AnimatoreUser.setRuoloComune(Ruolo.ANIMATORE);
-        AnimatoreUser.setComune("Castelfidardo");
+        AnimatoreUser.setComune("CASTELFIDARDO");
 
         repoUente.save(AnimatoreUser);
-        System.out.println("Animatore creato con successo");
+        System.out.println(AnimatoreUser.getComune() + ": " + AnimatoreUser.getRuoloComune() + " --> creato con successo");
     }
 
 }
