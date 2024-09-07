@@ -93,7 +93,7 @@ public class ComuneController {
         }
 
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
-                servizioPuntoGeo, servizioComune, richiesta, idUtente);
+                servizioPuntoGeo, servizioComune, richiesta, servizioPuntoGeo, idUtente);
         richiestaAggiunta.Execute();
 
     }

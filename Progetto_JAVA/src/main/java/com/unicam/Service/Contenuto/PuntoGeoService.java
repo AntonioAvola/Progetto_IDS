@@ -1,11 +1,10 @@
 package com.unicam.Service.Contenuto;
 
-import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.PuntoLogico;
-import com.unicam.Model.StatoContenuto;
-import com.unicam.Model.User;
+import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
+import com.unicam.Repository.IComuneRepository;
 import com.unicam.Repository.UtenteRepository;
+import com.unicam.Service.ComuneService;
 import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +16,17 @@ import java.util.Locale;
 @Service
 public class PuntoGeoService {
 
+    private final IComuneRepository repoComune;
     private final PuntoGeoRepository repoPunto;
     private final UtenteRepository repoUtente;
 
     @Autowired
     public PuntoGeoService(PuntoGeoRepository repoPunto,
-                              UtenteRepository repoUtente){
+                           UtenteRepository repoUtente,
+                           IComuneRepository repoComune){
         this.repoPunto = repoPunto;
         this.repoUtente = repoUtente;
+        this.repoComune = repoComune;
     }
 
     /**
@@ -122,7 +124,9 @@ public class PuntoGeoService {
                     "Si prega di controllare di aver scritto bene il nome e riprovare");
         List<PuntoGeolocalizzato> punti = this.repoPunto.findByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA);
         PuntoGeolocalizzato punto = punti.get(0);
-        punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
+        //punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
+        punti.clear();
+        punti.addAll(this.repoPunto.findByStato(StatoContenuto.ATTESA));
         punti.remove(punto);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoPunto.delete(punto);
@@ -136,9 +140,16 @@ public class PuntoGeoService {
 
     private void EliminaDoppioni(List<PuntoGeolocalizzato> punti, PuntoGeolocalizzato punto) {
         for(PuntoGeolocalizzato puntoTrovato: punti){
+
             if(puntoTrovato.getLatitudine().equals(punto.getLatitudine()) &&
-                    puntoTrovato.getLongitudine().equals(punto.getLongitudine()))
+                    puntoTrovato.getLongitudine().equals(punto.getLongitudine())){
+                if(puntoTrovato.getTitolo().equals("COMUNE")){
+                    //Comune comune = this.repoComune.findByNome(puntoTrovato.getComune());
+                    this.repoComune.delete(this.repoComune.findByNome(puntoTrovato.getComune()));
+                }
                 this.repoPunto.delete(puntoTrovato);
+            }
+
             else if(puntoTrovato.getTitolo().equals(punto.getTitolo()))
                 this.repoPunto.delete(puntoTrovato);
         }
@@ -167,5 +178,25 @@ public class PuntoGeoService {
             punti.add(this.GetPuntoGeoByNomeAndComuneAndStato(nome.toUpperCase(Locale.ROOT), comune));
         }
         return punti;
+    }
+
+    public void ContienePunto(PuntoGeolocalizzato punto) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        punti.addAll(this.repoPunto.findAll());
+        for(PuntoGeolocalizzato puntoTrovato : punti){
+            if(puntoTrovato.getStato() != StatoContenuto.ATTESA)
+                if(puntoTrovato.getLatitudine().equals(punto.getLatitudine()) &&
+                        puntoTrovato.getLongitudine().equals(punto.getLongitudine()))
+                    throw new IllegalArgumentException("Coordinate riferite ad un altro punto geolocalizzato già approvato");
+        }
+    }
+
+    /**
+     * Inserimento del punto inerente alla richiesta del comune, dopo aver controllato
+     * che le coordinate non siano già associate ad un altro punto approvato
+     * @param punto     punto da inserire
+     */
+    public void AggiungiPunto(PuntoGeolocalizzato punto) {
+        this.repoPunto.save(punto);
     }
 }

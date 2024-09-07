@@ -35,4 +35,6 @@ public interface PuntoGeoRepository extends JpaRepository<PuntoGeolocalizzato, L
     List<PuntoGeolocalizzato> findByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto attesa);
 
     List<PuntoGeolocalizzato> findByComuneAndStato(String comune, StatoContenuto attesa);
+
+    List<PuntoGeolocalizzato> findByStato(StatoContenuto attesa);
 }

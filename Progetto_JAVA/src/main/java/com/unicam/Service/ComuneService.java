@@ -5,6 +5,7 @@ import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.IComuneRepository;
+import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.dto.Risposte.ComuneResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import java.util.List;
 @Service
 public class ComuneService {
 
+    @Autowired
+    private PuntoGeoService servizioPunto;
     private final IComuneRepository repository;
     private final PuntoGeoRepository repositoryPunto;
 
@@ -71,6 +74,7 @@ public class ComuneService {
             punto.setStato(stato);
             this.repositoryPunto.save(punto);
             this.repository.save(comune);
+            this.servizioPunto.EliminaContenutiAttesaDoppioni(punto);
         }
     }
 

@@ -8,6 +8,7 @@ import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.RichiestaComuneDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Locale;
 
@@ -23,6 +24,7 @@ public class RichiestaAggiuntaComune implements ICommand{
     private PuntoGeoService servizioContenuto;
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
+    private PuntoGeoService servizioPuntoGeo;
     private PuntoGeolocalizzato punto;
     private Comune comune;
 
@@ -30,10 +32,12 @@ public class RichiestaAggiuntaComune implements ICommand{
                                    PuntoGeoService servizioPunto,
                                    ComuneService servizioComune,
                                    RichiestaComuneDTO richiesta,
+                                   PuntoGeoService servizioPuntoGeo,
                                    long id){
         this.servizioUtente = servizio;
         this.servizioContenuto = servizioPunto;
         this.servizioComune = servizioComune;
+        this.servizioPuntoGeo = servizioPuntoGeo;
         this.punto = richiesta.ToEntityPunto(this.servizioUtente.GetUtenteById(id).getComune());
         this.punto.setAutore(this.servizioUtente.GetUtenteById(id));
         this.punto.setStato(StatoContenuto.ATTESA);
@@ -44,7 +48,8 @@ public class RichiestaAggiuntaComune implements ICommand{
 
     @Override
     public void Execute() {
-        this.servizioContenuto.AggiungiContenuto(this.punto);
+        this.servizioPuntoGeo.ContienePunto(punto);
+        this.servizioContenuto.AggiungiPunto(this.punto);
         this.servizioComune.AggiungiComune(this.comune);
     }
 }
