@@ -32,7 +32,6 @@ import java.util.Locale;
 public class ComuneController {
 
     private final SecurityAutoConfiguration securityAutoConfiguration;
-    private ComuneService getServizioComune;
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
     /*@Autowired
@@ -98,8 +97,9 @@ public class ComuneController {
 
     }
 
-    @GetMapping("Api/Comune/RicercaComune")
-    public ResponseEntity<RicercaContenutiResponseDTO> RicercaComune(@RequestBody RicercaComuneDTO ricerca){
+    @GetMapping("Api/Comune/VisitaComune")
+    public ResponseEntity<RicercaContenutiResponseDTO> VisitaComune(@RequestParam String ricerca){
+
 
         //TODO rivedere
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -109,17 +109,26 @@ public class ComuneController {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        ControlloPresenzaComune(ricerca.getNome());
+        String comune = ricerca.toUpperCase(Locale.ROOT);
 
-        this.servizioUtente.AggiornaComuneVisitato(idUtente, ricerca.getNome());
+
+
+        ControlloPresenzaComune(comune);
+
+        this.servizioUtente.AggiornaComuneVisitato(idUtente, comune);
 
         RicercaContenutiResponseDTO ricercaComune = new RicercaContenutiResponseDTO();
 
-        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(ricerca.getNome());
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(ricerca.getNome());
-        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(ricerca.getNome());
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(ricerca.getNome());
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(ricerca.getNome(), Ruolo.TURISTA_AUTENTICATO);
+        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
+        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(comune);
+        List<ContestResponseDTO> contest;
+        if(comune.equals(this.servizioUtente.GetUtenteById(idUtente).getComune()))
+            contest = this.servizioCon.GetContestByComuneRuolo(comune, this.servizioUtente.GetUtenteById(idUtente).getRuoloComune());
+        else{
+            contest = this.servizioCon.GetContestByComuneRuolo(comune, Ruolo.TURISTA_AUTENTICATO);
+        }
 
 
         ricercaComune.getContenutiPresenti().put("punti geolocalizzati", puntiGeolocalizzati);
