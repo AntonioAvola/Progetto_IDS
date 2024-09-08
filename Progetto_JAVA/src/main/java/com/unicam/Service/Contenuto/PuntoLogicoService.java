@@ -101,18 +101,6 @@ public class PuntoLogicoService {
         return punti;
     }
 
-    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
-        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
-        punto.getIdUtenteContenutoPreferito().add(idUtente);
-        this.repoPunto.save(punto);
-    }
-
-    public void SegnalaContenuto(String nomeContenuto, long idCreatore) {
-        PuntoLogico punto = this.repoPunto.findLogicoByTitolo(nomeContenuto);
-        punto.setStato(StatoContenuto.SEGNALATO);
-        this.repoPunto.save(punto);
-    }
-
     public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
         if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
             throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +

@@ -95,8 +95,13 @@ public class EventoService {
         return new LuogoDTO(riferimento.getTitolo(), riferimento.getLatitudine(), riferimento.getLongitudine());
     }
 
-    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
-        Evento evento = this.repoEvento.findEventoByTitolo(nomeContenuto);
+    public void AggiungiPreferito(String nomeContenuto, String comune, Long idUtente) {
+        if(!this.repoEvento.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
+        Evento evento = this.repoEvento.findEventoByTitoloAndComune(nomeContenuto, comune);
+        List<Long> utentePreferito = evento.getIdUtenteContenutoPreferito();
+        if(utentePreferito.contains(idUtente))
+            throw new IllegalArgumentException("L'evento è già tra i preferiti");
         evento.getIdUtenteContenutoPreferito().add(idUtente);
         this.repoEvento.save(evento);
     }

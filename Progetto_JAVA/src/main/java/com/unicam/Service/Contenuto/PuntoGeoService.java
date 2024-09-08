@@ -106,14 +106,24 @@ public class PuntoGeoService {
         return punti;
     }
 
-    public void AggiuntiPreferito(String nomeContenuto, Long idUtente) {
-        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitolo(nomeContenuto);
+    public void AggiuntiPreferito(String nomeContenuto, String comune, Long idUtente) {
+        if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
+        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
+        List<Long> utentePreferito = punto.getIdUtenteContenutoPreferito();
+        if(utentePreferito.contains(idUtente))
+            throw new IllegalArgumentException("Il punto è già tra i preferiti");
         punto.getIdUtenteContenutoPreferito().add(idUtente);
         this.repoPunto.save(punto);
     }
 
-    public void SegnalaContenuto(String nomeContenuto, long idCreatore) {
-        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitolo(nomeContenuto);
+    public void SegnalaContenuto(String nomeContenuto, String comune) {
+        if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO)) {
+            if(this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.SEGNALATO))
+                throw new IllegalArgumentException("Il punto è già stato segnalato");
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
+        }
+        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
         punto.setStato(StatoContenuto.SEGNALATO);
         this.repoPunto.save(punto);
     }

@@ -83,11 +83,13 @@ public class AnimatoreController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         ControlloPresenzaComune(comune);
 
         Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
-        //evento.setLuogo(this.servizioPunto.GetPuntoGeoByNomeAndComune(proposta.getNomeLuogo().toUpperCase(Locale.ROOT), comune.toUpperCase(Locale.ROOT)));
         evento.setLuogo(ControlloPresenzaPuntoGeo(proposta.getNomeLuogo(), comune));
         RichiestaAggiuntaEvento richiesta = new RichiestaAggiuntaEvento(servizioEvento, evento);
         richiesta.Execute();
@@ -121,6 +123,10 @@ public class AnimatoreController {
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
+
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         ControllaNomeContest(contest.getTitolo(), contest.getComune());
         RichiestaAggiuntaContest richiesta = new RichiestaAggiuntaContest(servizioContest, contest);
@@ -130,4 +136,7 @@ public class AnimatoreController {
     private void ControllaNomeContest(String titolo, String comune) {
         this.servizioContest.ControllaPresenzaNome(titolo.toUpperCase(Locale.ROOT), comune);
     }
+
+    //TODO da implementare
+    public void EsitoContest(){}
 }

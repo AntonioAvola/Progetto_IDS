@@ -8,6 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -16,16 +19,27 @@ public class DataInitializer implements CommandLineRunner {
 
     private IComuneRepository repoComune;
 
+    private List<String> nomiComuni = new ArrayList<>();
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 
     @Override
     public void run(String... args) throws Exception {
+        nomiComuni.add("CASTELFIDARDO");
+        nomiComuni.add("SANTA VITTORIA");
+        nomiComuni.add("TOLENTINO");
         if(repoUente.count() == 0){
             CreateSuperADMIN();
-            CreateGestoreComune();
-            CreateCuratore();
-            CreateAnimatore();
+            System.out.println("---------------------------------------------------------------------");
+            int i = 1;
+            for(String nome: nomiComuni){
+                CreateGestoreComune(nome, i);
+                CreateCuratore(nome, i);
+                CreateAnimatore(nome, i);
+                System.out.println("---------------------------------------------------------------------");
+                i += 1;
+            }
         }
     }
 
@@ -46,43 +60,43 @@ public class DataInitializer implements CommandLineRunner {
 
     }
 
-    private void CreateGestoreComune(){
+    private void CreateGestoreComune(String comune, int i){
         User GestoreUser = new User();
         GestoreUser.setName("gestore comune");
-        GestoreUser.setUsername("gestore");
-        GestoreUser.setEmail("gestore@gestore.com");
+        GestoreUser.setUsername("gestore"+ i);
+        GestoreUser.setEmail("gestore" + i + "@gestore.com");
         GestoreUser.setPassword(bCryptPasswordEncoder.encode("Gestore111!"));
         GestoreUser.setRuoloComune(Ruolo.COMUNE);
-        GestoreUser.setComune("CASTELFIDARDO");
+        GestoreUser.setComune(comune);
 
         repoUente.save(GestoreUser);
 
         System.out.println(GestoreUser.getComune() + ": RAPPRESENTANTE " + GestoreUser.getRuoloComune() + " --> creato con successo");
     }
 
-    private void CreateCuratore(){
+    private void CreateCuratore(String comune, int i){
 
         User CuratoreUser = new User();
         CuratoreUser.setName("curatore");
-        CuratoreUser.setUsername("curatore");
-        CuratoreUser.setEmail("curatore@curatore.com");
+        CuratoreUser.setUsername("curatore" + i);
+        CuratoreUser.setEmail("curatore" + i + "@curatore.com");
         CuratoreUser.setPassword(bCryptPasswordEncoder.encode("Curatore111!"));
         CuratoreUser.setRuoloComune(Ruolo.CURATORE);
-        CuratoreUser.setComune("CASTELFIDARDO");
+        CuratoreUser.setComune(comune);
 
         repoUente.save(CuratoreUser);
         System.out.println(CuratoreUser.getComune() + ": " + CuratoreUser.getRuoloComune() + " --> creato con successo");
 
     }
 
-    private void CreateAnimatore(){
+    private void CreateAnimatore(String comune, int i){
         User AnimatoreUser = new User();
         AnimatoreUser.setName("animatore");
-        AnimatoreUser.setUsername("animatore");
-        AnimatoreUser.setEmail("animatore@animatore.com");
+        AnimatoreUser.setUsername("animatore" + i);
+        AnimatoreUser.setEmail("animatore" + i + "@animatore.com");
         AnimatoreUser.setPassword(bCryptPasswordEncoder.encode("Animatore111!"));
         AnimatoreUser.setRuoloComune(Ruolo.ANIMATORE);
-        AnimatoreUser.setComune("CASTELFIDARDO");
+        AnimatoreUser.setComune(comune);
 
         repoUente.save(AnimatoreUser);
         System.out.println(AnimatoreUser.getComune() + ": " + AnimatoreUser.getRuoloComune() + " --> creato con successo");

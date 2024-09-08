@@ -130,14 +130,24 @@ public class ItinerarioService {
         return itinerari;
     }
 
-    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
-        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+    public void AggiungiPreferito(String nomeContenuto, String comune, Long idUtente) {
+        if(!this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitoloAndComune(nomeContenuto, comune);
+        List<Long> utentePreferito = itinerario.getIdUtenteContenutoPreferito();
+        if(utentePreferito.contains(idUtente))
+            throw new IllegalArgumentException("L'itinerario è già tra i preferiti");
         itinerario.getIdUtenteContenutoPreferito().add(idUtente);
         this.repoItinerario.save(itinerario);
     }
 
-    public void SegnalaContenuto(String nomeContenuto, long idCreatore) {
-        Itinerario itinerario = this.repoItinerario.findItinerarioByTitolo(nomeContenuto);
+    public void SegnalaContenuto(String nomeContenuto, String comune) {
+        if(!this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO)) {
+            if(this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.SEGNALATO))
+                throw new IllegalArgumentException("L'itinerario è già stato segnalato");
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
+        }
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitoloAndComune(nomeContenuto, comune);
         itinerario.setStato(StatoContenuto.SEGNALATO);
         this.repoItinerario.save(itinerario);
     }

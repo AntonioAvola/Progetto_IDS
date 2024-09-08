@@ -11,7 +11,6 @@ import com.unicam.dto.AggiungiPreferitoDTO;
 import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
-import com.unicam.dto.RicercaComuneDTO;
 import com.unicam.dto.Risposte.ComuneResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -23,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(name = "api/turistaAutenticato")
@@ -77,7 +77,9 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
-    @PostMapping(value = "/aggiuntaPost")
+
+    //TODO da implementare
+    //@PostMapping(value = "/aggiuntaPost")
     public void AggiungiPost(@RequestBody PostTuristaDTO UserFile, @RequestParam("contenutoMultimediale") MultipartFile file) throws IOException {
         /**
          *  TODO REVIEW
@@ -89,21 +91,17 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        String currentRole = userDetails.getRole();
-
         String comune = userDetails.getComune();
 
         /**
          * Antonio, perchè il CONTRIBUTOR dovrebbe aggiungere un post?
          * Comunque il ruolo non viene mai cambiato a TURISTA_AUTENTICATO
          */
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune)
+        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
             throw new IllegalArgumentException("Non hai i permessi per inserire un post");
 
         RichiestaAggiuntaPost aggiunta = new RichiestaAggiuntaPost(servizioPost, servizioUtente, UserFile,this.servizioUtente.GetUtenteById(idUtente), comune);
         aggiunta.Execute();
-        /*post.setStato(StatoContenuto.APPROVATO);
-        servizioPost.AggiungiContenuto(post);*/
     }
 
     @GetMapping("Api/Utente/TuttiIComuni")
@@ -129,25 +127,23 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        String currentRole = userDetails.getRole();
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
-        String comune = userDetails.getComune();
-
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune)
-            throw new IllegalArgumentException("Non hai i permessi per inserire un post");
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
 
         if(preferito.getTipoContenuto().equals("punti geolocalizzati"))
-            this.servicePuntoGeo.AggiuntiPreferito(preferito.getNomeContenuto(), idUtente);
-        else if(preferito.getTipoContenuto().equals("punti logici")
-                || preferito.getTipoContenuto().equals("avvisi")
-                || preferito.getTipoContenuto().equals("punti logici / avvisi"))
-            this.servicePuntoLogico.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
+            this.servicePuntoGeo.AggiuntiPreferito(preferito.getNomeContenuto(), comune.getNome(),  idUtente);
         else if(preferito.getTipoContenuto().equals("itinerari"))
-            this.serviceItinerario.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
+            this.serviceItinerario.AggiungiPreferito(preferito.getNomeContenuto(), comune.getNome(), idUtente);
         else if(preferito.getTipoContenuto().equals("eventi"))
-            this.serviceEv.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
+            this.serviceEv.AggiungiPreferito(preferito.getNomeContenuto(), comune.getNome(), idUtente);
         else if(preferito.getTipoContenuto().equals("contest"))
-            this.serviceCon.AggiungiPreferito(preferito.getNomeContenuto(), idUtente);
+            this.serviceCon.AggiungiPreferito(preferito.getNomeContenuto(), comune.getNome(), idUtente);
+        else if(preferito.getTipoContenuto().equals("punti logici") ||
+                preferito.getTipoContenuto().equals("avvisi") ||
+                preferito.getTipoContenuto().equals("punti logici / avvisi"))
+            throw new IllegalArgumentException("Non è possibile inserire questo tipo di contenuto nei preferiti");
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
@@ -162,21 +158,28 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        String currentRole = userDetails.getRole();
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
-        String comune = userDetails.getComune();
+        String tipoContenuto = segnala.getTipo().toLowerCase(Locale.ROOT);
 
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato() == comune)
-            throw new IllegalArgumentException("Non hai i permessi per inserire un post");
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
 
-        if(segnala.getTipo().toUpperCase().equals("ITINERARIO"))
-            this.serviceItinerario.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
-        else if(segnala.getTipo().toUpperCase().equals("PUNTO GEOLOCALIZZATO"))
-            this.servicePuntoGeo.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
-        else if(segnala.getTipo().toUpperCase().equals("PUNTO LOGICO"))
-            this.servicePuntoLogico.SegnalaContenuto(segnala.getNomeContenuto(), segnala.getIdCreatore());
+        if(tipoContenuto.equals("itinerari"))
+            this.serviceItinerario.SegnalaContenuto(segnala.getNomeContenuto().toUpperCase(Locale.ROOT), comune.getNome());
+        else if(tipoContenuto.equals("punti geolocalizzati"))
+            this.servicePuntoGeo.SegnalaContenuto(segnala.getNomeContenuto().toUpperCase(Locale.ROOT), comune.getNome());
+        else if(tipoContenuto.equals("eventi"))
+            throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto. " +
+                    "Si possono segnalare i punti geolocalizzati e gli itinerari");
+        else if(tipoContenuto.equals("punti logici") ||
+                tipoContenuto.equals("avvisi") ||
+                tipoContenuto.equals("punti logici / avvisi"))
+            throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto. " +
+                    "Si possono segnalare i punti geolocalizzati e gli itinerari");
         else
-            throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto");
+            throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata. " +
+                    "Si possono segnalare i punti geolocalizzati e gli itinerari");
     }
 
     @GetMapping("Api/Turista/TuttiIPreferiti")

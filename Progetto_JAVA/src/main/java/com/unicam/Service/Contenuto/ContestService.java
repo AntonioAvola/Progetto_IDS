@@ -61,8 +61,13 @@ public class ContestService {
         return contests;
     }
 
-    public void AggiungiPreferito(String nomeContenuto, Long idUtente) {
+    public void AggiungiPreferito(String nomeContenuto, String comune, Long idUtente) {
+        if(!this.repoContest.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
+            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
         Contest contest = this.repoContest.findContestByTitolo(nomeContenuto);
+        List<Long> utentePreferito = contest.getIdUtenteContenutoPreferito();
+        if(utentePreferito.contains(idUtente))
+            throw new IllegalArgumentException("Il contest è già tra i preferiti");
         contest.getIdUtenteContenutoPreferito().add(idUtente);
         this.repoContest.save(contest);
     }

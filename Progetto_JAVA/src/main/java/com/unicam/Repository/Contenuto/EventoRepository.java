@@ -22,4 +22,6 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
     boolean existsByTitoloAndComune(String nomeContenuto, String comune);
 
     List<Evento> findEventoByComuneAndStato(String comune, StatoContenuto attesa);
+
+    boolean existsByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto approvato);
 }

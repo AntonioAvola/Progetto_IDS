@@ -82,6 +82,9 @@ public class ComuneController {
         if(!currentRole.equals(Ruolo.COMUNE.name()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         if(this.servizioComune.ContainComune(comune)) {
             List<ComuneResponseDTO> approvati = this.servizioComune.GetComuneByStato(StatoContenuto.APPROVATO);
             for(ComuneResponseDTO comuneTrovato : approvati){
@@ -100,8 +103,6 @@ public class ComuneController {
     @GetMapping("Api/Comune/VisitaComune")
     public ResponseEntity<RicercaContenutiResponseDTO> VisitaComune(@RequestParam String ricerca){
 
-
-        //TODO rivedere
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -111,7 +112,10 @@ public class ComuneController {
 
         String comune = ricerca.toUpperCase(Locale.ROOT);
 
+        String currentRole = userDetails.getRole();
 
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         ControlloPresenzaComune(comune);
 
@@ -155,11 +159,17 @@ public class ComuneController {
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
         String currentRole = userDetails.getRole();
 
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.COMUNE.name()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
@@ -186,6 +196,9 @@ public class ComuneController {
         String comune = userDetails.getComune();
 
         if(!currentRole.equals(Ruolo.COMUNE.name()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         if(contenuto.getTipoContenuto().equals("eventi"))
