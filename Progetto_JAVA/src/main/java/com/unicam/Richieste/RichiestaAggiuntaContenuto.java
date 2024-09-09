@@ -6,8 +6,8 @@ import com.unicam.Model.User;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 
-public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand{
-    private ContenutoService<T> contenutoService;
+public class RichiestaAggiuntaContenuto<T extends Contenuto>{
+    /*private ContenutoService<T> contenutoService;
     private T contenuto;
 
     public RichiestaAggiuntaContenuto(ContenutoService<T> contenutoService,
@@ -20,5 +20,5 @@ public class RichiestaAggiuntaContenuto<T extends Contenuto> implements ICommand
     @Override
     public void Execute() {
         contenutoService.AggiungiContenuto(contenuto);
-    }
+    }*/
 }

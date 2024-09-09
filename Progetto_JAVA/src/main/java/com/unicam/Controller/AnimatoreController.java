@@ -4,7 +4,6 @@ import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaContest;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaEvento;
-import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.ContestService;

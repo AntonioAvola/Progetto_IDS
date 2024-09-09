@@ -4,7 +4,6 @@ import com.unicam.Model.*;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaItinerario;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoGeo;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
-import com.unicam.Richieste.RichiestaAggiuntaContenuto;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.ItinerarioService;
@@ -249,7 +248,7 @@ public class ContributorController {
         //TODO implementare
     }
 
-    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario")
+    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoLogico")
     public void EliminaPuntoLogico(@RequestBody AccettaRifiutaPuntoLogicoDTO contenuto){
 
         ControlliPermessi();
