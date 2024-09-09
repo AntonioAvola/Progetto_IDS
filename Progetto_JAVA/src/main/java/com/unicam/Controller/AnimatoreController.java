@@ -93,6 +93,7 @@ public class AnimatoreController {
         //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servizioEvento.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
+        this.servizioEvento.ControllaPresenzaNome(proposta.getTitolo(), comune);
         Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
         evento.setLuogo(ControlloPresenzaPuntoGeo(proposta.getNomeLuogo(), comune));

@@ -140,7 +140,7 @@ public class EventoService {
     }
 
     public void ControllaPresenzaNome(String titolo, String comune) {
-        if(this.repoEvento.findEventoByComune(comune).contains(titolo))
+        if(this.repoEvento.existsByTitoloAndComune(titolo, comune))
             throw new IllegalArgumentException("Esiste già un evento (accettato o in attesa) con questo nome. " +
                     "Si prega di cambiarlo o essere più specifico/a");
     }

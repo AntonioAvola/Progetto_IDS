@@ -93,7 +93,8 @@ public class ContestService {
             if(contest.getDurata().getFine().isAfter(inizioContest))
                 throw new IllegalArgumentException("Esiste già un contest con questo titolo in quel periodo. Rimonimare il contest");
         }
-        throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
+        if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.ATTESA))
+            throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
     }
 
     public List<ContestResponseDTO> GetContestPreferiti(Long idUtente, String nomeComune, LocalDateTime adesso) {
@@ -110,13 +111,14 @@ public class ContestService {
 
     public void PartecipaContest(String titolo, String comune, boolean partecipo, long idUtente) {
         Contest contest = this.repoContest.findContestByTitoloAndComune(titolo, comune);
-        if(contest.getIdUtenteContenutoPreferito().contains(idUtente))
+        if(contest.getIdPartecipanti().contains(idUtente))
             throw new IllegalArgumentException("Hai già partecipato a questo contest");
-        contest.getIdUtenteContenutoPreferito().add(idUtente);
+        contest.getIdPartecipanti().add(idUtente);
         if(partecipo)
             contest.setVotiFavore(contest.getVotiFavore()+1);
         else
             contest.setVotiContrari(contest.getVotiContrari()+1);
+        this.repoContest.save(contest);
     }
 
     public void ControllaPresenzaNomeApprovato(String titolo, String comune) {

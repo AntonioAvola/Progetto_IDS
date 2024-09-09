@@ -17,11 +17,11 @@ public class PropostaEventoDTO {
     public PropostaEventoDTO( String titolo, String descrizione,
                                         LocalDateTime inizio, LocalDateTime fine,
                                         String nomeLuogo){
-        this.titolo = titolo;
+        this.titolo = titolo.toUpperCase(Locale.ROOT);
         this.descrizione = descrizione;
         this.inizio = inizio;
         this.fine = fine;
-        this.nomeLuogo = nomeLuogo;
+        this.nomeLuogo = nomeLuogo.toUpperCase(Locale.ROOT);
     }
 
 
