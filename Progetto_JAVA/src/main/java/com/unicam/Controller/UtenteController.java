@@ -1,9 +1,9 @@
 package com.unicam.Controller;
 
+import com.unicam.Model.Ruolo;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.UtenteService;
-import com.unicam.dto.EliminaUtenteDTO;
 import com.unicam.dto.Risposte.*;
 import com.unicam.dto.RegistrazioneUtentiDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -61,7 +62,7 @@ public class UtenteController {
         this.servizioCon = servizioCon;
     }
 
-    @PostMapping("/RegistrazioneUtente")
+    @PostMapping("Api/RegistrazioneUtente")
     public ResponseEntity<LoginResponseDTO> Registrazione(@RequestBody RegistrazioneUtentiDTO registrazione){
         LoginResponseDTO login = new LoginResponseDTO();
 
@@ -70,11 +71,13 @@ public class UtenteController {
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
 
+        LocalDateTime adesso = LocalDateTime.now();
+
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(registrazione.getComune());
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(registrazione.getComune());
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(registrazione.getComune());
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(registrazione.getComune());
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole());
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(registrazione.getComune());
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole(), adesso);
 
 
         login.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
@@ -85,7 +88,7 @@ public class UtenteController {
         return ResponseEntity.ok(login);
     }
 
-    @DeleteMapping("/EliminaAccount")
+    @DeleteMapping("Api/Utente/Elimina-Account")
     public void EliminaAccount(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -95,10 +98,11 @@ public class UtenteController {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        this.servizio.EliminaUtente(idUtente);
-    }
+        String currentRole = userDetails.getRole();
 
-    public void PartecipaAlContest(){
-        //TODO implementare
+        if(currentRole.equals(Ruolo.ADMIN.name()) || currentRole.equals(Ruolo.COMUNE.name()))
+            throw new IllegalArgumentException("Non puoi eliminare l'account");
+
+        this.servizio.EliminaUtente(idUtente);
     }
 }

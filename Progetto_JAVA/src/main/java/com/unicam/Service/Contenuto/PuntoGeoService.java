@@ -5,6 +5,7 @@ import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.IComuneRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ComuneService;
+import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,16 +44,12 @@ public class PuntoGeoService {
      *                                      ma con differenti coordinate
      */
     public void AggiungiContenuto(PuntoGeolocalizzato contenuto) {
-        List<PuntoGeolocalizzato> puntiPresenti = this.repoPunto.findByComune(contenuto.getComune());
+        List<PuntoGeolocalizzato> puntiPresenti = this.repoPunto.findAll();
         for (PuntoGeolocalizzato puntoTrovato: puntiPresenti) {
-            if(puntoTrovato.getStato() != StatoContenuto.ATTESA) {
+            if(puntoTrovato.getStato() == StatoContenuto.APPROVATO) {
                 if ((puntoTrovato.getLatitudine().equals(contenuto.getLatitudine()))
                         && (puntoTrovato.getLongitudine().equals(contenuto.getLongitudine())))
                     throw new IllegalArgumentException("Esiste già un punto con quelle coordinate");
-                if((puntoTrovato.getTitolo().equals(contenuto.getTitolo()))
-                        && (puntoTrovato.getComune().equals(contenuto.getComune())))
-                    throw new IllegalArgumentException("Esiste già un punto geolocalizzato con quel nome. " +
-                            "Prova ad essere più specifico/a");
             }
         }
         this.repoPunto.save(contenuto);
@@ -68,27 +65,11 @@ public class PuntoGeoService {
         }
     }
 
-    public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {
-        return this.repoPunto.findGeoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }
-
-    public PuntoGeolocalizzato GetPuntoGeoByNomeAndComune(String nome, String comune) {
-        return this.repoPunto.findGeoByTitoloAndComune(nome, comune);
-    }
-
-    public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
-        List<PuntoGeolocalizzato> punti = new ArrayList<>();
-        for (String nome : nomiPunti) {
-            punti.add(GetPuntoGeoByNome(nome.toUpperCase(Locale.ROOT)));
-        }
-        return punti;
-    }
-
     public List<PuntoGeoResponseDTO> GetPuntiGeoByComune(String comune) {
         List<PuntoGeolocalizzato> puntiPresenti = this.repoPunto.findPuntoGeoByComune(comune);
         List<PuntoGeoResponseDTO> punti = new ArrayList<>();
         for (PuntoGeolocalizzato punto : puntiPresenti) {
-            if (!(punto.getStato() == StatoContenuto.ATTESA))
+            if (punto.getStato() == StatoContenuto.APPROVATO)
                 punti.add(new PuntoGeoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
                         punto.getLatitudine(), punto.getLongitudine(), punto.getAutore().getUsername()));
         }
@@ -132,17 +113,23 @@ public class PuntoGeoService {
         if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
             throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
                     "Si prega di controllare di aver scritto bene il nome e riprovare");
-        List<PuntoGeolocalizzato> punti = this.repoPunto.findByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA);
-        PuntoGeolocalizzato punto = punti.get(0);
-        //punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
-        punti.clear();
-        punti.addAll(this.repoPunto.findByStato(StatoContenuto.ATTESA));
-        punti.remove(punto);
+        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoPunto.delete(punto);
         else{
             punto.setStato(stato);
             this.repoPunto.save(punto);
+            /**
+             * Se il punto non viene rifiutato, mi salvo tutti i punti geolocalizzati che sono in stato di attesa,
+             * levando il punto sottoposto ad accettazione, e se la lista non è vuota (quindi ci sono altri punti
+             * in stato di attesa, anche di altri comuni) eseguo i controlli per verificare se tali putni in attesa
+             * hanno lo stesso nome e/o coordinate del punto che viene accettato e nel caso coincidono, levo il
+             * punto in attesa (non quello accettato) dal database.
+             * Anche nel caso che sia stata fatta richiesta di aggiunta di un comune, se il comune ha le stesse
+             * coordinate del punto accettato sotto altro comune, la richiesta di aggiunta dell'altro comune viene
+             * eliminata dai comuni in attesa
+             */
+            List<PuntoGeolocalizzato> punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
             if(!punti.isEmpty())
                 EliminaDoppioni(punti, punto);
         }
@@ -150,25 +137,30 @@ public class PuntoGeoService {
 
     private void EliminaDoppioni(List<PuntoGeolocalizzato> punti, PuntoGeolocalizzato punto) {
         for(PuntoGeolocalizzato puntoTrovato: punti){
-
             if(puntoTrovato.getLatitudine().equals(punto.getLatitudine()) &&
                     puntoTrovato.getLongitudine().equals(punto.getLongitudine())){
+                /**
+                 * Elimino la richiesta di aggiunta di un comune (in attesa) qualora abbia le stesse coorinate
+                 * del punto che viene approvato sotto comune differente dalla richiesta di aggiunta al sistema.
+                 * Eliminando prima il comune e poi il suo riferimento geolocalizzato
+                 */
                 if(puntoTrovato.getTitolo().equals("COMUNE")){
-                    //Comune comune = this.repoComune.findByNome(puntoTrovato.getComune());
                     this.repoComune.delete(this.repoComune.findByNome(puntoTrovato.getComune()));
                 }
                 this.repoPunto.delete(puntoTrovato);
             }
-
-            else if(puntoTrovato.getTitolo().equals(punto.getTitolo()))
-                this.repoPunto.delete(puntoTrovato);
         }
     }
 
     public void EliminaContenutiAttesaDoppioni(PuntoGeolocalizzato punto) {
         List<PuntoGeolocalizzato> puntiTrovati = new ArrayList<>();
         puntiTrovati.addAll(this.repoPunto.findByLatitudineAndLongitudineAndStato(punto.getLatitudine(), punto.getLongitudine(),StatoContenuto.ATTESA));
-        this.repoPunto.deleteAll(puntiTrovati);
+        //puntiTrovati.addAll(this.repoPunto.findPuntiByTitoloAndComuneAndStato(punto.getTitolo(), punto.getComune(), StatoContenuto.ATTESA));
+        for(PuntoGeolocalizzato puntoTrovato : puntiTrovati){
+            if(punto.getTitolo().equals("COMUNE"))
+                this.repoComune.delete(this.repoComune.findByNome(puntoTrovato.getComune()));
+            this.repoPunto.delete(puntoTrovato);
+        }
     }
 
     public PuntoGeolocalizzato GetPuntoGeoByNomeAndComuneAndStato(String nomePuntoGeo, String comune) {
@@ -209,4 +201,50 @@ public class PuntoGeoService {
     public void AggiungiPunto(PuntoGeolocalizzato punto) {
         this.repoPunto.save(punto);
     }
+
+    public void ControllaPresenzaNome(String titolo, String comune) {
+        if(this.repoPunto.findGeoByTitoloAndComune(titolo, comune) != null)
+            throw new IllegalArgumentException("Esiste già un punto geolocalizzato (accettato, in attesa, o segnalato) con quel nome. " +
+                    "Prova ad essere più specifico/a");
+    }
+
+    public List<PuntoGeoResponseDTO> GetPuntiPreferiti(Long idUtente, String nomeComune) {
+        List<PuntoGeolocalizzato> punti = this.repoPunto.findByComuneAndStato(nomeComune, StatoContenuto.APPROVATO);
+        List<PuntoGeoResponseDTO> puntiPreferiti = new ArrayList<>();
+        for(PuntoGeolocalizzato punto: punti){
+            if(punto.getIdUtenteContenutoPreferito().contains(idUtente))
+                puntiPreferiti.add(new PuntoGeoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
+                        punto.getLatitudine(), punto.getLongitudine(), punto.getAutore().getUsername()));
+        }
+        return puntiPreferiti;
+    }
+
+    public List<PuntoGeoResponseDTO> GetPuntiGeoByAutore(User autore) {
+        List<PuntoGeolocalizzato> punti = this.repoPunto.findByAutore(autore);
+        List<PuntoGeoResponseDTO> puntiPropri = new ArrayList<>();
+        if(punti != null){
+            for(PuntoGeolocalizzato punto: punti){
+                if(punto.getAutore().equals(autore))
+                    puntiPropri.add(new PuntoGeoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
+                            punto.getLatitudine(), punto.getLongitudine(), punto.getAutore().getUsername()));
+            }
+        }
+        return puntiPropri;
+    }
+
+    /*public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {
+        return this.repoPunto.findGeoByTitolo(nome.toUpperCase(Locale.ROOT));
+    }
+
+    public PuntoGeolocalizzato GetPuntoGeoByNomeAndComune(String nome, String comune) {
+        return this.repoPunto.findGeoByTitoloAndComune(nome, comune);
+    }
+
+    public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        for (String nome : nomiPunti) {
+            punti.add(GetPuntoGeoByNome(nome.toUpperCase(Locale.ROOT)));
+        }
+        return punti;
+    }*/
 }

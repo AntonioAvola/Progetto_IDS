@@ -28,10 +28,13 @@ public class Contest extends Contenuto{
     private int votiFavore;
     private int votiContrari;
 
+    private List<Long> idPartecipanti;
+
     public Contest(){
         super();
         this.votiFavore = 0;
         this.votiContrari = 0;
+        this.idPartecipanti = new ArrayList<>();
     }
 
 
@@ -43,19 +46,35 @@ public class Contest extends Contenuto{
         this.partecipanti = partecipanti;
     }
 
-    public int getVotiFavore() {
-        return votiFavore;
-    }
-
-    public int getVotiContrari() {
-        return votiContrari;
-    }
-
     public Tempo getDurata() {
         return durata;
     }
 
     public void setDurata(Tempo durata) {
         this.durata = durata;
+    }
+
+    public List<Long> getIdPartecipanti() {
+        return idPartecipanti;
+    }
+
+    public void setIdPartecipanti(List<Long> idPartecipanti) {
+        this.idPartecipanti = idPartecipanti;
+    }
+
+    public int getVotiFavore() {
+        return votiFavore;
+    }
+
+    public void setVotiFavore(int votiFavore) {
+        this.votiFavore = votiFavore;
+    }
+
+    public int getVotiContrari() {
+        return votiContrari;
+    }
+
+    public void setVotiContrari(int votiContrari) {
+        this.votiContrari = votiContrari;
     }
 }

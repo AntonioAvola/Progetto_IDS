@@ -16,7 +16,7 @@ import java.util.Locale;
 @Service
 public class ContenutoService <T extends Contenuto> {
 
-    private final IContenutoRepository<T> repo;
+    /*private final IContenutoRepository<T> repo;
 
     private final UtenteRepository repoUser;
     private AuthorizationService autorizzazioni = new AuthorizationService();
@@ -202,5 +202,5 @@ public class ContenutoService <T extends Contenuto> {
             }
         }
         return itinerari;
-    }
+    }*/
 }

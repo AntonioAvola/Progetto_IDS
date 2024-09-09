@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(name = "Api/GestorePiattaforma")
@@ -25,25 +26,38 @@ public class GestorePiattaformaController {
     @Autowired
     private ComuneService servizioComune;
 
-    @GetMapping("Api/GestorePiattaforma/RichiesteComuni")
+    @GetMapping("Api/GestorePiattaforma/Richieste-Comuni-In-Attesa")
     public ResponseEntity<List<ComuneResponseDTO>> RicercaRichiesteComune(){
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
-
-        String currentRole = userDetails.getRole();
-
-        if(!currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("Non hai i permessi per l'operazione");
+        ControllaPermessi();
 
         List<ComuneResponseDTO> comuniPresenti = this.servizioComune.GetComuneByStato(StatoContenuto.ATTESA);
         return ResponseEntity.ok(comuniPresenti);
     }
 
-    @PutMapping("Api/GestorePiattaforma/AccettaRifiutaComune")
-    public void AccettaORifiuta(@RequestBody AccettaRifiutaComuneDTO comune){
+    @PutMapping("Api/GestorePiattaforma/Accetta-Comune")
+    public void AccettaComune(/*@RequestBody AccettaRifiutaComuneDTO*/@RequestParam String comune){
 
+        ControllaPermessi();
+        ControllaPresenzaComune(comune.toUpperCase(Locale.ROOT));
+
+        this.servizioComune.AccettaORifiutaComune(comune.toUpperCase(Locale.ROOT), StatoContenuto.APPROVATO);
+    }
+
+    @PutMapping("Api/GestorePiattaforma/Rifiuta-Comune")
+    public void RifiutaComune(@RequestParam String comune){
+
+        ControllaPermessi();
+        ControllaPresenzaComune(comune.toUpperCase(Locale.ROOT));
+
+        this.servizioComune.AccettaORifiutaComune(comune.toUpperCase(Locale.ROOT), StatoContenuto.RIFIUTATO);
+    }
+
+    private void ControllaPresenzaComune(String nomeComune) {
+        this.servizioComune.ContieneComuneAttesa(nomeComune);
+    }
+
+    private void ControllaPermessi() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -52,8 +66,6 @@ public class GestorePiattaformaController {
 
         if(!currentRole.equals(Ruolo.ADMIN.name()))
             throw new IllegalArgumentException("Non hai i permessi per l'operazione");
-
-        this.servizioComune.AccettaORifiutaComune(comune.getNomeComune(), comune.getStato());
     }
 
 }

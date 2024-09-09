@@ -40,7 +40,7 @@ public class EventoService {
     public void AggiungiContenuto(Evento contenuto) {
         List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(contenuto.getComune());
         for(Evento eventoTrovato : eventiPresenti){
-            if(eventoTrovato.getStato() != StatoContenuto.ATTESA && eventoTrovato.getLuogo().equals(contenuto.getLuogo())){
+            if(eventoTrovato.getStato() == StatoContenuto.APPROVATO && eventoTrovato.getLuogo().equals(contenuto.getLuogo())){
                 if((contenuto.getDurata().getInizio().isBefore(eventoTrovato.getDurata().getFine())
                         && contenuto.getDurata().getInizio().isAfter(eventoTrovato.getDurata().getInizio())))
                     throw new IllegalArgumentException("Non è possibile proporre l'evento, dato che è gia stato approvato " +
@@ -54,36 +54,19 @@ public class EventoService {
                     throw new IllegalArgumentException("Non è possibile proporre l'evento, dato che è gia stato approvato " +
                             "un evento che inizia il "+ eventoTrovato.getDurata().getInizio().getDayOfMonth() + " e finisce il " +
                             eventoTrovato.getDurata().getFine().getDayOfMonth());
-                if(eventoTrovato.getTitolo().equals(contenuto.getTitolo()))
-                    throw new IllegalArgumentException("Esiste già un evento con questo nome. Si prega di cambiarlo");
             }
-            if(eventoTrovato.getTitolo().equals(contenuto.getTitolo()))
-                throw new IllegalArgumentException("Esiste già un evento con questo nome. Si prega di cambiarlo");
         }
         this.repoEvento.save(contenuto);
     }
 
-    public void ApprovaContenuto(long id, Evento contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoEvento.save(contenuto);
-        } else {
-            repoEvento.delete(contenuto);
-        }
-    }
-
-    public Evento GetEventoByNome(String nome){
-        return this.repoEvento.findEventoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }
-
-    public List<EventoResponseDTO> GetEventiStatoByComune(String comune) {
+    public List<EventoResponseDTO> GetEventiByComune(String comune) {
         List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(comune);
         List<EventoResponseDTO> eventi = new ArrayList<>();
         for (Evento evento : eventiPresenti) {
-            if (!(evento.getStato() == StatoContenuto.ATTESA)) {
+            if (evento.getStato() == StatoContenuto.APPROVATO) {
                 EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(),
-                        evento.getDescrizione(), evento.getDurata(), evento.getAutore().getUsername());
+                        evento.getDescrizione(), evento.getDurata().getInizio(),
+                        evento.getDurata().getFine(), evento.getAutore().getUsername());
                 nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
                 eventi.add(nuovo);
             }
@@ -106,13 +89,14 @@ public class EventoService {
         this.repoEvento.save(evento);
     }
 
-    public List<EventoResponseDTO> GetEventiStatoByComune(String comune, StatoContenuto stato) {
+    public List<EventoResponseDTO> GetEventiByComune(String comune, StatoContenuto stato) {
         List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(comune);
         List<EventoResponseDTO> eventi = new ArrayList<>();
         for (Evento evento : eventiPresenti) {
             if (evento.getStato() == stato) {
                 EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(),
-                        evento.getDescrizione(), evento.getDurata(), evento.getAutore().getUsername());
+                        evento.getDescrizione(), evento.getDurata().getInizio(), evento.getDurata().getFine(),
+                        evento.getAutore().getUsername());
                 nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
                 eventi.add(nuovo);
             }
@@ -130,29 +114,60 @@ public class EventoService {
         else{
             evento.setStato(stato);
             this.repoEvento.save(evento);
-            EliminaProposteEventiCheSiAccavallano(evento);
+            List<Evento> eventiAttesa = this.repoEvento.findEventoByComuneAndStato(evento.getComune(), StatoContenuto.ATTESA);
+            if(!eventiAttesa.isEmpty())
+                EliminaProposteEventiCheSiAccavallano(eventiAttesa, evento);
         }
     }
 
-    private void EliminaProposteEventiCheSiAccavallano(Evento evento) {
-        List<Evento> eventiAttesa = this.repoEvento.findEventoByComuneAndStato(evento.getComune(), StatoContenuto.ATTESA);
-        if(eventiAttesa != null){
-            for(Evento eventoTrovato : eventiAttesa){
-                if(eventoTrovato.getLuogo().equals(evento.getLuogo())){
-                    if((eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getFine())
-                            && eventoTrovato.getDurata().getInizio().isAfter(evento.getDurata().getInizio())))
-                        this.repoEvento.delete(eventoTrovato);
-                    if(eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getInizio())
-                            && eventoTrovato.getDurata().getFine().isBefore(evento.getDurata().getFine()))
-                        this.repoEvento.delete(eventoTrovato);
-                    if(eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getInizio())
-                            && eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getFine()))
-                        this.repoEvento.delete(eventoTrovato);
-                    if(eventoTrovato.getDurata().getInizio().isEqual(evento.getDurata().getInizio())
-                            || eventoTrovato.getDurata().getFine().isEqual(evento.getDurata().getFine()))
-                        this.repoEvento.delete(eventoTrovato);
-                }
+    private void EliminaProposteEventiCheSiAccavallano(List<Evento> eventiAttesa, Evento evento) {
+        for(Evento eventoTrovato : eventiAttesa){
+            if(eventoTrovato.getLuogo().equals(evento.getLuogo())){
+                if((eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getFine())
+                        && eventoTrovato.getDurata().getInizio().isAfter(evento.getDurata().getInizio())))
+                    this.repoEvento.delete(eventoTrovato);
+                if(eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getInizio())
+                        && eventoTrovato.getDurata().getFine().isBefore(evento.getDurata().getFine()))
+                    this.repoEvento.delete(eventoTrovato);
+                if(eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getInizio())
+                        && eventoTrovato.getDurata().getFine().isAfter(evento.getDurata().getFine()))
+                    this.repoEvento.delete(eventoTrovato);
+                if(eventoTrovato.getDurata().getInizio().isEqual(evento.getDurata().getInizio())
+                        || eventoTrovato.getDurata().getFine().isEqual(evento.getDurata().getFine()))
+                    this.repoEvento.delete(eventoTrovato);
             }
         }
     }
+
+    public void ControllaPresenzaNome(String titolo, String comune) {
+        if(this.repoEvento.findEventoByComune(comune).contains(titolo))
+            throw new IllegalArgumentException("Esiste già un evento (accettato o in attesa) con questo nome. " +
+                    "Si prega di cambiarlo o essere più specifico/a");
+    }
+
+    public List<EventoResponseDTO> GetEventiPreferiti(Long idUtente, String nomeComune) {
+        List<Evento> eventi = this.repoEvento.findEventoByComuneAndStato(nomeComune, StatoContenuto.APPROVATO);
+        List<EventoResponseDTO> eventiPreferiti = new ArrayList<>();
+        for(Evento evento: eventi){
+            if(evento.getIdUtenteContenutoPreferito().contains(idUtente))
+                eventiPreferiti.add(new EventoResponseDTO(evento.getTitolo(), evento.getDescrizione(),
+                        evento.getDurata().getInizio(), evento.getDurata().getFine(),
+                        evento.getAutore().getUsername()));
+        }
+        return eventiPreferiti;
+    }
+
+    /*public void ApprovaContenuto(long id, Evento contenuto, StatoContenuto nuovoStato) {
+        User user = repoUtente.getById(id);
+        if (nuovoStato == StatoContenuto.APPROVATO) {
+            contenuto.setStato(nuovoStato);
+            repoEvento.save(contenuto);
+        } else {
+            repoEvento.delete(contenuto);
+        }
+    }
+
+    public Evento GetEventoByNome(String nome){
+        return this.repoEvento.findEventoByTitolo(nome.toUpperCase(Locale.ROOT));
+    }*/
 }

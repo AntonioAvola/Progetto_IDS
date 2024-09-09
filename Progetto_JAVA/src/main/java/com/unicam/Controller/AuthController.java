@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -58,11 +59,13 @@ public class AuthController {
 
         String comune = this.servizioUtente.GetComuneByUsername(loginRequest.getUsername());
 
+        LocalDateTime adesso = LocalDateTime.now();
+
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiStatoByComune(comune);
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, risposta.getRole());
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune);
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, risposta.getRole(), adesso);
 
         risposta.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
         risposta.getContenutiComune().put("punti logici / avvisi", puntiLogici);

@@ -2,18 +2,20 @@ package com.unicam.dto.Risposte;
 
 import com.unicam.Model.Tempo;
 
+import java.time.LocalDateTime;
+
 public class ContestResponseDTO {
 
     private String nomeItinerario;
     private String descrizione;
-    private Tempo durata;
+    private LocalDateTime fine;
     private String autore;
 
     public ContestResponseDTO(String nomeItinerario, String descrizione,
-                              Tempo durata, String autore){
+                              LocalDateTime fine, String autore){
         this.nomeItinerario = nomeItinerario;
         this.descrizione = descrizione;
-        this.durata = durata;
+        this.fine = fine;
         this.autore = autore;
     }
 
@@ -25,8 +27,8 @@ public class ContestResponseDTO {
         return descrizione;
     }
 
-    public Tempo getDurata() {
-        return durata;
+    public LocalDateTime getFine() {
+        return fine;
     }
 
     public String getAutore() {

@@ -31,7 +31,6 @@ public class UtenteService implements UserDetailsService {
     private final ItinerarioRepository repoIt;
     private final EventoRepository repoEv;
     private final ContestRepository repoCon;
-    private final PostRepository repoPost;
 
 
     private JwtTokenProvider tokenProvider = new JwtTokenProvider();
@@ -42,15 +41,13 @@ public class UtenteService implements UserDetailsService {
                          PuntoLogicoRepository repoLogico,
                          ItinerarioRepository repoIt,
                          EventoRepository repoEv,
-                         ContestRepository repoCon,
-                         PostRepository repoPost){
+                         ContestRepository repoCon){
         this.repository = repo;
         this.repoGeo = repoGeo;
         this.repoLogico = repoLogico;
         this.repoIt = repoIt;
         this.repoEv = repoEv;
         this.repoCon = repoCon;
-        this.repoPost = repoPost;
     }
 
     public String RegistrazioneUtente(RegistrazioneUtentiDTO registrazione){
@@ -99,14 +96,21 @@ public class UtenteService implements UserDetailsService {
         EliminaEventi(this.repository.getById(idUtente));
         EliminaContest(this.repository.getById(idUtente));
         EliminaPuntiGeo(this.repository.getById(idUtente));
-        EliminaPost(this.repository.getById(idUtente));
+        AggiornaItinerari(this.repoIt.findItinerarioByComune(this.repository.getById(idUtente).getComune()), idUtente);
         this.repository.deleteById(idUtente);
     }
 
-    private void EliminaPost(User user) {
-        List<PostTurista> postPresenti = this.repoPost.findByAutore(user);
-        for (PostTurista post: postPresenti) {
-            this.repoPost.delete(post);
+    private void AggiornaItinerari(List<Itinerario> itinerari, long idUtente) {
+        List<PuntoGeolocalizzato> punti = new ArrayList<>();
+        for(Itinerario itinerario : itinerari){
+            punti.addAll(itinerario.getPuntiDiInteresse());
+            for(PuntoGeolocalizzato punto : punti){
+                if(punto.getAutore().getId() == idUtente){
+                    punti.remove(punto);
+                }
+            }
+            itinerario.setPuntiDiInteresse(punti);
+            this.repoIt.save(itinerario);
         }
     }
 

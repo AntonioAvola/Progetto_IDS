@@ -12,9 +12,12 @@ import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.Contenuto.PuntoLogicoService;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;
 import com.unicam.dto.ItinerarioDTO;
+import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
 import com.unicam.dto.PuntoGeoDTO;
 import com.unicam.dto.PuntoLogicoDTO;
+import com.unicam.dto.Risposte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * I metodi di questa classe devono poter essere utilizzati da:
@@ -34,48 +38,26 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(name = "Api/contributor")
-public class ContributorController<T extends Contenuto> {
+public class ContributorController {
 
     private final SecurityAutoConfiguration securityAutoConfiguration;
-    private UtenteService serviceUtente;
-    /*private ContenutoService<Itinerario> serviceItinerario;
-    private ContenutoService<PuntoGeolocalizzato> servicePuntoGeo;
-    private ContenutoService<PuntoLogico> servicePuntoLogico;
-
     @Autowired
-    public ContributorController(ContenutoService<Itinerario> serviceIt,
-                                 ContenutoService<PuntoGeolocalizzato> servicePG,
-                                 ContenutoService<PuntoLogico> servicePL,
-                                 UtenteService servizioUtente,
-                                 SecurityAutoConfiguration securityAutoConfiguration){
-        this.serviceItinerario = serviceIt;
-        this.servicePuntoGeo = servicePG;
-        this.servicePuntoLogico = servicePL;
-        this.serviceUtente = servizioUtente;
-        this.securityAutoConfiguration = securityAutoConfiguration;
-    }*/
-
+    private UtenteService serviceUtente;
+    @Autowired
     private ItinerarioService serviceItinerario;
+    @Autowired
     private PuntoGeoService servicePuntoGeo;
+    @Autowired
     private PuntoLogicoService servicePuntoLogico;
     @Autowired
     private ComuneService serviceComune;
 
     @Autowired
-    public ContributorController(ItinerarioService serviceIt,
-                                 PuntoGeoService servicePG,
-                                 PuntoLogicoService servicePL,
-                                 UtenteService servizioUtente,
-                                 SecurityAutoConfiguration securityAutoConfiguration){
-        this.serviceItinerario = serviceIt;
-        this.servicePuntoGeo = servicePG;
-        this.servicePuntoLogico = servicePL;
-        this.serviceUtente = servizioUtente;
+    public ContributorController(SecurityAutoConfiguration securityAutoConfiguration){
         this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
-
-    @PostMapping("Api/Contributor/AggiungiItinerario")
+    @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore/Aggiungi-Itinerario")
     public ResponseEntity<String> AggiungiItinerario(@RequestBody ItinerarioDTO richiesta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -89,16 +71,20 @@ public class ContributorController<T extends Contenuto> {
 
         String comune = userDetails.getComune();
 
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
                 !currentRole.equals(Ruolo.CURATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
-
         ControlloPresenzaComune(comune);
+
+        //controllo che non esista già un itinerario nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
+        this.serviceItinerario.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
         Itinerario itinerario = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
         itinerario.setPuntiDiInteresse(ControllaPuntiDiInteresse(richiesta.getNomiPunti(), comune));
@@ -125,8 +111,7 @@ public class ContributorController<T extends Contenuto> {
             throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
     }
 
-    @PostMapping("Api/Contributor/AggiungiPuntoGeo")
-
+    @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore-Animatore/Aggiungi-PuntoGeo")
     public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoDTO richiesta){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -139,6 +124,10 @@ public class ContributorController<T extends Contenuto> {
 
         String comune = userDetails.getComune();
 
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
                 !currentRole.equals(Ruolo.CURATORE.name()) &&
@@ -146,12 +135,13 @@ public class ContributorController<T extends Contenuto> {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
-
         ControlloPresenzaComune(comune);
 
+        //controllo che non esista già un punto logico nel database con lo stesso luogo (indipendentemente dallo stato del contenuto)
+        this.servicePuntoGeo.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), comune);
+
         PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
+
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaPuntoGeo aggiunta = new RichiestaAggiuntaPuntoGeo(servicePuntoGeo, punto);
             aggiunta.Execute();
@@ -163,7 +153,7 @@ public class ContributorController<T extends Contenuto> {
         }
     }
 
-    @PostMapping("Api/Contributor/aggiungiPuntoLogico")
+    @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore/Aggiungi-PuntoLogico")
     public void AggiungiPuntoLogico(@RequestBody PuntoLogicoDTO richiesta){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -177,20 +167,23 @@ public class ContributorController<T extends Contenuto> {
 
         String comune = userDetails.getComune();
 
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
         if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
                 !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
                 !currentRole.equals(Ruolo.CURATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
-
         ControlloPresenzaComune(comune);
 
+        //controllo che non esista già un punto geolocalizzato nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
+        this.servicePuntoLogico.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), richiesta.getNomePuntoGeo(), comune);
 
         PuntoLogico punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
-        punto.setRiferimento(ControlloPresenzaPuntoGeo(richiesta.getNomePuntoGeo(), comune));
+        punto.setRiferimento(this.servicePuntoGeo.GetPuntoGeoByNomeAndComuneAndStato(richiesta.getNomePuntoGeo(), comune));
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaPuntoLogico aggiunta = new RichiestaAggiuntaPuntoLogico(servicePuntoLogico, punto);
             aggiunta.Execute();
@@ -202,15 +195,89 @@ public class ContributorController<T extends Contenuto> {
         }
     }
 
-    private PuntoGeolocalizzato ControlloPresenzaPuntoGeo(String nomePuntoGeo, String comune) {
-        return this.servicePuntoGeo.GetPuntoGeoByNomeAndComuneAndStato(nomePuntoGeo, comune);
+
+    public ResponseEntity<RicercaContenutiResponseDTO> PropriContenutiApprovati(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
+                !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
+                !currentRole.equals(Ruolo.CURATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        ControlloPresenzaComune(comune);
+
+        User autore = this.serviceUtente.GetUtenteById(idUtente);
+        RicercaContenutiResponseDTO propriContenutiApprovati = new RicercaContenutiResponseDTO();
+
+        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servicePuntoGeo.GetPuntiGeoByAutore(autore);
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servicePuntoLogico.GetPuntiLogiciByAutore(autore);
+        List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerarioByAutore(autore);
+        //List<EventoResponseDTO> eventi = this.s.GetEventiByComune(registrazione.getComune());
+        //List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole(), adesso);
+
+
+        propriContenutiApprovati.getContenutiPresenti().put("punti geolocalizzati", puntiGeolocalizzati);
+        propriContenutiApprovati.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
+        propriContenutiApprovati.getContenutiPresenti().put("itinerari", itinerari);
+        //login.getContenutiComune().put("eventi", eventi);
+        //login.getContenutiComune().put("contest", contest);
+
+        return ResponseEntity.ok(propriContenutiApprovati);
     }
 
-    public void ModificaContenuto(){}
+    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario")
+    public void EliminaGeoItineraio(@RequestBody ContenutoAttesaDTO contenuto){
 
-    public void EliminaContenuto(){
+        ControlliPermessi();
+
+
         //TODO implementare
     }
 
+    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario")
+    public void EliminaPuntoLogico(@RequestBody AccettaRifiutaPuntoLogicoDTO contenuto){
+
+        ControlliPermessi();
+
+
+        //TODO implementare
+    }
+
+    private String ControlliPermessi() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new IllegalArgumentException("Non hai i permessi per accettare o rifiutare contenuti");
+        return comune;
+    }
 
 }

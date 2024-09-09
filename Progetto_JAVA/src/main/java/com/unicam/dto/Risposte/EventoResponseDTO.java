@@ -2,6 +2,7 @@ package com.unicam.dto.Risposte;
 
 import com.unicam.Model.Tempo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class EventoResponseDTO {
@@ -9,14 +10,17 @@ public class EventoResponseDTO {
     private String nomeItinerario;
     private String descrizione;
     private LuogoDTO luogo;
-    private Tempo durata;
+    private LocalDateTime inizio;
+    private LocalDateTime fine;
     private String autore;
 
     public EventoResponseDTO(String nomeItinerario, String descrizione,
-                             Tempo durata, String autore){
+                             LocalDateTime inizio, LocalDateTime fine,
+                             String autore){
         this.nomeItinerario = nomeItinerario;
         this.descrizione = descrizione;
-        this.durata = durata;
+        this.inizio = inizio;
+        this.fine = fine;
         this.autore = autore;
     }
 
@@ -36,11 +40,16 @@ public class EventoResponseDTO {
         this.luogo = luogo;
     }
 
-    public Tempo getDurata() {
-        return durata;
-    }
 
     public String getAutore() {
         return autore;
+    }
+
+    public LocalDateTime getInizio() {
+        return inizio;
+    }
+
+    public LocalDateTime getFine() {
+        return fine;
     }
 }

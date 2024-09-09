@@ -22,4 +22,6 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     Contest findContestByTitoloAndComune(String nomeContenuto, String comune);
 
     boolean existsByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto approvato);
+
+    List<Contest> findByComuneAndStato(String nomeComune, StatoContenuto approvato);
 }

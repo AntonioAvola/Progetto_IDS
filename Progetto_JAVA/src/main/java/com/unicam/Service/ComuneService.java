@@ -60,9 +60,6 @@ public class ComuneService {
     }
 
     public void AccettaORifiutaComune(String nomeComune, StatoContenuto stato) {
-        if(!this.repository.existsByNome(nomeComune))
-            throw new NullPointerException("Non esiste la richiesta per il comune inserito. " +
-                    "Si prega di controllare di aver scritto il comune in maniera corretta");
         Comune comune = this.repository.findByNome(nomeComune);
         PuntoGeolocalizzato punto = this.repositoryPunto.findGeoByTitoloAndComune("COMUNE", nomeComune);
         if(stato == StatoContenuto.RIFIUTATO) {
@@ -85,5 +82,15 @@ public class ComuneService {
     public List<ComuneResponseDTO> GetAllPresenti() {
         List<Comune> comuni = this.repository.findAllByStatoRichiesta(StatoContenuto.APPROVATO);
         return ConvertiInResponse(comuni);
+    }
+
+    public void ContieneComuneAttesa(String nomeComune) {
+        if(!this.repository.existsByNome(nomeComune))
+            throw new IllegalArgumentException("Non è stata fatta la richiesta di aggiunta del comune");
+        List<Comune> comuni = this.repository.findAllByStatoRichiesta(StatoContenuto.APPROVATO);
+        for(Comune comune : comuni) {
+            if(comune.getNome().equals(nomeComune))
+                throw new IllegalArgumentException("Il comune è già stato approvato");
+        }
     }
 }

@@ -15,7 +15,6 @@ public class ItinerarioResponseDTO {
                                  String autore){
         this.nomeItinerario = nomeItinerario;
         this.descrizione = descrizione;
-        this.luoghi = luoghi;
         this.autore = autore;
     }
 

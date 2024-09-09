@@ -11,7 +11,7 @@ import com.unicam.dto.AggiungiPreferitoDTO;
 import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
-import com.unicam.dto.Risposte.ComuneResponseDTO;
+import com.unicam.dto.Risposte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -77,34 +78,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         this.securityAutoConfiguration = securityAutoConfiguration;
     }
 
-
-    //TODO da implementare
-    //@PostMapping(value = "/aggiuntaPost")
-    public void AggiungiPost(@RequestBody PostTuristaDTO UserFile, @RequestParam("contenutoMultimediale") MultipartFile file) throws IOException {
-        /**
-         *  TODO REVIEW
-         */
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
-
-        String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);
-
-        String comune = userDetails.getComune();
-
-        /**
-         * Antonio, perchè il CONTRIBUTOR dovrebbe aggiungere un post?
-         * Comunque il ruolo non viene mai cambiato a TURISTA_AUTENTICATO
-         */
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
-            throw new IllegalArgumentException("Non hai i permessi per inserire un post");
-
-        RichiestaAggiuntaPost aggiunta = new RichiestaAggiuntaPost(servizioPost, servizioUtente, UserFile,this.servizioUtente.GetUtenteById(idUtente), comune);
-        aggiunta.Execute();
-    }
-
-    @GetMapping("Api/Utente/TuttiIComuni")
+    @GetMapping("Api/Utente/Tutti-I-Comuni-Presenti-Nel-Sistema")
     public ResponseEntity<List<ComuneResponseDTO>> RicercaComuniPresenti(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -117,7 +91,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
 
     }
 
-    @PutMapping("Api/Turista/AggiungiAPreferiti")
+    @PutMapping("Api/Turista/Aggiungi-A-Preferiti")
     public void AggiungiPreferito(@RequestBody AggiungiPreferitoDTO preferito){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -148,7 +122,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
 
-    @PutMapping("/segnalaContenuto")
+    @PutMapping("Api/Turista/Segnala-PuntoGeo-Itinerario")
     public void SegnalaContenuto(@RequestBody SegnalazioneProvvisoriaDTO segnala){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -182,8 +156,75 @@ public class TuristaAutenticatoController<T extends Contenuto> {
                     "Si possono segnalare i punti geolocalizzati e gli itinerari");
     }
 
-    @GetMapping("Api/Turista/TuttiIPreferiti")
-    public void TuttiMieiPreferiti(){
-        //TODO
+    @GetMapping("Api/Turista/Tutti-I-Miei-Preferiti")
+    public ResponseEntity<RicercaContenutiResponseDTO> TuttiMieiPreferiti(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComune());
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune.getNome()))
+            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+
+        RicercaContenutiResponseDTO preferiti = new RicercaContenutiResponseDTO();
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        List<PuntoGeoResponseDTO> puntiGeo = this.servicePuntoGeo.GetPuntiPreferiti(idUtente, comune.getNome());
+        List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerariPreferiti(idUtente, comune.getNome());
+        List<EventoResponseDTO> eventi = this.serviceEv.GetEventiPreferiti(idUtente, comune.getNome());
+        List<ContestResponseDTO> contest = this.serviceCon.GetContestPreferiti(idUtente, comune.getNome(), adesso);
+
+        preferiti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
+        preferiti.getContenutiPresenti().put("itinerari", itinerari);
+        preferiti.getContenutiPresenti().put("eventi", eventi);
+        preferiti.getContenutiPresenti().put("contest", contest);
+
+        return ResponseEntity.ok(preferiti);
+    }
+
+    @PutMapping("Api/Partecipante-Contest/Voto-Favore")
+    public void VotoAFavore(@RequestParam String nomeContest){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+
+        this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
+
+        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),true, idUtente);
+    }
+
+    @PutMapping("Api/Partecipante-Contest/Voto-Contrario")
+    public void VotoContrario(@RequestParam String nomeContest){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+
+        this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
+
+        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),false, idUtente);
     }
 }

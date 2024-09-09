@@ -6,8 +6,8 @@ import java.util.Locale;
 
 public class SegnalazioneProvvisoriaDTO<T extends Contenuto> {
 
-    private String nomeContenuto;
     private String tipo;
+    private String nomeContenuto;
 
     public SegnalazioneProvvisoriaDTO(String tipoContenuto,
                                       String nomeContenuto){
