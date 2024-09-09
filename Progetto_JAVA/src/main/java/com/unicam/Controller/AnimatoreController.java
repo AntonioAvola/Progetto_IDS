@@ -13,6 +13,8 @@ import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.PropostaContestDTO;
 import com.unicam.dto.PropostaEventoDTO;
+import com.unicam.dto.Risposte.ContestVotiDTO;
+import com.unicam.dto.Risposte.RicercaContenutiResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -153,8 +155,8 @@ public class AnimatoreController {
     }
 
 
-    @GetMapping("Api/Animatore/Esiti-Contest-Terminati")
-    public ResponseEntity<List<Contest>> EsitoContestTerminati(){
+    @GetMapping("Api/Animatore/Andamento-Contest")
+    public ResponseEntity<RicercaContenutiResponseDTO> EsitoContestTerminati(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -177,8 +179,14 @@ public class AnimatoreController {
 
         LocalDateTime adesso = LocalDateTime.now();
 
-        List<Contest> contests = this.servizioContest.GetContestByComuneTempo(comune, adesso);
+        RicercaContenutiResponseDTO contestConVoti = new RicercaContenutiResponseDTO();
 
-        return ResponseEntity.ok(contests);
+        List<ContestVotiDTO> contestInCorso = this.servizioContest.GetContestByComuneTempo(comune, adesso, false);
+        List<ContestVotiDTO> contestsFinti = this.servizioContest.GetContestByComuneTempo(comune, adesso, true);
+
+        contestConVoti.getContenutiPresenti().put("contest terminati:", contestsFinti);
+        contestConVoti.getContenutiPresenti().put("contest in corso:", contestInCorso);
+
+        return ResponseEntity.ok(contestConVoti);
     }
 }

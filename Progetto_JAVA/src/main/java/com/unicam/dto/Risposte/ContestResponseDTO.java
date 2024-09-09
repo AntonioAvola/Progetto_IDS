@@ -1,26 +1,24 @@
 package com.unicam.dto.Risposte;
 
-import com.unicam.Model.Tempo;
-
 import java.time.LocalDateTime;
 
 public class ContestResponseDTO {
 
-    private String nomeItinerario;
+    private String nomeContest;
     private String descrizione;
     private LocalDateTime fine;
     private String autore;
 
     public ContestResponseDTO(String nomeItinerario, String descrizione,
                               LocalDateTime fine, String autore){
-        this.nomeItinerario = nomeItinerario;
+        this.nomeContest = nomeItinerario;
         this.descrizione = descrizione;
         this.fine = fine;
         this.autore = autore;
     }
 
-    public String getNomeItinerario() {
-        return nomeItinerario;
+    public String getNomeContest() {
+        return nomeContest;
     }
 
     public String getDescrizione() {

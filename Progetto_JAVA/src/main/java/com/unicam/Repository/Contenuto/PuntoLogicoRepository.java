@@ -36,4 +36,6 @@ public interface PuntoLogicoRepository extends JpaRepository<PuntoLogico, Long> 
     List<PuntoLogico> findByComuneAndStato(String comune, StatoContenuto attesa);
 
     boolean existsByTitoloAndComuneAndRiferimento(String titolo, String comune, PuntoGeolocalizzato luogo);
+
+    List<PuntoLogico> findByRiferimento(PuntoGeolocalizzato punto);
 }

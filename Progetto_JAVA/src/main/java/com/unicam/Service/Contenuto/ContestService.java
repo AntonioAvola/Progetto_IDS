@@ -4,6 +4,7 @@ import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.ContestRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.ContestResponseDTO;
+import com.unicam.dto.Risposte.ContestVotiDTO;
 import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.stereotype.Service;
 
@@ -127,13 +128,22 @@ public class ContestService {
                     "Assicurarsi di aver inserito correttamente il nome del oontest");
     }
 
-    public List<Contest> GetContestByComuneTempo(String comune, LocalDateTime adesso) {
+    public List<ContestVotiDTO> GetContestByComuneTempo(String comune, LocalDateTime adesso, boolean finito) {
         List<Contest> contests = this.repoContest.findByComuneAndStato(comune, StatoContenuto.APPROVATO);
+        List<ContestVotiDTO> restituiti = new ArrayList<>();
         for(Contest contest: contests){
-            if(contest.getDurata().getFine().isAfter(adesso))
-                contests.remove(contest);
+            if(finito == true) {
+                if (contest.getDurata().getFine().isBefore(adesso))
+                    restituiti.add(new ContestVotiDTO(contest.getTitolo(), contest.getDescrizione(),
+                            contest.getDurata().getFine(), contest.getVotiFavore(), contest.getVotiContrari()));
+            }
+            else {
+                if (contest.getDurata().getFine().isAfter(adesso) && contest.getDurata().getInizio().isBefore(adesso))
+                    restituiti.add(new ContestVotiDTO(contest.getTitolo(), contest.getDescrizione(),
+                            contest.getDurata().getFine(), contest.getVotiFavore(), contest.getVotiContrari()));
+            }
         }
-        return contests;
+        return restituiti;
     }
 
     /*public void ApprovaContenuto(long id, Contest contenuto, StatoContenuto nuovoStato) {

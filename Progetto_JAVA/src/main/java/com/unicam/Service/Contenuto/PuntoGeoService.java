@@ -1,7 +1,10 @@
 package com.unicam.Service.Contenuto;
 
 import com.unicam.Model.*;
+import com.unicam.Repository.Contenuto.EventoRepository;
+import com.unicam.Repository.Contenuto.ItinerarioRepository;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
+import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.IComuneRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ComuneService;
@@ -20,14 +23,23 @@ public class PuntoGeoService {
     private final IComuneRepository repoComune;
     private final PuntoGeoRepository repoPunto;
     private final UtenteRepository repoUtente;
+    private final PuntoLogicoRepository repoLogico;
+    private final EventoRepository repoEv;
+    private final ItinerarioRepository repoIti;
 
     @Autowired
     public PuntoGeoService(PuntoGeoRepository repoPunto,
                            UtenteRepository repoUtente,
-                           IComuneRepository repoComune){
+                           IComuneRepository repoComune,
+                           PuntoLogicoRepository repoLogico,
+                           EventoRepository repoEv,
+                           ItinerarioRepository repoIti){
         this.repoPunto = repoPunto;
         this.repoUtente = repoUtente;
         this.repoComune = repoComune;
+        this.repoLogico = repoLogico;
+        this.repoEv = repoEv;
+        this.repoIti = repoIti;
     }
 
     /**
@@ -111,11 +123,15 @@ public class PuntoGeoService {
 
     public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
         if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
-            throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
-                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+            if(!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.SEGNALATO))
+                throw new IllegalArgumentException("Il punto non è presente tra le richieste o segnalazioni. " +
+                        "Si prega di controllare di aver scritto bene il nome e riprovare");
         PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
-        if(stato == StatoContenuto.RIFIUTATO)
+        if(stato == StatoContenuto.RIFIUTATO) {
+            if (punto.getStato().equals(StatoContenuto.SEGNALATO))
+                EliminaDaItinerariLogiciEventi(punto);
             this.repoPunto.delete(punto);
+        }
         else{
             punto.setStato(stato);
             this.repoPunto.save(punto);
@@ -132,6 +148,38 @@ public class PuntoGeoService {
             List<PuntoGeolocalizzato> punti = this.repoPunto.findByComuneAndStato(comune, StatoContenuto.ATTESA);
             if(!punti.isEmpty())
                 EliminaDoppioni(punti, punto);
+        }
+    }
+
+    private void EliminaDaItinerariLogiciEventi(PuntoGeolocalizzato punto) {
+        EliminaDaItinerari(punto);
+        EliminaEventi(punto);
+        EliminaLogici(punto);
+    }
+
+    private void EliminaLogici(PuntoGeolocalizzato punto) {
+        List<PuntoLogico> punti = this.repoLogico.findByRiferimento(punto);
+        this.repoLogico.deleteAll(punti);
+    }
+
+    private void EliminaEventi(PuntoGeolocalizzato punto) {
+        List<Evento> eventi = this.repoEv.findEventoByComune(punto.getComune());
+        for(Evento evento : eventi){
+            if(evento.getLuogo().equals(punto)){
+                this.repoEv.delete(evento);
+            }
+        }
+    }
+
+    private void EliminaDaItinerari(PuntoGeolocalizzato punto) {
+        List<Itinerario> itinerari = this.repoIti.findItinerarioByComune(punto.getComune());
+        for(Itinerario itinerario : itinerari){
+            List<PuntoGeolocalizzato> punti = itinerario.getPuntiDiInteresse();
+            if(punti.contains(punto)) {
+                punti.remove(punto);
+                itinerario.setPuntiDiInteresse(punti);
+                this.repoIti.save(itinerario);
+            }
         }
     }
 

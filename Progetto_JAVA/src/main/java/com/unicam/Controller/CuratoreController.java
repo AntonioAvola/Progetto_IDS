@@ -75,13 +75,10 @@ public class CuratoreController {
     private RicercaContenutiResponseDTO ContenutiTrovati(String comune, StatoContenuto stato) {
         RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
         List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoStatoByComune(comune, stato);
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciStatoByComune(comune, stato);
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariStatoByComune(comune, stato);
 
         contenuti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
-        contenuti.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
         contenuti.getContenutiPresenti().put("itinerari", itinerari);
-        //TODO da aggiungere i post del turista autenticato
         return contenuti;
     }
 
@@ -109,8 +106,8 @@ public class CuratoreController {
         return ResponseEntity.ok(ContenutiTrovati(comune, StatoContenuto.SEGNALATO));
     }
 
-    @PutMapping("Api/Curatore/Accetta-PuntiGeo-Itinerari")
-    public void AccettaContenuto(@RequestBody ContenutoAttesaDTO contenuto){
+    @PutMapping("Api/Curatore/Accetta-PuntiGeo-Itinerari-Segnalazioni")
+    public void AccettaContenutoOSegnalazione(@RequestBody ContenutoAttesaDTO contenuto){
 
         String comune = ControlliPermessi();
 
@@ -123,8 +120,8 @@ public class CuratoreController {
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
 
-    @PutMapping("Api/Curatore/Rifiuta-PuntiGeo-Itinerari")
-    public void RifiutaContenuto(@RequestBody ContenutoAttesaDTO contenuto){
+    @PutMapping("Api/Curatore/Rifiuta-PuntiGeo-Itinerari-Segnalazioni")
+    public void RifiutaContenutoOSegnalazione(@RequestBody ContenutoAttesaDTO contenuto){
 
         String comune = ControlliPermessi();
 

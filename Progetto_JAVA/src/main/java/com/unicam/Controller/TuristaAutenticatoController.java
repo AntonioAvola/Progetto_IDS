@@ -141,14 +141,14 @@ public class TuristaAutenticatoController<T extends Contenuto> {
 
         if(tipoContenuto.equals("itinerari"))
             this.serviceItinerario.SegnalaContenuto(segnala.getNomeContenuto().toUpperCase(Locale.ROOT), comune.getNome());
-        else if(tipoContenuto.equals("punti geolocalizzati"))
+        else if(tipoContenuto.equals("punti geolocalizzati")) {
+            if (segnala.getNomeContenuto().toUpperCase(Locale.ROOT).equals("COMUNE"))
+                throw new IllegalArgumentException("Non puoi segnalare il punto inerente al comune");
             this.servicePuntoGeo.SegnalaContenuto(segnala.getNomeContenuto().toUpperCase(Locale.ROOT), comune.getNome());
-        else if(tipoContenuto.equals("eventi"))
-            throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto. " +
-                    "Si possono segnalare i punti geolocalizzati e gli itinerari");
-        else if(tipoContenuto.equals("punti logici") ||
-                tipoContenuto.equals("avvisi") ||
-                tipoContenuto.equals("punti logici / avvisi"))
+        }
+        else if(tipoContenuto.equals("eventi") || tipoContenuto.equals("punti logici") ||
+                tipoContenuto.equals("avvisi") || tipoContenuto.equals("punti logici / avvisi") ||
+                tipoContenuto.equals("contest"))
             throw new IllegalArgumentException("Non è possibile segnalare questo tipo di contenuto. " +
                     "Si possono segnalare i punti geolocalizzati e gli itinerari");
         else
@@ -166,9 +166,9 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
-        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComune());
+        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
-        if(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune.getNome()))
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
             throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
 
         RicercaContenutiResponseDTO preferiti = new RicercaContenutiResponseDTO();
@@ -201,7 +201,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
         if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
-            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
@@ -221,7 +221,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
         if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
-            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
