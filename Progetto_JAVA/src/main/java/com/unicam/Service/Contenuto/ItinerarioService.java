@@ -180,12 +180,20 @@ public class ItinerarioService {
         List<ItinerarioResponseDTO> itinerariPropri = new ArrayList<>();
         if(itinerari != null){
             for(Itinerario itinerario: itinerari){
-                if(itinerario.getAutore().equals(autore))
-                    itinerariPropri.add(new ItinerarioResponseDTO(itinerario.getTitolo(), itinerario.getDescrizione(),
-                            itinerario.getAutore().getUsername()));
+                ItinerarioResponseDTO nuovo = new ItinerarioResponseDTO(itinerario.getTitolo(), itinerario.getDescrizione(),
+                        itinerario.getAutore().getUsername());
+                nuovo.setLuoghi(ConvertiInListaDiLuoghiDTO(itinerario.getPuntiDiInteresse()));
+                itinerariPropri.add(nuovo);
             }
         }
         return itinerariPropri;
+    }
+
+    public void EliminaItinerario(String nomeContenuto, String comune) {
+        Itinerario itinerario = this.repoItinerario.findItinerarioByTitoloAndComune(nomeContenuto, comune);
+        if(itinerario == null)
+            throw new NullPointerException("L'itinerario non esiste. Controllare di aver inserito correttamente il titolo");
+        this.repoItinerario.delete(itinerario);
     }
 
     /*private List<Itinerario> ItinerariApprovati(String comune) {

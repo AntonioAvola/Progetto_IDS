@@ -4,6 +4,7 @@ import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.EventoResponseDTO;
+import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -155,6 +156,27 @@ public class EventoService {
                         evento.getAutore().getUsername()));
         }
         return eventiPreferiti;
+    }
+
+    public List<EventoResponseDTO> GetEventiByAutore(User autore) {
+        List<Evento> eventi = this.repoEvento.findByAutore(autore);
+        List<EventoResponseDTO> eventiPropri = new ArrayList<>();
+        if(eventi != null){
+            for(Evento evento: eventi){
+                EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(), evento.getDescrizione(),
+                        evento.getDurata().getInizio(), evento.getDurata().getFine(), evento.getAutore().getUsername());
+                nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
+                eventiPropri.add(nuovo);
+            }
+        }
+        return eventiPropri;
+    }
+
+    public void EliminaEvento(String nomeContenuto, String comune) {
+        Evento evento = this.repoEvento.findEventoByTitoloAndComune(nomeContenuto, comune);
+        if(evento == null)
+            throw new NullPointerException("L'evento non esiste. Controllare di aver inserito correttamente il nome dell'evento");
+        this.repoEvento.delete(evento);
     }
 
     /*public void ApprovaContenuto(long id, Evento contenuto, StatoContenuto nuovoStato) {

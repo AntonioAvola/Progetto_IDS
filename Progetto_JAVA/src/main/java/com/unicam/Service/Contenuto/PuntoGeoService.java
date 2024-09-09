@@ -128,8 +128,7 @@ public class PuntoGeoService {
                         "Si prega di controllare di aver scritto bene il nome e riprovare");
         PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
         if(stato == StatoContenuto.RIFIUTATO) {
-            if (punto.getStato().equals(StatoContenuto.SEGNALATO))
-                EliminaDaItinerariLogiciEventi(punto);
+            EliminaDaItinerariLogiciEventi(punto);
             this.repoPunto.delete(punto);
         }
         else{
@@ -176,9 +175,13 @@ public class PuntoGeoService {
         for(Itinerario itinerario : itinerari){
             List<PuntoGeolocalizzato> punti = itinerario.getPuntiDiInteresse();
             if(punti.contains(punto)) {
-                punti.remove(punto);
-                itinerario.setPuntiDiInteresse(punti);
-                this.repoIti.save(itinerario);
+                if(punti.size()==1)
+                    this.repoIti.delete(itinerario);
+                else{
+                    punti.remove(punto);
+                    itinerario.setPuntiDiInteresse(punti);
+                    this.repoIti.save(itinerario);
+                }
             }
         }
     }
@@ -272,12 +275,19 @@ public class PuntoGeoService {
         List<PuntoGeoResponseDTO> puntiPropri = new ArrayList<>();
         if(punti != null){
             for(PuntoGeolocalizzato punto: punti){
-                if(punto.getAutore().equals(autore))
-                    puntiPropri.add(new PuntoGeoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
-                            punto.getLatitudine(), punto.getLongitudine(), punto.getAutore().getUsername()));
+                puntiPropri.add(new PuntoGeoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
+                        punto.getLatitudine(), punto.getLongitudine(), punto.getAutore().getUsername()));
             }
         }
         return puntiPropri;
+    }
+
+    public void EliminaPuntoGeo(String nomeContenuto, String comune) {
+        if(!this.repoPunto.existsByTitoloAndComune(nomeContenuto, comune))
+            throw new IllegalArgumentException("Il punto specificato non esiste. Controllare di aver inserito correttamente il nome");
+        PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
+        EliminaDaItinerariLogiciEventi(punto);
+        this.repoPunto.delete(punto);
     }
 
     /*public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {

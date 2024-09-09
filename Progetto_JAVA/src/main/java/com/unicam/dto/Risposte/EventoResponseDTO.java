@@ -11,10 +11,10 @@ public class EventoResponseDTO {
     private LocalDateTime fine;
     private String autore;
 
-    public EventoResponseDTO(String nomeItinerario, String descrizione,
+    public EventoResponseDTO(String nomeEvento, String descrizione,
                              LocalDateTime inizio, LocalDateTime fine,
                              String autore){
-        this.nomeEvento = nomeItinerario;
+        this.nomeEvento = nomeEvento;
         this.descrizione = descrizione;
         this.inizio = inizio;
         this.fine = fine;

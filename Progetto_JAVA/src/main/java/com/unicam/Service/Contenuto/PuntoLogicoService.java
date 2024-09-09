@@ -10,6 +10,7 @@ import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.LuogoDTO;
 import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import com.unicam.dto.Risposte.PuntoLogicoResponseDTO;
+import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -147,14 +148,28 @@ public class PuntoLogicoService {
         List<PuntoLogicoResponseDTO> puntiPropri = new ArrayList<>();
         if (punti != null) {
             for (PuntoLogico punto : punti) {
-                if (punto.getAutore().equals(autore)) {
-                    PuntoLogicoResponseDTO nuovo = new PuntoLogicoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
-                            punto.getAutore().getUsername());
-                    nuovo.setLuogo(ConvertiInLuogoDTO(punto.getRiferimento()));
-                    puntiPropri.add(nuovo);
-                }
+                PuntoLogicoResponseDTO nuovo = new PuntoLogicoResponseDTO(punto.getTitolo(), punto.getDescrizione(),
+                        punto.getAutore().getUsername());
+                nuovo.setLuogo(ConvertiInLuogoDTO(punto.getRiferimento()));
+                puntiPropri.add(nuovo);
             }
         }
         return puntiPropri;
+    }
+
+    public void EliminaPuntoLogico(String nomeAvviso, String comune, String nomeLuogo) {
+        PuntoGeolocalizzato punto = this.repoGeo.findGeoByTitoloAndComune(nomeLuogo, comune);
+        if(punto != null){
+            if(this.repoPunto.existsByTitoloAndComuneAndRiferimento(nomeAvviso, comune, punto)){
+                PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
+                this.repoPunto.delete(avviso);
+            }
+            else{
+                throw new IllegalArgumentException("L'avviso non è presente. Controllare di aver inserito correttamente i parametri");
+            }
+        }
+        else{
+            throw new NullPointerException("Il luogo specificato non esiste. Controllare di aver inserito correttamente il luogo dell'avviso");
+        }
     }
 }

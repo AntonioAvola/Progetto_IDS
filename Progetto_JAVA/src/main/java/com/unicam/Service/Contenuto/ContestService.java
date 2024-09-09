@@ -90,9 +90,7 @@ public class ContestService {
     //possono esistere per lo stesso comune due contest con lo stesso nome, basta che l'inizio del secondo non sia prima della fine del primo
     public void ControllaPresenzaNome(String titolo, String comune, LocalDateTime inizioContest) {
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.APPROVATO)){
-            Contest contest = this.repoContest.findContestByTitoloAndComune(titolo, comune);
-            if(contest.getDurata().getFine().isAfter(inizioContest))
-                throw new IllegalArgumentException("Esiste già un contest con questo titolo in quel periodo. Rimonimare il contest");
+            throw new IllegalArgumentException("Esiste già un contest con questo titolo in quel periodo. Rimonimare il contest");
         }
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.ATTESA))
             throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
@@ -144,6 +142,25 @@ public class ContestService {
             }
         }
         return restituiti;
+    }
+
+    public List<ContestResponseDTO> GetContestByAutore(User autore) {
+        List<Contest> contests = this.repoContest.findByAutore(autore);
+        List<ContestResponseDTO> contestPropri = new ArrayList<>();
+        if(contests != null){
+            for(Contest contest: contests){
+                contestPropri.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
+                        contest.getDurata().getFine(), contest.getAutore().getUsername()));
+            }
+        }
+        return contestPropri;
+    }
+
+    public void EliminaContest(String nomeContenuto, String comune) {
+        Contest contest = this.repoContest.findContestByTitoloAndComune(nomeContenuto, comune);
+        if(contest == null)
+            throw new NullPointerException("Il contest non esiste. Controllare di aver inserito correttamente il titolo del contest");
+        this.repoContest.delete(contest);
     }
 
     /*public void ApprovaContenuto(long id, Contest contenuto, StatoContenuto nuovoStato) {

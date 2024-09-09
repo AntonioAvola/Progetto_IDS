@@ -6,9 +6,7 @@ import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoGeo;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
-import com.unicam.Service.Contenuto.ItinerarioService;
-import com.unicam.Service.Contenuto.PuntoGeoService;
-import com.unicam.Service.Contenuto.PuntoLogicoService;
+import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;
@@ -48,6 +46,10 @@ public class ContributorController {
     private PuntoGeoService servicePuntoGeo;
     @Autowired
     private PuntoLogicoService servicePuntoLogico;
+    @Autowired
+    private EventoService serviceEvento;
+    @Autowired
+    private ContestService serviceContest;
     @Autowired
     private ComuneService serviceComune;
 
@@ -194,8 +196,8 @@ public class ContributorController {
         }
     }
 
-
-    public ResponseEntity<RicercaContenutiResponseDTO> PropriContenutiApprovati(){
+    @GetMapping("Api/Utente/Tutti-I-Propri-Contenuti")
+    public ResponseEntity<RicercaContenutiResponseDTO> PropriContenuti(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -212,38 +214,72 @@ public class ContributorController {
         if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
-        if(!currentRole.equals(Ruolo.CONTRIBUTOR.name()) &&
-                !currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) &&
-                !currentRole.equals(Ruolo.CURATORE.name())){
+        if(currentRole.equals(Ruolo.ADMIN.name()) ||
+                currentRole.equals(Ruolo.COMUNE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
         ControlloPresenzaComune(comune);
 
-        User autore = this.serviceUtente.GetUtenteById(idUtente);
         RicercaContenutiResponseDTO propriContenutiApprovati = new RicercaContenutiResponseDTO();
 
-        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servicePuntoGeo.GetPuntiGeoByAutore(autore);
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servicePuntoLogico.GetPuntiLogiciByAutore(autore);
-        List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerarioByAutore(autore);
-        //List<EventoResponseDTO> eventi = this.s.GetEventiByComune(registrazione.getComune());
-        //List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole(), adesso);
-
-
+        if(currentRole.equals(Ruolo.CONTRIBUTOR.name()) || currentRole.equals(Ruolo.CONTRIBUTOR_AUTORIZZATO.name()) || currentRole.equals(Ruolo.CURATORE.name())){
+            List<PuntoLogicoResponseDTO> puntiLogici = this.servicePuntoLogico.GetPuntiLogiciByAutore(this.serviceUtente.GetUtenteById(idUtente));
+            List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerarioByAutore(this.serviceUtente.GetUtenteById(idUtente));
+            propriContenutiApprovati.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
+            propriContenutiApprovati.getContenutiPresenti().put("itinerari", itinerari);
+        }
+        else{
+            List<EventoResponseDTO> eventi = this.serviceEvento.GetEventiByAutore(this.serviceUtente.GetUtenteById(idUtente));
+            List<ContestResponseDTO> contest = this.serviceContest.GetContestByAutore(this.serviceUtente.GetUtenteById(idUtente));
+            propriContenutiApprovati.getContenutiPresenti().put("eventi", eventi);
+            propriContenutiApprovati.getContenutiPresenti().put("contest", contest);
+        }
+        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servicePuntoGeo.GetPuntiGeoByAutore(this.serviceUtente.GetUtenteById(idUtente));
         propriContenutiApprovati.getContenutiPresenti().put("punti geolocalizzati", puntiGeolocalizzati);
-        propriContenutiApprovati.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
-        propriContenutiApprovati.getContenutiPresenti().put("itinerari", itinerari);
-        //login.getContenutiComune().put("eventi", eventi);
-        //login.getContenutiComune().put("contest", contest);
+
 
         return ResponseEntity.ok(propriContenutiApprovati);
     }
 
-    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario")
-    public void EliminaGeoItineraio(@RequestBody ContenutoAttesaDTO contenuto){
+    @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario-Evento-Contest")
+    public void EliminaGeoItineraioEventoContest(@RequestBody ContenutoAttesaDTO contenuto){
 
-        ControlliPermessi();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
+
+        if(currentRole.equals(Ruolo.COMUNE.name()))
+            throw new IllegalArgumentException("COMUNE; nessun contenuto da visualizzare oltre al proprio punto geolocalizzato");
+
+        if(contenuto.getTipoContenuto().equals("itinerari"))
+            this.serviceItinerario.EliminaItinerario(contenuto.getNomeContenuto(), comune);
+        else if(contenuto.getTipoContenuto().equals("punti geolocalizzati"))
+            this.servicePuntoGeo.EliminaPuntoGeo(contenuto.getNomeContenuto(), comune);
+        else if(contenuto.getTipoContenuto().equals("punti logici") || contenuto.getTipoContenuto().equals("avvisi") ||
+                contenuto.getTipoContenuto().equals("punti logici / avvisi"))
+            throw new IllegalArgumentException("Non è possibile eliminare questo tipo di contenuto in questa API." );
+        else if(contenuto.getTipoContenuto().equals("eventi"))
+            this.serviceEvento.EliminaEvento(contenuto.getNomeContenuto(), comune);
+        else if(contenuto.getTipoContenuto().equals("contest"))
+            this.serviceContest.EliminaContest(contenuto.getNomeContenuto(), comune);
+        else
+            throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata. " +
+                    "Si possono segnalare i punti geolocalizzati e gli itinerari");
 
         //TODO implementare
     }
@@ -251,10 +287,32 @@ public class ContributorController {
     @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoLogico")
     public void EliminaPuntoLogico(@RequestBody AccettaRifiutaPuntoLogicoDTO contenuto){
 
-        ControlliPermessi();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
 
-        //TODO implementare
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
+
+        String titoloAvviso = contenuto.getTitoloAvviso().toUpperCase(Locale.ROOT);
+
+        if(!titoloAvviso.contains("AVVISO!!"))
+            titoloAvviso = "AVVISO!! " + titoloAvviso;
+        if(!this.servicePuntoLogico.ContienePuntoLogico(titoloAvviso, comune))
+            throw new IllegalArgumentException("Il punto logico/avviso specificato non esiste. Controllare di aver scritto correttamente il titolo");
+
+        this.servicePuntoLogico.EliminaPuntoLogico(titoloAvviso, comune, contenuto.getNomeLuogo());
     }
 
     private String ControlliPermessi() {
@@ -275,7 +333,7 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         if(currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("Non hai i permessi per accettare o rifiutare contenuti");
+            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
         return comune;
     }
 

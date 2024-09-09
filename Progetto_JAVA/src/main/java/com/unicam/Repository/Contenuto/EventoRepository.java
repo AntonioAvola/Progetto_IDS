@@ -3,6 +3,7 @@ package com.unicam.Repository.Contenuto;
 import com.unicam.Model.Evento;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.User;
+import com.unicam.dto.Risposte.EventoResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

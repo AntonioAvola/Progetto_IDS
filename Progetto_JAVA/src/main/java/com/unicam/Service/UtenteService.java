@@ -96,7 +96,6 @@ public class UtenteService implements UserDetailsService {
         EliminaEventi(this.repository.getById(idUtente));
         EliminaContest(this.repository.getById(idUtente));
         EliminaPuntiGeo(this.repository.getById(idUtente));
-        AggiornaItinerari(this.repoIt.findItinerarioByComune(this.repository.getById(idUtente).getComune()), idUtente);
         this.repository.deleteById(idUtente);
     }
 
@@ -111,6 +110,7 @@ public class UtenteService implements UserDetailsService {
             }
             itinerario.setPuntiDiInteresse(punti);
             this.repoIt.save(itinerario);
+            punti.clear();
         }
     }
 
@@ -126,6 +126,14 @@ public class UtenteService implements UserDetailsService {
         for (Evento evento: eventi) {
             this.repoEv.delete(evento);
         }
+
+        //elimino tutti gli eventi che non sono dell'utente che si elimina, che che hanno come luogo di riferimento un suo punto
+        eventi = this.repoEv.findEventoByComune(user.getComune());
+        List<PuntoGeolocalizzato> geo = this.repoGeo.findByAutore(user);
+        for(Evento evento : eventi){
+            if(geo.contains(evento.getLuogo()))
+                this.repoEv.delete(evento);
+        }
     }
 
     private void EliminaItinerari(User user) {
@@ -133,6 +141,8 @@ public class UtenteService implements UserDetailsService {
         for (Itinerario itinerario: itinerari) {
             this.repoIt.delete(itinerario);
         }
+        itinerari = this.repoIt.findItinerarioByComune(user.getComune());
+        AggiornaItinerari(itinerari, user.getId());
     }
 
     private void EliminaPuntiLogici(User user) {
@@ -172,11 +182,6 @@ public class UtenteService implements UserDetailsService {
     public boolean CheckPassword(String rawPassword, String username) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.matches(rawPassword, this.repository.findByUsername(username).getPassword());
-    }
-
-    public String AccessoOspite(){
-        //TODO fornire soltanto un username momentaneo, non salvaere nel database
-        return "";
     }
 
     public Ruolo GetUtente(String username) {
