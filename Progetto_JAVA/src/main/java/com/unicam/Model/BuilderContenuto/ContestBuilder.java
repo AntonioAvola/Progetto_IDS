@@ -34,16 +34,7 @@ public class ContestBuilder implements Builder{
         this.contest.setComune(comune);
     }
 
-    public void BuildSpecifica(List<Ruolo> partecipanti, Tempo tempo){
-        BuildPartecipanti(partecipanti);
-        BuildDurata(tempo);
-    }
-
-    private void BuildPartecipanti(List<Ruolo> partecipanti){
-        this.contest.setPartecipanti(partecipanti);
-    }
-
-    private void BuildDurata(Tempo tempo) {
+    public void BuildSpecifica(Tempo tempo){
         this.contest.setDurata(tempo);
     }
 

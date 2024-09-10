@@ -14,15 +14,6 @@ import java.util.List;
 
 public class Contest extends Contenuto{
 
-    /**
-     * lista di ruoli, in cui vengono specificati quali utenti possono
-     * partecipare in base al ruolo che hanno.
-     * Esempio:
-     * un contest potrebbe essere reso disponibile solo per contributor e contributors
-     * autorizzati, quindi si associano i due ruoli al contest e chiunque ha quel ruolo
-     * può vedere sulla pagina del comune quali contest sono inseriti e partecipare
-     */
-    private List<Ruolo> partecipanti = new ArrayList<>();
     @Embedded
     private Tempo durata;
     private int votiFavore;
@@ -35,15 +26,6 @@ public class Contest extends Contenuto{
         this.votiFavore = 0;
         this.votiContrari = 0;
         this.idPartecipanti = new ArrayList<>();
-    }
-
-
-    public List<Ruolo> getPartecipanti() {
-        return partecipanti;
-    }
-
-    public void setPartecipanti(List<Ruolo> partecipanti) {
-        this.partecipanti = partecipanti;
     }
 
     public Tempo getDurata() {
