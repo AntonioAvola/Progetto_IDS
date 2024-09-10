@@ -51,18 +51,6 @@ public class ContestService {
         return contests;
     }
 
-    //TODO eliminare
-    public void AggiungiPreferito(String nomeContenuto, String comune, Long idUtente) {
-        if(!this.repoContest.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
-            throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
-        Contest contest = this.repoContest.findContestByTitolo(nomeContenuto);
-        List<Long> utentePreferito = contest.getIdUtenteContenutoPreferito();
-        if(utentePreferito.contains(idUtente))
-            throw new IllegalArgumentException("Il contest è già tra i preferiti");
-        contest.getIdUtenteContenutoPreferito().add(idUtente);
-        this.repoContest.save(contest);
-    }
-
     public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato, LocalDateTime adesso) {
         List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
         List<ContestResponseDTO> contests = new ArrayList<>();
@@ -95,19 +83,6 @@ public class ContestService {
         }
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.ATTESA))
             throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
-    }
-
-    //TODO eliminare
-    public List<ContestResponseDTO> GetContestPreferiti(Long idUtente, String nomeComune, LocalDateTime adesso) {
-        List<Contest> contestPresenti = this.repoContest.findByComuneAndStato(nomeComune, StatoContenuto.APPROVATO);
-        List<ContestResponseDTO> contestPreferiti = new ArrayList<>();
-        for(Contest contest: contestPresenti){
-            if(contest.getIdUtenteContenutoPreferito().contains(idUtente))
-                if(contest.getDurata().getFine().isAfter(adesso) && contest.getDurata().getInizio().isBefore(adesso))
-                    contestPreferiti.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
-                            contest.getDurata().getFine(), contest.getAutore().getUsername()));
-        }
-        return contestPreferiti;
     }
 
     public void PartecipaContest(String titolo, String comune, boolean partecipo, long idUtente) {

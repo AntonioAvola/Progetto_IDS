@@ -115,7 +115,6 @@ public class CuratoreController {
             this.servizioPuntoGeo.AccettaORifiuta(contenuto.getNomeContenuto(), comune, StatoContenuto.APPROVATO);
         else if(contenuto.getTipoContenuto().equals("itinerari"))
             this.servizioIti.AccettaORifiuta(contenuto.getNomeContenuto(), comune, StatoContenuto.APPROVATO);
-            //TODO aggiungere i post del turista autenticato
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }
@@ -129,7 +128,6 @@ public class CuratoreController {
             this.servizioPuntoGeo.AccettaORifiuta(contenuto.getNomeContenuto(), comune, StatoContenuto.RIFIUTATO);
         else if(contenuto.getTipoContenuto().equals("itinerari"))
             this.servizioIti.AccettaORifiuta(contenuto.getNomeContenuto(), comune, StatoContenuto.RIFIUTATO);
-            //TODO aggiungere i post del turista autenticato
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata");
     }

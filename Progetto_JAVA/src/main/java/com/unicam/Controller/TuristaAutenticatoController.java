@@ -111,7 +111,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         else if(preferito.getTipoContenuto().equals("eventi"))
             this.serviceEv.AggiungiPreferito(preferito.getNomeContenuto(), comune.getNome(), idUtente);
         else if(preferito.getTipoContenuto().equals("contest"))
-            this.serviceCon.AggiungiPreferito(preferito.getNomeContenuto(), comune.getNome(), idUtente);
+            throw new IllegalArgumentException("Non è possibile inserire questo tipo di contenuto nei preferiti");
         else if(preferito.getTipoContenuto().equals("punti logici") ||
                 preferito.getTipoContenuto().equals("avvisi") ||
                 preferito.getTipoContenuto().equals("punti logici / avvisi"))
@@ -176,12 +176,10 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         List<PuntoGeoResponseDTO> puntiGeo = this.servicePuntoGeo.GetPuntiPreferiti(idUtente, comune.getNome());
         List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerariPreferiti(idUtente, comune.getNome());
         List<EventoResponseDTO> eventi = this.serviceEv.GetEventiPreferiti(idUtente, comune.getNome());
-        List<ContestResponseDTO> contest = this.serviceCon.GetContestPreferiti(idUtente, comune.getNome(), adesso);
 
         preferiti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
         preferiti.getContenutiPresenti().put("itinerari", itinerari);
         preferiti.getContenutiPresenti().put("eventi", eventi);
-        preferiti.getContenutiPresenti().put("contest", contest);
 
         return ResponseEntity.ok(preferiti);
     }

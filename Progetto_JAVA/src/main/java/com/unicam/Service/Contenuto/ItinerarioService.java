@@ -41,7 +41,6 @@ public class ItinerarioService {
      *                                      dell'itinerario che si sta provando ad aggiungere
      */
     public void AggiungiContenuto(Itinerario contenuto) {
-        //TODO controllare che i punti selezionati siano approvati
         List<Itinerario> itinerari = this.repoItinerario.findItinerarioByComune(contenuto.getComune());
         for (Itinerario itinerario : itinerari) {
             if(itinerario.getStato() == StatoContenuto.APPROVATO){
