@@ -135,7 +135,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String tipoContenuto = segnala.getTipo().toLowerCase(Locale.ROOT);
 
         if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
-            throw new IllegalArgumentException("Non hai i permessi per salvare tra i preferiti");
+            throw new IllegalArgumentException("Non hai i permessi per segnalare tra i preferiti");
 
         if(tipoContenuto.equals("itinerari"))
             this.serviceItinerario.SegnalaContenuto(segnala.getNomeContenuto().toUpperCase(Locale.ROOT), comune.getNome());

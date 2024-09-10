@@ -67,17 +67,17 @@ public class UtenteService implements UserDetailsService {
     private void ControlloCampiUse(User user) {
         if(user == null)
             throw new NullPointerException("L'utente passato è nullo");
-        if(user.getName().isBlank() /*|| user.getName().isEmpty()*/)
+        if(user.getName().isBlank())
             throw new IllegalArgumentException("Il nome non è stato inserito");
-        if(/*user.getUsername().isEmpty() ||*/ user.getUsername().isBlank())
+        if(user.getUsername().isBlank())
             throw new IllegalArgumentException("L'username non è stato inserito");
-        if(user.getComune().isBlank() /*|| user.getComune().isEmpty()*/)
+        if(user.getComune().isBlank())
             throw new IllegalArgumentException("Il Comune di residenza non è stato inserito");
-        if(/*user.getEmail().isEmpty() ||*/ user.getEmail().isBlank())
+        if(user.getEmail().isBlank())
             throw new IllegalArgumentException("L'email non è stata inserita");
         if(!EmailValidator.isValidEmail(user.getEmail()))
             throw new IllegalArgumentException("L'email non è stata inserita correttamente. Si prega di inserire una email valida");
-        if(user.getPassword().isBlank() /*|| user.getPassword().isEmpty()*/)
+        if(user.getPassword().isBlank())
             throw new IllegalArgumentException("La password non è stata inserita");
         if(!PasswordValidator.isValidPassword(user.getPassword()))
             throw new IllegalArgumentException("La password non rispetta i requisiti richiesti: lunghezza 5, almeno una maiuscola, " +
@@ -87,11 +87,12 @@ public class UtenteService implements UserDetailsService {
     public void EliminaUtente(long idUtente){
         if(!repository.existsById(idUtente))
             throw new IllegalArgumentException("L'utente non esiste");
-        EliminaPuntiLogici(this.repository.getById(idUtente));
-        EliminaItinerari(this.repository.getById(idUtente));
-        EliminaEventi(this.repository.getById(idUtente));
-        EliminaContest(this.repository.getById(idUtente));
-        EliminaPuntiGeo(this.repository.getById(idUtente));
+        //User user = this.repository.findUserById(idUtente);
+        EliminaPuntiLogici(this.repository.findUserById(idUtente));
+        EliminaItinerari(this.repository.findUserById(idUtente));
+        EliminaEventi(this.repository.findUserById(idUtente));
+        EliminaContest(this.repository.findUserById(idUtente));
+        EliminaPuntiGeo(this.repository.findUserById(idUtente));
         this.repository.deleteById(idUtente);
     }
 
@@ -99,12 +100,13 @@ public class UtenteService implements UserDetailsService {
         List<PuntoGeolocalizzato> punti = new ArrayList<>();
         for(Itinerario itinerario : itinerari){
             punti.addAll(itinerario.getPuntiDiInteresse());
+            List<PuntoGeolocalizzato> interessi = new ArrayList<>();
             for(PuntoGeolocalizzato punto : punti){
-                if(punto.getAutore().getId() == idUtente){
-                    punti.remove(punto);
+                if(!(punto.getAutore().getId() == idUtente)){
+                    interessi.add(punto);
                 }
             }
-            itinerario.setPuntiDiInteresse(punti);
+            itinerario.setPuntiDiInteresse(interessi);
             this.repoIt.save(itinerario);
             punti.clear();
         }
@@ -119,12 +121,9 @@ public class UtenteService implements UserDetailsService {
 
     private void EliminaEventi(User user) {
         List<Evento> eventi = this.repoEv.findByAutore(user);
-        if(eventi != null){
-            for (Evento evento: eventi) {
-                this.repoEv.delete(evento);
-            }
+        for (Evento evento: eventi) {
+            this.repoEv.delete(evento);
         }
-
         //elimino tutti gli eventi che non sono dell'utente che si elimina, che che hanno come luogo di riferimento un suo punto
         eventi = this.repoEv.findEventoByComune(user.getComune());
         List<PuntoGeolocalizzato> geo = this.repoGeo.findByAutore(user);
@@ -145,10 +144,8 @@ public class UtenteService implements UserDetailsService {
 
     private void EliminaPuntiLogici(User user) {
         List<PuntoLogico> punti = this.repoLogico.findByAutore(user);
-        if(punti != null){
-            for (PuntoLogico punto: punti) {
-                this.repoLogico.delete(punto);
-            }
+        for (PuntoLogico punto: punti) {
+            this.repoLogico.delete(punto);
         }
         List<PuntoGeolocalizzato> geo = this.repoGeo.findByAutore(user);
         punti = this.repoLogico.findByComune(user.getComune());
