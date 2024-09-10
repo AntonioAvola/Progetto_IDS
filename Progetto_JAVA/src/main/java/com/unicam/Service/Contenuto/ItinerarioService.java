@@ -155,7 +155,7 @@ public class ItinerarioService {
     }
 
     public void ControllaPresenzaNome(String titolo, String comune) {
-        Itinerario itineraro = this.repoItinerario.findByTitoloAndComune(titolo, comune);
+        Itinerario itineraro = this.repoItinerario.findItinerarioByTitoloAndComune(titolo, comune);
         if(itineraro != null)
             throw new IllegalArgumentException("Esiste già un itinerario (accettato, in attesa o segnalato) con questo nome. " +
                     "Prova ad essere più specifico/a");
@@ -195,52 +195,4 @@ public class ItinerarioService {
             throw new NullPointerException("L'itinerario non esiste. Controllare di aver inserito correttamente il titolo");
         this.repoItinerario.delete(itinerario);
     }
-
-    /*private List<Itinerario> ItinerariApprovati(String comune) {
-        List<Itinerario> itinerari = new ArrayList<>();
-        List<Itinerario> presenti = this.repoItinerario.findItinerarioByComune(comune);
-        if(presenti != null){
-            for (Itinerario itinerario: presenti) {
-                if(!(itinerario.getStato() == StatoContenuto.ATTESA))
-                    itinerari.add(itinerario);
-            }
-        }
-        return itinerari;
-    }
-
-    public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
-        List<PuntoGeolocalizzato> punti = new ArrayList<>();
-        for (String nome : nomiPunti) {
-            punti.add(GetPuntoGeoByNome(nome.toUpperCase(Locale.ROOT)));
-        }
-        return punti;
-    }
-
-    public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {
-        return this.repoPunto.findGeoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }
-
-    public void ApprovaContenuto(long id, Itinerario contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoItinerario.save(contenuto);
-        } else {
-            repoItinerario.delete(contenuto);
-        }
-    }
-
-    public Itinerario GetItinerarioByNome(String nome){
-        return this.repoItinerario.findItinerarioByTitolo(nome.toUpperCase(Locale.ROOT));
-    }
-
-    public List<PuntoGeolocalizzato> GetPuntiByListaNomiAndComune(List<String> nomiPunti, String comune) {
-        List<PuntoGeolocalizzato> punti = new ArrayList<>();
-        for (String punto: nomiPunti) {
-            punti.add(this.repoPunto.findGeoByTitoloAndComune(punto.toUpperCase(Locale.ROOT),comune.toUpperCase(Locale.ROOT)));
-        }
-        return punti;
-    }
-
-    */
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IComuneRepository extends JpaRepository<Comune, Long> {
+public interface ComuneRepository extends JpaRepository<Comune, Long> {
     boolean existsByNome(String nome);
 
     List<Comune> findAllByStatoRichiesta(StatoContenuto attesa);

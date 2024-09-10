@@ -1,7 +1,7 @@
 package com.unicam.Security;
 
 import com.unicam.Model.*;
-import com.unicam.Repository.IComuneRepository;
+import com.unicam.Repository.ComuneRepository;
 import com.unicam.Repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +17,7 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private UtenteRepository repoUente;
 
-    private IComuneRepository repoComune;
+    private ComuneRepository repoComune;
 
     private List<String> nomiComuni = new ArrayList<>();
 

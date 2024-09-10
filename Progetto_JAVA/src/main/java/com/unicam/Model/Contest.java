@@ -40,10 +40,6 @@ public class Contest extends Contenuto{
         return idPartecipanti;
     }
 
-    public void setIdPartecipanti(List<Long> idPartecipanti) {
-        this.idPartecipanti = idPartecipanti;
-    }
-
     public int getVotiFavore() {
         return votiFavore;
     }

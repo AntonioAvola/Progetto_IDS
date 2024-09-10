@@ -57,20 +57,6 @@ public class PuntoLogicoService {
         this.repoPunto.save(contenuto);
     }
 
-    /*public void ApprovaContenuto(long id, PuntoLogico contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoPunto.save(contenuto);
-        } else {
-            repoPunto.delete(contenuto);
-        }
-    }
-
-    public PuntoLogico GetPuntoLogicoByNome(String nome){
-        return this.repoPunto.findLogicoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }*/
-
     public List<PuntoLogicoResponseDTO> GetPuntiLogiciByComune(String comune) {
         List<PuntoLogico> puntiPresenti = this.repoPunto.findPuntoLogicoByComune(comune);
         List<PuntoLogicoResponseDTO> punti = new ArrayList<>();
@@ -89,20 +75,6 @@ public class PuntoLogicoService {
         return new LuogoDTO(riferimento.getTitolo(), riferimento.getLatitudine(), riferimento.getLongitudine());
     }
 
-    public List<PuntoLogicoResponseDTO> GetPuntiLogiciStatoByComune(String comune, StatoContenuto stato) {
-        List<PuntoLogico> puntiPresenti = this.repoPunto.findPuntoLogicoByComune(comune);
-        List<PuntoLogicoResponseDTO> punti = new ArrayList<>();
-        for (PuntoLogico punto : puntiPresenti) {
-            if (punto.getStato() == stato) {
-                PuntoLogicoResponseDTO nuovo =
-                        new PuntoLogicoResponseDTO(punto.getTitolo(), punto.getDescrizione(), punto.getAutore().getUsername());
-                nuovo.setLuogo(ConvertiInLuogoDTO(punto.getRiferimento()));
-                punti.add(nuovo);
-            }
-        }
-        return punti;
-    }
-
     public void AccettaORifiuta(String nomeContenuto, String luogo, String comune, StatoContenuto stato) {
         if (!this.repoPunto.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
             throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
@@ -117,13 +89,6 @@ public class PuntoLogicoService {
             this.repoPunto.save(punto);
         }
     }
-
-    /*private void EliminaDoppioni(List<PuntoLogico> punti, PuntoLogico punto) {
-        for(PuntoLogico puntoTrovato: punti){
-            if(puntoTrovato.getRiferimento().equals(punto.getRiferimento()))
-                this.repoPunto.delete(puntoTrovato);
-        }
-    }*/
 
     public void EliminaContenutiAttesaDoppioni(PuntoLogico punto) {
         List<PuntoLogico> puntiTrovati = new ArrayList<>();

@@ -12,8 +12,6 @@ import java.util.List;
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 
-    Evento findEventoByTitolo(String toUpperCase);
-
     List<Evento> findEventoByComune(String comune);
 
     List<Evento> findByAutore(User user);

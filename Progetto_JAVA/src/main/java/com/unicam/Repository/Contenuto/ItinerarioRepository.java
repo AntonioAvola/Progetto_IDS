@@ -14,19 +14,16 @@ import java.util.List;
 @Repository
 public interface ItinerarioRepository extends JpaRepository<Itinerario, Long> {
 
-    Itinerario findItinerarioByTitolo(String toUpperCase);
-
     List<Itinerario> findItinerarioByComune(String comune);
 
     List<Itinerario> findByAutore(User user);
 
     Itinerario findItinerarioByTitoloAndComune(String nomeContenuto, String comune);
 
+    //TODO eliminare
     Itinerario findByTitoloAndComune(String titolo, String comune);
 
     List<Itinerario> findByComuneAndStato(String comune, StatoContenuto attesa);
 
     boolean existsByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto attesa);
-
-    List<Itinerario> findItinerariByTitoloAndComune(String nomeContenuto, String comune);
 }

@@ -1,14 +1,12 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
-import com.unicam.Richieste.RichiestaAggiuntaPost;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.PostService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AggiungiPreferitoDTO;
-import com.unicam.dto.PostTuristaDTO;
 
 import com.unicam.dto.Provvisori.SegnalazioneProvvisoriaDTO;
 import com.unicam.dto.Risposte.*;
@@ -189,7 +187,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     }
 
     @PutMapping("Api/Partecipante-Contest/Voto-Favore")
-    public void VotoAFavore(@RequestParam String nomeContest){
+    public ResponseEntity<String> VotoAFavore(@RequestParam String nomeContest){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -212,10 +210,11 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
         this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),true, idUtente);
+        return ResponseEntity.ok("Votazione eseguita con successo");
     }
 
     @PutMapping("Api/Partecipante-Contest/Voto-Contrario")
-    public void VotoContrario(@RequestParam String nomeContest){
+    public ResponseEntity<String> VotoContrario(@RequestParam String nomeContest){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -238,5 +237,6 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
         this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),false, idUtente);
+        return  ResponseEntity.ok("Votazione eseguita con successo");
     }
 }

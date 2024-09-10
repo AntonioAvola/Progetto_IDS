@@ -5,10 +5,8 @@ import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Repository.Contenuto.ItinerarioRepository;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
-import com.unicam.Repository.IComuneRepository;
+import com.unicam.Repository.ComuneRepository;
 import com.unicam.Repository.UtenteRepository;
-import com.unicam.Service.ComuneService;
-import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.PuntoGeoResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ import java.util.Locale;
 @Service
 public class PuntoGeoService {
 
-    private final IComuneRepository repoComune;
+    private final ComuneRepository repoComune;
     private final PuntoGeoRepository repoPunto;
     private final UtenteRepository repoUtente;
     private final PuntoLogicoRepository repoLogico;
@@ -30,7 +28,7 @@ public class PuntoGeoService {
     @Autowired
     public PuntoGeoService(PuntoGeoRepository repoPunto,
                            UtenteRepository repoUtente,
-                           IComuneRepository repoComune,
+                           ComuneRepository repoComune,
                            PuntoLogicoRepository repoLogico,
                            EventoRepository repoEv,
                            ItinerarioRepository repoIti){
@@ -65,16 +63,6 @@ public class PuntoGeoService {
             }
         }
         this.repoPunto.save(contenuto);
-    }
-
-    public void ApprovaContenuto(long id, PuntoGeolocalizzato contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoPunto.save(contenuto);
-        } else {
-            repoPunto.delete(contenuto);
-        }
     }
 
     public List<PuntoGeoResponseDTO> GetPuntiGeoByComune(String comune) {
@@ -286,23 +274,8 @@ public class PuntoGeoService {
         if(!this.repoPunto.existsByTitoloAndComune(nomeContenuto, comune))
             throw new IllegalArgumentException("Il punto specificato non esiste. Controllare di aver inserito correttamente il nome");
         PuntoGeolocalizzato punto = this.repoPunto.findGeoByTitoloAndComune(nomeContenuto, comune);
-        EliminaDaItinerariLogiciEventi(punto);
+        if(punto.getStato() != StatoContenuto.ATTESA)
+            EliminaDaItinerariLogiciEventi(punto);
         this.repoPunto.delete(punto);
     }
-
-    /*public PuntoGeolocalizzato GetPuntoGeoByNome(String nome) {
-        return this.repoPunto.findGeoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }
-
-    public PuntoGeolocalizzato GetPuntoGeoByNomeAndComune(String nome, String comune) {
-        return this.repoPunto.findGeoByTitoloAndComune(nome, comune);
-    }
-
-    public List<PuntoGeolocalizzato> GetPuntiByListaNomi(List<String> nomiPunti) {
-        List<PuntoGeolocalizzato> punti = new ArrayList<>();
-        for (String nome : nomiPunti) {
-            punti.add(GetPuntoGeoByNome(nome.toUpperCase(Locale.ROOT)));
-        }
-        return punti;
-    }*/
 }

@@ -82,7 +82,7 @@ public class CuratoreController {
         return contenuti;
     }
 
-    @GetMapping("Api/Comune/Contenuti-Segnalati")
+    @GetMapping("Api/Curatore/Contenuti-Segnalati")
     public ResponseEntity<RicercaContenutiResponseDTO> RicercaSegnalazioni(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

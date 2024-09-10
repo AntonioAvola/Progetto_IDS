@@ -13,13 +13,9 @@ import java.util.List;
 @Repository
 public interface PuntoLogicoRepository extends JpaRepository<PuntoLogico, Long> {
 
-    PuntoLogico findLogicoByTitolo(String toUpperCase);
-
     List<PuntoLogico> findPuntoLogicoByComune(String comune);
 
     List<PuntoLogico> findByAutore(User user);
-
-    PuntoLogico findLogicoByTitoloAndComune(String nomeContenuto, String comune);
 
     boolean existsByTitoloAndComune(String titolo, String comune);
 
@@ -29,13 +25,11 @@ public interface PuntoLogicoRepository extends JpaRepository<PuntoLogico, Long> 
 
     boolean existsByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto attesa);
 
-    List<PuntoLogico> findByTitoloAndComuneAndStato(String nomeContenuto, String comune, StatoContenuto attesa);
-
     PuntoLogico findByTitoloAndRiferimento(String nomeContenuto, PuntoGeolocalizzato luogo);
-
-    List<PuntoLogico> findByComuneAndStato(String comune, StatoContenuto attesa);
 
     boolean existsByTitoloAndComuneAndRiferimento(String titolo, String comune, PuntoGeolocalizzato luogo);
 
     List<PuntoLogico> findByRiferimento(PuntoGeolocalizzato punto);
+
+    List<PuntoLogico> findByComune(String comune);
 }

@@ -51,6 +51,7 @@ public class ContestService {
         return contests;
     }
 
+    //TODO eliminare
     public void AggiungiPreferito(String nomeContenuto, String comune, Long idUtente) {
         if(!this.repoContest.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.APPROVATO))
             throw new IllegalArgumentException("Il punto non esiste. Controlla di aver scritto bene le caratteristiche");
@@ -96,6 +97,7 @@ public class ContestService {
             throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
     }
 
+    //TODO eliminare
     public List<ContestResponseDTO> GetContestPreferiti(Long idUtente, String nomeComune, LocalDateTime adesso) {
         List<Contest> contestPresenti = this.repoContest.findByComuneAndStato(nomeComune, StatoContenuto.APPROVATO);
         List<ContestResponseDTO> contestPreferiti = new ArrayList<>();
@@ -162,18 +164,4 @@ public class ContestService {
             throw new NullPointerException("Il contest non esiste. Controllare di aver inserito correttamente il titolo del contest");
         this.repoContest.delete(contest);
     }
-
-    /*public void ApprovaContenuto(long id, Contest contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoContest.save(contenuto);
-        } else {
-            repoContest.delete(contenuto);
-        }
-    }
-
-    public Contest GetIContestByNome(String nome){
-        return this.repoContest.findContestByTitolo(nome.toUpperCase(Locale.ROOT));
-    }*/
 }

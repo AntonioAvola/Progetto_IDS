@@ -261,7 +261,7 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         if(currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
+            throw new IllegalArgumentException("ADMIN; nessun contenuto da eliminare");
 
         if(currentRole.equals(Ruolo.COMUNE.name()))
             throw new IllegalArgumentException("COMUNE; nessun contenuto da visualizzare oltre al proprio punto geolocalizzato");
@@ -280,8 +280,6 @@ public class ContributorController {
         else
             throw new IllegalArgumentException("Il tipo di contenuto non esiste. Oppure è stato scritto in maniera errata. " +
                     "Si possono segnalare i punti geolocalizzati e gli itinerari");
-
-        //TODO implementare
     }
 
     @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoLogico")
@@ -303,7 +301,7 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         if(currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
+            throw new IllegalArgumentException("ADMIN; nessun contenuto da eliminare");
 
         String titoloAvviso = contenuto.getTitoloAvviso().toUpperCase(Locale.ROOT);
 

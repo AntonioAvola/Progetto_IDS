@@ -185,24 +185,6 @@ public class User implements UserDetails {
     }
 
     /**
-     * Restituisce una rappresentazione in formato stringa dell'oggetto User.
-     * Questa rappresentazione include il nome, l'email e il comune dell'utente.
-     *
-     * @return Una stringa che rappresenta l'oggetto User.
-     */
-    @Override
-    public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", comune='" + comune + '\'' +
-                ", email='" + email + '\'' +
-                ", ruolo=" + ruoloComune +
-                '}';
-    }
-
-
-    /**
      * Confronta questo oggetto User con l'oggetto specificato per verificarne l'uguaglianza.
      * Due oggetti User sono considerati uguali se hanno lo stesso nome, email e comune.
      *

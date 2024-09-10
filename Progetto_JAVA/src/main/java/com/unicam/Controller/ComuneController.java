@@ -97,7 +97,7 @@ public class ComuneController {
         }
 
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
-                servizioPuntoGeo, servizioComune, richiesta, servizioPuntoGeo, idUtente);
+                servizioComune, richiesta, servizioPuntoGeo, idUtente);
         richiestaAggiunta.Execute();
 
     }
@@ -116,7 +116,7 @@ public class ComuneController {
 
         String currentRole = userDetails.getRole();
 
-        if(currentRole.equals(Ruolo.ADMIN.name()))
+        if(currentRole.equals(Ruolo.ADMIN.name()) || currentRole.equals(Ruolo.COMUNE.name()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
 
         ControlloPresenzaComune(comune);

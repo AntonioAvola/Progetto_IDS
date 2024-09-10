@@ -36,7 +36,7 @@ public class GestorePiattaformaController {
     }
 
     @PutMapping("Api/GestorePiattaforma/Accetta-Comune")
-    public void AccettaComune(/*@RequestBody AccettaRifiutaComuneDTO*/@RequestParam String comune){
+    public void AccettaComune(@RequestParam String comune){
 
         ControllaPermessi();
         ControllaPresenzaComune(comune.toUpperCase(Locale.ROOT));

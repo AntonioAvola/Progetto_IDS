@@ -4,7 +4,7 @@ import com.unicam.Model.Comune;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
-import com.unicam.Repository.IComuneRepository;
+import com.unicam.Repository.ComuneRepository;
 import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.dto.Risposte.ComuneResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
@@ -19,11 +19,11 @@ public class ComuneService {
 
     @Autowired
     private PuntoGeoService servizioPunto;
-    private final IComuneRepository repository;
+    private final ComuneRepository repository;
     private final PuntoGeoRepository repositoryPunto;
 
     @Autowired
-    public ComuneService(IComuneRepository repository,
+    public ComuneService(ComuneRepository repository,
                          PuntoGeoRepository repositoryPunto){
         this.repository = repository;
         this.repositoryPunto = repositoryPunto;
@@ -47,10 +47,12 @@ public class ComuneService {
 
     private List<ComuneResponseDTO> ConvertiInResponse(List<Comune> allByStatoRichiesta) {
         List<ComuneResponseDTO> comuni = new ArrayList<>();
-        for (Comune comune: allByStatoRichiesta) {
-            ComuneResponseDTO nuovo = new ComuneResponseDTO(comune.getNome());
-            nuovo.setLuogo(ConvertiInLuogoDTO(comune.getPosizione()));
-            comuni.add(nuovo);
+        if(allByStatoRichiesta != null){
+            for (Comune comune: allByStatoRichiesta) {
+                ComuneResponseDTO nuovo = new ComuneResponseDTO(comune.getNome());
+                nuovo.setLuogo(ConvertiInLuogoDTO(comune.getPosizione()));
+                comuni.add(nuovo);
+            }
         }
         return comuni;
     }

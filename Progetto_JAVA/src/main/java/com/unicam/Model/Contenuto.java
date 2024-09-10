@@ -79,19 +79,7 @@ public abstract class  Contenuto {
         this.comune = comune;
     }
 
-    @Override
-    public String toString(){
-        return "Titolo: " + titolo + "\n"
-                + "Descrizione: "+ descrizione + "\n"
-                + "Autore: " + autore + "\n"
-                + "Stato: " + stato;
-    }
-
     public List<Long> getIdUtenteContenutoPreferito() {
         return idUtenteContenutoPreferito;
-    }
-
-    public void setIdUtenteContenutoPreferito(List<Long> idUtenteContenutoPreferito) {
-        this.idUtenteContenutoPreferito = idUtenteContenutoPreferito;
     }
 }

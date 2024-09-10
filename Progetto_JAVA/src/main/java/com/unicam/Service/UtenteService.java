@@ -2,12 +2,8 @@ package com.unicam.Service;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.*;
-import com.unicam.Repository.PostRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Security.JwtTokenProvider;
-import com.unicam.Service.Contenuto.ContestService;
-import com.unicam.Service.Contenuto.EventoService;
-import com.unicam.Service.Contenuto.ItinerarioService;
 import com.unicam.Validator.EmailValidator;
 import com.unicam.Validator.PasswordValidator;
 import com.unicam.dto.RegistrazioneUtentiDTO;
@@ -123,8 +119,10 @@ public class UtenteService implements UserDetailsService {
 
     private void EliminaEventi(User user) {
         List<Evento> eventi = this.repoEv.findByAutore(user);
-        for (Evento evento: eventi) {
-            this.repoEv.delete(evento);
+        if(eventi != null){
+            for (Evento evento: eventi) {
+                this.repoEv.delete(evento);
+            }
         }
 
         //elimino tutti gli eventi che non sono dell'utente che si elimina, che che hanno come luogo di riferimento un suo punto
@@ -147,8 +145,18 @@ public class UtenteService implements UserDetailsService {
 
     private void EliminaPuntiLogici(User user) {
         List<PuntoLogico> punti = this.repoLogico.findByAutore(user);
-        for (PuntoLogico punto: punti) {
-            this.repoLogico.delete(punto);
+        if(punti != null){
+            for (PuntoLogico punto: punti) {
+                this.repoLogico.delete(punto);
+            }
+        }
+        List<PuntoGeolocalizzato> geo = this.repoGeo.findByAutore(user);
+        punti = this.repoLogico.findByComune(user.getComune());
+        if(geo != null){
+            for(PuntoLogico punto : punti){
+                if(geo.contains(punto.getRiferimento()))
+                    this.repoLogico.delete(punto);
+            }
         }
     }
 
@@ -222,6 +230,6 @@ public class UtenteService implements UserDetailsService {
     }
 
     public boolean FindUtente(String username) {
-        return this.repository.findUserByUsername(username);
+        return this.repository.existsByUsername(username);
     }
 }

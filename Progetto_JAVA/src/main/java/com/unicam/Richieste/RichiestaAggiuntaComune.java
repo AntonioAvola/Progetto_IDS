@@ -21,7 +21,6 @@ public class RichiestaAggiuntaComune implements ICommand{
 
     private PuntoGeoBuilder builderPunto = new PuntoGeoBuilder();
     //private ContenutoService<PuntoGeolocalizzato> servizioContenuto;
-    private PuntoGeoService servizioContenuto;
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
     private PuntoGeoService servizioPuntoGeo;
@@ -29,13 +28,11 @@ public class RichiestaAggiuntaComune implements ICommand{
     private Comune comune;
 
     public RichiestaAggiuntaComune(UtenteService servizio,
-                                   PuntoGeoService servizioPunto,
                                    ComuneService servizioComune,
                                    RichiestaComuneDTO richiesta,
                                    PuntoGeoService servizioPuntoGeo,
                                    long id){
         this.servizioUtente = servizio;
-        this.servizioContenuto = servizioPunto;
         this.servizioComune = servizioComune;
         this.servizioPuntoGeo = servizioPuntoGeo;
         this.punto = richiesta.ToEntityPunto(this.servizioUtente.GetUtenteById(id).getComune());
@@ -49,7 +46,7 @@ public class RichiestaAggiuntaComune implements ICommand{
     @Override
     public void Execute() {
         this.servizioPuntoGeo.ContienePunto(punto);
-        this.servizioContenuto.AggiungiPunto(this.punto);
+        this.servizioPuntoGeo.AggiungiPunto(this.punto);
         this.servizioComune.AggiungiComune(this.comune);
     }
 }

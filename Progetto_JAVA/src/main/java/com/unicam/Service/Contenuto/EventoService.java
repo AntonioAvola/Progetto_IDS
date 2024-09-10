@@ -4,14 +4,12 @@ import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.dto.Risposte.EventoResponseDTO;
-import com.unicam.dto.Risposte.ItinerarioResponseDTO;
 import com.unicam.dto.Risposte.LuogoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class EventoService {
@@ -117,11 +115,11 @@ public class EventoService {
             this.repoEvento.save(evento);
             List<Evento> eventiAttesa = this.repoEvento.findEventoByComuneAndStato(evento.getComune(), StatoContenuto.ATTESA);
             if(!eventiAttesa.isEmpty())
-                EliminaProposteEventiCheSiAccavallano(eventiAttesa, evento);
+                EliminaProposteEventiCheSiSovrappongono(eventiAttesa, evento);
         }
     }
 
-    private void EliminaProposteEventiCheSiAccavallano(List<Evento> eventiAttesa, Evento evento) {
+    private void EliminaProposteEventiCheSiSovrappongono(List<Evento> eventiAttesa, Evento evento) {
         for(Evento eventoTrovato : eventiAttesa){
             if(eventoTrovato.getLuogo().equals(evento.getLuogo())){
                 if((eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getFine())
@@ -178,18 +176,4 @@ public class EventoService {
             throw new NullPointerException("L'evento non esiste. Controllare di aver inserito correttamente il nome dell'evento");
         this.repoEvento.delete(evento);
     }
-
-    /*public void ApprovaContenuto(long id, Evento contenuto, StatoContenuto nuovoStato) {
-        User user = repoUtente.getById(id);
-        if (nuovoStato == StatoContenuto.APPROVATO) {
-            contenuto.setStato(nuovoStato);
-            repoEvento.save(contenuto);
-        } else {
-            repoEvento.delete(contenuto);
-        }
-    }
-
-    public Evento GetEventoByNome(String nome){
-        return this.repoEvento.findEventoByTitolo(nome.toUpperCase(Locale.ROOT));
-    }*/
 }
