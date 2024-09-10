@@ -198,9 +198,15 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
+        String currentRole = userDetails.getRole();
+
         Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
-        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()) &&
+                (currentRole.equals(Ruolo.ANIMATORE.name()) || currentRole.equals(Ruolo.COMUNE.name())))
             throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
@@ -218,9 +224,15 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         String idUtenteStr = userDetails.getUserId();
         Long idUtente = Long.parseLong(idUtenteStr);
 
+        String currentRole = userDetails.getRole();
+
         Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
 
-        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()))
+        if(currentRole.equals(Ruolo.ADMIN.name()))
+            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
+
+        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()) &&
+                (currentRole.equals(Ruolo.ANIMATORE.name()) || currentRole.equals(Ruolo.COMUNE.name())))
             throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());

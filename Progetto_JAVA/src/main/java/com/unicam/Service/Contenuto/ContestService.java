@@ -42,7 +42,7 @@ public class ContestService {
         List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
         List<ContestResponseDTO> contests = new ArrayList<>();
         for (Contest contest : contestPresenti) {
-            if (contest.getStato() == StatoContenuto.APPROVATO && contest.getPartecipanti().contains(role)) {
+            if (contest.getStato() == StatoContenuto.APPROVATO) {
                 if(contest.getDurata().getFine().isAfter(adesso) && contest.getDurata().getInizio().isBefore(adesso))
                     contests.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
                             contest.getDurata().getFine(), contest.getAutore().getUsername()));

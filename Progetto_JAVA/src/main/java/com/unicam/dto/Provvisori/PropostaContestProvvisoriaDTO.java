@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class PropostaContestProvvisoriaDTO {
 
-    private long idUtente;
+    /*private long idUtente;
     private String titolo;
     private String descrizione;
     private LocalDateTime inizio;
@@ -77,20 +77,7 @@ public class PropostaContestProvvisoriaDTO {
         ContestBuilder builder = new ContestBuilder();
         builder.BuildTitolo(getTitolo().toUpperCase(Locale.ROOT));
         builder.BuildDescrizione(getDescrizione());
-        builder.BuildSpecifica(RuoliPartecipanti(), new Tempo(getInizio(), getFine()));
+        builder.BuildSpecifica(new Tempo(getInizio(), getFine()));
         return builder.Result();
-    }
-
-    private List<Ruolo> RuoliPartecipanti() {
-        List<Ruolo> ruoli = new ArrayList<>();
-        if(isCuratore())
-            ruoli.add(Ruolo.CURATORE);
-        if(isContributor())
-            ruoli.add(Ruolo.CONTRIBUTOR);
-        if(isContributorAutorizzati())
-            ruoli.add(Ruolo.CONTRIBUTOR_AUTORIZZATO);
-        if(isTuristaAutenticato())
-            ruoli.add(Ruolo.TURISTA_AUTENTICATO);
-        return ruoli;
-    }
+    }*/
 }
