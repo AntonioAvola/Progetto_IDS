@@ -7,7 +7,6 @@ import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ProxyOSM.OSMService;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;

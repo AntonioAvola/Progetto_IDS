@@ -196,16 +196,6 @@ public class UtenteService implements UserDetailsService {
         return repository.getById(id);
     }
 
-    public Long GetIdByUsername(String username) {
-        return this.repository.findByUsername(username).getId();
-    }
-
-    public void EliminaUtenteByUsername(String username) {
-        User utente = this.repository.findByUsername(username);
-        Long idUtente = utente.getId();
-        this.repository.deleteById(idUtente);
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username);
@@ -224,9 +214,5 @@ public class UtenteService implements UserDetailsService {
         User utente = this.repository.getById(idUtente);
         utente.setComuneVisitato(nome.toUpperCase(Locale.ROOT));
         this.repository.save(utente);
-    }
-
-    public boolean FindUtente(String username) {
-        return this.repository.existsByUsername(username);
     }
 }

@@ -5,7 +5,6 @@ import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ProxyOSM.OSMService;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
@@ -73,7 +72,7 @@ public class ComuneController {
     }
 
     @PostMapping("Api/Comune/Richiesta-Inserimento-Comune")
-    public void RichiestaAggiunta(/*@RequestBody RichiestaComuneDTO richiesta*/) throws IOException {
+    public void RichiestaAggiunta() throws IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

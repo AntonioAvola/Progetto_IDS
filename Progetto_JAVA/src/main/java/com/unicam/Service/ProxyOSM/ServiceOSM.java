@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OSMService implements OpenStreetMapProxy{
+public class ServiceOSM implements OpenStreetMapProxy{
 
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 

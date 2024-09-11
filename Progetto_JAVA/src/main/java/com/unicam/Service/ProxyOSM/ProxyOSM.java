@@ -12,7 +12,7 @@ import java.util.Map;
 public class ProxyOSM implements OpenStreetMapProxy{
 
     @Autowired
-    private OSMService servizioMappa;
+    private ServiceOSM servizioMappa;
     private Map<String, List<Double>> cache = new HashMap<String, List<Double>>();
 
     @Override
