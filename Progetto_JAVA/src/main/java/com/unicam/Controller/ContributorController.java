@@ -7,8 +7,8 @@ import com.unicam.Richieste.Contenuto.RichiestaAggiuntaPuntoLogico;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.ContenutoService;
-import com.unicam.Service.OSMService;
+import com.unicam.Service.ProxyOSM.OSMService;
+import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;
 import com.unicam.dto.ItinerarioDTO;
@@ -45,7 +45,7 @@ public class ContributorController {
     private final SecurityAutoConfiguration securityAutoConfiguration;
 
     @Autowired
-    private OSMService servizioMappa;
+    private ProxyOSM servizioMappa;
     @Autowired
     private UtenteService serviceUtente;
     @Autowired

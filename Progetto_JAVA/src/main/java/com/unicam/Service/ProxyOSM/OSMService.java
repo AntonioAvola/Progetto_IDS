@@ -1,4 +1,4 @@
-package com.unicam.Service;
+package com.unicam.Service.ProxyOSM;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OSMService {
+public class OSMService implements OpenStreetMapProxy{
 
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 

@@ -5,9 +5,9 @@ import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.OSMService;
+import com.unicam.Service.ProxyOSM.OSMService;
+import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
-import com.unicam.dto.AccettaRifiutaContenutoDTO;
 import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
 import com.unicam.dto.RichiestaComuneDTO;
 import com.unicam.dto.Risposte.*;
@@ -16,13 +16,11 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ObservationSecurityContextChangedListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -63,7 +61,7 @@ public class ComuneController {
     @Autowired
     private ContestService servizioCon;
     @Autowired
-    private OSMService servizioMappa;
+    private ProxyOSM servizioMappa;
 
     @Autowired
     public ComuneController(ComuneService servizio,
