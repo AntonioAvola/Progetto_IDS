@@ -1,5 +1,6 @@
 package com.unicam.Controller;
 
+import com.unicam.Model.Ruolo;
 import com.unicam.Security.JwtTokenProvider;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.UtenteService;
@@ -58,20 +59,24 @@ public class AuthController {
         risposta.setRole(servizioUtente.GetUtente(loginRequest.getUsername()));
 
         String comune = this.servizioUtente.GetComuneByUsername(loginRequest.getUsername());
+        risposta.setComune(comune);
+        risposta.setComuneVisitato(comune);
 
         LocalDateTime adesso = LocalDateTime.now();
 
-        List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
-        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
-        List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune);
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, risposta.getRole(), adesso);
+        if(!this.servizioUtente.GetUtente(loginRequest.getUsername()).equals(Ruolo.ADMIN)){
+            List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
+            List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
+            List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
+            List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune);
+            List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, adesso);
 
-        risposta.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
-        risposta.getContenutiComune().put("punti logici / avvisi", puntiLogici);
-        risposta.getContenutiComune().put("itinerari", itinerari);
-        risposta.getContenutiComune().put("eventi", eventi);
-        risposta.getContenutiComune().put("contest", contest);
+            risposta.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);
+            risposta.getContenutiComune().put("punti logici / avvisi", puntiLogici);
+            risposta.getContenutiComune().put("itinerari", itinerari);
+            risposta.getContenutiComune().put("eventi", eventi);
+            risposta.getContenutiComune().put("contest", contest);
+        }
         return ResponseEntity.ok(risposta);
     }
 }

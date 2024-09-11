@@ -11,6 +11,8 @@ public class LoginResponseDTO {
     private String token;
     private String username;
     private Ruolo role;
+    private String comune;
+    private String comuneVisitato;
     private String message;
 
     //aggiunta attributo Map<String, List<?>> per i contenuti inerenti a un comune
@@ -19,10 +21,13 @@ public class LoginResponseDTO {
     // Costruttore vuoto per la deserializzazione
     public LoginResponseDTO() {}
 
-    public LoginResponseDTO(String token, String username, Ruolo role) {
+    public LoginResponseDTO(String token, String username, Ruolo role,
+                            String comune, String comuneVisitato) {
         this.token = token;
         this.username = username;
         this.role = role;
+        this.comune = comune;
+        this.comuneVisitato = comuneVisitato;
     }
 
     public String getToken() {
@@ -63,5 +68,21 @@ public class LoginResponseDTO {
 
     public void setContenutiComune(Map<String, List<?>> contenutiComune) {
         this.contenutiComune = contenutiComune;
+    }
+
+    public String getComune() {
+        return comune;
+    }
+
+    public void setComune(String comune) {
+        this.comune = comune;
+    }
+
+    public String getComuneVisitato() {
+        return comuneVisitato;
+    }
+
+    public void setComuneVisitato(String comuneVisitato) {
+        this.comuneVisitato = comuneVisitato;
     }
 }

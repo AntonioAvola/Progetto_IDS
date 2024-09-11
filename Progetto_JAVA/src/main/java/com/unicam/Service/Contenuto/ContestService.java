@@ -38,7 +38,7 @@ public class ContestService {
         this.repoContest.save(contenuto);
     }
 
-    public List<ContestResponseDTO> GetContestByComuneRuolo(String comune, Ruolo role, LocalDateTime adesso) {
+    public List<ContestResponseDTO> GetContestByComuneRuolo(String comune, LocalDateTime adesso) {
         List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
         List<ContestResponseDTO> contests = new ArrayList<>();
         for (Contest contest : contestPresenti) {

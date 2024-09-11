@@ -8,9 +8,11 @@ import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ContenutoService;
+import com.unicam.Service.OSMService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;
 import com.unicam.dto.ItinerarioDTO;
+import com.unicam.dto.OSM.PuntoGeoOSMDTO;
 import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
 import com.unicam.dto.PuntoGeoDTO;
 import com.unicam.dto.PuntoLogicoDTO;
@@ -24,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +43,9 @@ import java.util.Locale;
 public class ContributorController {
 
     private final SecurityAutoConfiguration securityAutoConfiguration;
+
+    @Autowired
+    private OSMService servizioMappa;
     @Autowired
     private UtenteService serviceUtente;
     @Autowired
@@ -113,7 +121,7 @@ public class ContributorController {
     }
 
     @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore-Animatore/Aggiungi-PuntoGeo")
-    public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoDTO richiesta){
+    public void AggiungiPuntoGeolocalizzato(@RequestBody /*PuntoGeoDTO*/ PuntoGeoOSMDTO richiesta) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -141,7 +149,13 @@ public class ContributorController {
         //controllo che non esista già un punto logico nel database con lo stesso luogo (indipendentemente dallo stato del contenuto)
         this.servicePuntoGeo.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
-        PuntoGeolocalizzato punto = richiesta.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
+        String indirizzo = richiesta.getTitolo();
+        indirizzo = URLEncoder.encode(indirizzo, StandardCharsets.UTF_8.toString());
+        List<Double> coordinate = servizioMappa.getCoordinates(indirizzo);
+
+        PuntoGeoDTO puntoTrovato = new PuntoGeoDTO(richiesta.getTitolo(), richiesta.getDescrizione(), coordinate.get(0), coordinate.get(1));
+
+        PuntoGeolocalizzato punto = puntoTrovato.ToEntity(this.serviceUtente.GetUtenteById(idUtente), comune);
 
         if(currentRole.equals(Ruolo.CONTRIBUTOR.name())){
             RichiestaAggiuntaPuntoGeo aggiunta = new RichiestaAggiuntaPuntoGeo(servicePuntoGeo, punto);

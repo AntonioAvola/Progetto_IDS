@@ -70,6 +70,8 @@ public class UtenteController {
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
+        login.setComune(registrazione.getComune());
+        login.setComuneVisitato(registrazione.getComune());
 
         LocalDateTime adesso = LocalDateTime.now();
 
@@ -77,7 +79,7 @@ public class UtenteController {
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(registrazione.getComune());
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(registrazione.getComune());
         List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(registrazione.getComune());
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), login.getRole(), adesso);
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(registrazione.getComune(), adesso);
 
 
         login.getContenutiComune().put("punti geolocalizzati", puntiGeolocalizzati);

@@ -126,17 +126,13 @@ public class ComuneController {
         RicercaContenutiResponseDTO ricercaComune = new RicercaContenutiResponseDTO();
 
         LocalDateTime adesso = LocalDateTime.now();
+        ricercaComune.setComuneVisitato(comune);
 
         List<PuntoGeoResponseDTO> puntiGeolocalizzati = this.servizioPuntoGeo.GetPuntiGeoByComune(comune);
         List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciByComune(comune);
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariByComune(comune);
         List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune);
-        List<ContestResponseDTO> contest;
-        if(comune.equals(this.servizioUtente.GetUtenteById(idUtente).getComune()))
-            contest = this.servizioCon.GetContestByComuneRuolo(comune, this.servizioUtente.GetUtenteById(idUtente).getRuoloComune(), adesso);
-        else{
-            contest = this.servizioCon.GetContestByComuneRuolo(comune, Ruolo.TURISTA_AUTENTICATO, adesso);
-        }
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestByComuneRuolo(comune, adesso);
 
         ricercaComune.getContenutiPresenti().put("punti geolocalizzati", puntiGeolocalizzati);
         ricercaComune.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
