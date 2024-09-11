@@ -5,6 +5,7 @@ import com.unicam.Richieste.RichiestaAggiuntaComune;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
+import com.unicam.Service.OSMService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AccettaRifiutaContenutoDTO;
 import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
@@ -15,10 +16,15 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ObservationSecurityContextChangedListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +62,8 @@ public class ComuneController {
     private EventoService servizioEv;
     @Autowired
     private ContestService servizioCon;
+    @Autowired
+    private OSMService servizioMappa;
 
     @Autowired
     public ComuneController(ComuneService servizio,
@@ -67,7 +75,7 @@ public class ComuneController {
     }
 
     @PostMapping("Api/Comune/Richiesta-Inserimento-Comune")
-    public void RichiestaAggiunta(@RequestBody RichiestaComuneDTO richiesta){
+    public void RichiestaAggiunta(/*@RequestBody RichiestaComuneDTO richiesta*/) throws IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -95,6 +103,11 @@ public class ComuneController {
             }
             throw new IllegalArgumentException("La richiesta di aggiunta del comune è già stata inoltrata");
         }
+
+        String indirizzo = URLEncoder.encode(comune, StandardCharsets.UTF_8.toString());
+        List<Double> coordinateComune = this.servizioMappa.getCoordinates(indirizzo);
+
+        RichiestaComuneDTO richiesta = new RichiestaComuneDTO(coordinateComune.get(0), coordinateComune.get(1));
 
         RichiestaAggiuntaComune richiestaAggiunta = new RichiestaAggiuntaComune(servizioUtente,
                 servizioComune, richiesta, servizioPuntoGeo, idUtente);
