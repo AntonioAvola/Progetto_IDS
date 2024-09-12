@@ -28,65 +28,65 @@ import static javax.crypto.Cipher.SECRET_KEY;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-
     @Autowired
     private JwtUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    private String SALT = "passwordSegretaAbbastanzaLunga1234ProgettoIngegneriaDelSoftware";
+    private JwtTokenProvider jwtTokenProvider;  // Usa il provider per gestire la logica del token
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String requestTokenHeader = request.getHeader("Authorization");
+        // Ottieni il token dall'header Authorization
+        String jwtToken = jwtTokenProvider.resolveToken(request);
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            String jwtToken = requestTokenHeader.substring(7);  // Rimuovi "Bearer "
-
+        if (jwtToken != null) {
             try {
-                if (jwtToken.contains(" ")) {
-                    logger.error("Token contiene spazi non validi");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token non valido");
-                    return;
+                // Estrai i claims dal token
+                Claims claims = jwtTokenProvider.extractAllClaims(jwtToken);
+                String username = claims.get("username", String.class);
+                String role = claims.get("role", String.class);
+                String comune = claims.get("comune", String.class);
+
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // Carica i dettagli dell'utente
+                    UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+
+                    if (jwtTokenProvider.validateToken(jwtToken, userDetails.getUsername())) {
+                        // Costruisci l'oggetto UserCustomDetails o utilizza i dettagli utente standard
+                        UserCustomDetails userCustomDetails = new UserCustomDetails(username, claims.get("id").toString(), role, comune);
+
+                        // Imposta le authorities per l'utente
+                        List<GrantedAuthority> authorities = new ArrayList<>();
+                        authorities.add(new SimpleGrantedAuthority(role));
+
+                        // Setta il contesto di sicurezza
+                        setAuthentication(userCustomDetails, authorities, request);
+                    }
                 }
-
-                Claims claims = Jwts.parser()
-                        .setSigningKey(SALT)
-                        .parseClaimsJws(jwtToken)
-                        .getBody();
-
-                String username = claims.get("username").toString();
-                String userId = claims.get("id").toString();
-                String role = claims.get("role").toString();
-                String comune = claims.get("comune").toString();
-
-                // Crea una lista di authority
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority(role));
-
-
-                UserCustomDetails userCustomDetails = new UserCustomDetails(username, userId, role, comune);
-
-                logger.info("utente autenticato: " + username + "con ruolo: " + role + "e id: " + userId);
-
-
-                // Imposta l'autenticazione nel contesto di sicurezza
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userCustomDetails, null, userCustomDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            } catch (ExpiredJwtException e) {
+                logger.warn("Token JWT scaduto", e);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token JWT scaduto");
+                return;
             } catch (JwtException | IllegalArgumentException e) {
-                logger.error("Errore nella decodifica del token JWT", e);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token non valido");
+                logger.error("Errore nel token JWT", e);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token JWT non valido");
                 return;
             }
         }
 
+        // Continua con la catena di filtri
         filterChain.doFilter(request, response);
     }
+
+    private void setAuthentication(UserCustomDetails userCustomDetails, List<GrantedAuthority> authorities, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userCustomDetails, null, authorities);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+
+
 }
