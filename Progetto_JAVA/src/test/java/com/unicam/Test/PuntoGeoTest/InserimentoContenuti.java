@@ -1,4 +1,4 @@
-package com.unicam.Test.PuntoGeoTest;
+package com.unicam.test.PuntoGeoTest;
 
 import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
 import com.unicam.Model.PuntoGeolocalizzato;
