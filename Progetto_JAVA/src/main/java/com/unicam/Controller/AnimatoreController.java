@@ -1,7 +1,6 @@
 package com.unicam.Controller;
 
 import com.unicam.Model.*;
-import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaContest;
 import com.unicam.Richieste.Contenuto.RichiestaAggiuntaEvento;
 import com.unicam.Security.UserCustomDetails;
@@ -9,7 +8,6 @@ import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.ContestService;
 import com.unicam.Service.Contenuto.EventoService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
-import com.unicam.Service.ContenutoService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.PropostaContestDTO;
 import com.unicam.dto.PropostaEventoDTO;
@@ -27,9 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Metodi disponibili solo agli animatori
- */
 @RestController
 @RequestMapping(name = "api/animatore")
 public class AnimatoreController {
@@ -37,20 +32,6 @@ public class AnimatoreController {
     @Autowired
     private ComuneService servizioComune;
     private UtenteService servizioUtente;
-    /*private ContenutoService<Evento> servizioEvento;
-    private ContenutoService<Contest> servizioContest;
-    private ContenutoService<PuntoGeolocalizzato> servizioPunto;
-
-    @Autowired
-    public AnimatoreController(UtenteService servizioUtente,
-                               ContenutoService<Evento> servizioEvento,
-                               ContenutoService<Contest> servizioContest,
-                               ContenutoService<PuntoGeolocalizzato> servizioPunto){
-        this.servizioUtente = servizioUtente;
-        this.servizioEvento = servizioEvento;
-        this.servizioContest = servizioContest;
-        this.servizioPunto = servizioPunto;
-    }*/
     private EventoService servizioEvento;
     private ContestService servizioContest;
     private PuntoGeoService servizioPunto;
@@ -90,7 +71,7 @@ public class AnimatoreController {
 
         ControllaInizioFine(proposta.getInizio(), proposta.getFine());
 
-        ControlloPresenzaComune(comune);
+        this.servizioComune.ControlloPresenzaComune(comune);
 
         //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servizioEvento.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
@@ -105,13 +86,6 @@ public class AnimatoreController {
 
     private PuntoGeolocalizzato ControlloPresenzaPuntoGeo(String nomeLuogo, String comune) {
         return this.servizioPunto.GetPuntoGeoByNomeAndComuneAndStato(nomeLuogo.toUpperCase(Locale.ROOT), comune);
-    }
-
-    private void ControlloPresenzaComune(String comune) {
-        if(!this.servizioComune.ContainComune(comune))
-            throw new NullPointerException("Non è stata ancora fatta richiesta di inserimento del comune nel sistema");
-        if(this.servizioComune.GetComuneByNome(comune).getStatoRichiesta() == StatoContenuto.ATTESA)
-            throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
     }
 
     @PostMapping("Api/Animatore/Proponi-Contest")
@@ -135,6 +109,8 @@ public class AnimatoreController {
         if(!currentRole.equals(Ruolo.ANIMATORE.name())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
+
+        this.servizioComune.ControlloPresenzaComune(comune);
 
         ControllaInizioFine(proposta.getInizio(), proposta.getFine());
 

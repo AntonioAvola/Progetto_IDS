@@ -24,17 +24,6 @@ import java.util.List;
 @RequestMapping(name = "Api/Curatore")
 public class CuratoreController {
 
-    /*@Autowired
-    private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
-    @Autowired
-    private ContenutoService<PuntoLogico> servizioPuntoLo;
-    @Autowired
-    private ContenutoService<Itinerario> servizioIti;
-    @Autowired
-    private ContenutoService<Evento> servizioEv;
-    @Autowired
-    private ContenutoService<Contest> servizioCon;*/
-
     @Autowired
     private PuntoGeoService servizioPuntoGeo;
     @Autowired

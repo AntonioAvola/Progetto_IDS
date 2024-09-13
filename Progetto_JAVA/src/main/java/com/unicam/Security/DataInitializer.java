@@ -2,12 +2,17 @@ package com.unicam.Security;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.ComuneRepository;
+import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.UtenteRepository;
+import com.unicam.Service.ProxyOSM.ProxyOSM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +20,20 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private UtenteRepository repoUente;
+    private UtenteRepository repoUtente;
 
+    @Autowired
     private ComuneRepository repoComune;
 
+    @Autowired
+    private PuntoGeoRepository repoPunto;
+
+    @Autowired
+    private ProxyOSM proxyOSM;
+
+
     private List<String> nomiComuni = new ArrayList<>();
+    private List<String> luoghiRoma = new ArrayList<>();
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -27,9 +41,13 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         nomiComuni.add("CASTELFIDARDO");
-        nomiComuni.add("SANTA VITTORIA");
+        nomiComuni.add("MILANO");
         nomiComuni.add("TOLENTINO");
-        if(repoUente.count() == 0){
+        nomiComuni.add("ROMA");
+        luoghiRoma.add("ARCO DI TITO");
+        luoghiRoma.add("PANTHEON");
+        luoghiRoma.add("FONTANA DI TREVI");
+        if(repoUtente.count() == 0){
             CreateSuperADMIN();
             System.out.println("---------------------------------------------------------------------");
             int i = 1;
@@ -37,10 +55,17 @@ public class DataInitializer implements CommandLineRunner {
                 CreateGestoreComune(nome, i);
                 CreateCuratore(nome, i);
                 CreateAnimatore(nome, i);
+                CreateContributor(nome, i);
                 System.out.println("---------------------------------------------------------------------");
                 i += 1;
             }
+            CreateComuneApprovato();
+            System.out.println("---------------------------------------------------------------------");
+            CreateComuneAttesa();
+            CreatePuntoGeoApprovato(luoghiRoma);
+            CreatePuntoGeoAttesa();
         }
+        nomiComuni.clear();
     }
 
 
@@ -54,7 +79,7 @@ public class DataInitializer implements CommandLineRunner {
         adminUser.setPassword(bCryptPasswordEncoder.encode("Admin111!"));
         adminUser.setRuoloComune(Ruolo.ADMIN);
 
-        repoUente.save(adminUser);
+        repoUtente.save(adminUser);
 
         System.out.println("Admin creato con successo");
 
@@ -69,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
         GestoreUser.setRuoloComune(Ruolo.COMUNE);
         GestoreUser.setComune(comune);
 
-        repoUente.save(GestoreUser);
+        repoUtente.save(GestoreUser);
 
         System.out.println(GestoreUser.getComune() + ": RAPPRESENTANTE " + GestoreUser.getRuoloComune() + " --> creato con successo");
     }
@@ -84,7 +109,7 @@ public class DataInitializer implements CommandLineRunner {
         CuratoreUser.setRuoloComune(Ruolo.CURATORE);
         CuratoreUser.setComune(comune);
 
-        repoUente.save(CuratoreUser);
+        repoUtente.save(CuratoreUser);
         System.out.println(CuratoreUser.getComune() + ": " + CuratoreUser.getRuoloComune() + " --> creato con successo");
 
     }
@@ -98,8 +123,102 @@ public class DataInitializer implements CommandLineRunner {
         AnimatoreUser.setRuoloComune(Ruolo.ANIMATORE);
         AnimatoreUser.setComune(comune);
 
-        repoUente.save(AnimatoreUser);
+        repoUtente.save(AnimatoreUser);
         System.out.println(AnimatoreUser.getComune() + ": " + AnimatoreUser.getRuoloComune() + " --> creato con successo");
     }
 
+    private void CreateContributor(String comune, int i){
+
+        User ContributorUser = new User();
+        ContributorUser.setName("contributor");
+        ContributorUser.setUsername("contributor" + i);
+        ContributorUser.setEmail("contributor" + i + "@contributor.com");
+        ContributorUser.setComune(comune);
+        ContributorUser.setPassword(bCryptPasswordEncoder.encode("Contributor111!"));
+        ContributorUser.setRuoloComune(Ruolo.CONTRIBUTOR);
+
+        repoUtente.save(ContributorUser);
+
+        System.out.println(ContributorUser.getComune() + ": " + ContributorUser.getRuoloComune() + " --> creato con successo");
+
+    }
+
+    private void CreateComuneApprovato() throws IOException {
+        List<Double> coordinate = proxyOSM.getCoordinates("ROMA");
+        PuntoGeolocalizzato puntoComune = new PuntoGeolocalizzato();
+        puntoComune.setAutore(this.repoUtente.findUserById(14));
+        puntoComune.setTitolo("COMUNE");
+        puntoComune.setComune("ROMA");
+        puntoComune.setDescrizione("comune");
+        puntoComune.setLatitudine(coordinate.get(0));
+        puntoComune.setLongitudine(coordinate.get(1));
+        puntoComune.setStato(StatoContenuto.APPROVATO);
+        repoPunto.save(puntoComune);
+
+        Comune comune = new Comune();
+        comune.setNome("ROMA");
+        comune.setPosizione(puntoComune);
+        comune.setStatoRichiesta(StatoContenuto.APPROVATO);
+        repoComune.save(comune);
+
+        System.out.println("ROMA: COMUNE aggiunto");
+    }
+
+    private void CreateComuneAttesa() throws IOException {
+        List<Double> coordinate = proxyOSM.getCoordinates("MILANO");
+        PuntoGeolocalizzato puntoComune = new PuntoGeolocalizzato();
+        puntoComune.setAutore(this.repoUtente.findUserById(6));
+        puntoComune.setTitolo("COMUNE");
+        puntoComune.setComune("MILANO");
+        puntoComune.setDescrizione("comune");
+        puntoComune.setLatitudine(coordinate.get(0));
+        puntoComune.setLongitudine(coordinate.get(1));
+        puntoComune.setStato(StatoContenuto.ATTESA);
+        repoPunto.save(puntoComune);
+
+        Comune comune = new Comune();
+        comune.setNome("MILANO");
+        comune.setPosizione(puntoComune);
+        comune.setStatoRichiesta(StatoContenuto.ATTESA);
+        repoComune.save(comune);
+
+        System.out.println("MILANO: COMUNE richiesta inviata");
+    }
+
+    private void CreatePuntoGeoApprovato(List<String> luoghiRoma) throws IOException {
+        for(String luogo: luoghiRoma){
+            PuntoGeolocalizzato puntoComune = new PuntoGeolocalizzato();
+            puntoComune.setAutore(this.repoUtente.findUserById(15));
+            puntoComune.setTitolo(luogo);
+
+            String url = URLEncoder.encode(luogo, StandardCharsets.UTF_8);
+            List<Double> coordinate = proxyOSM.getCoordinates( url + ",Roma");
+
+            puntoComune.setComune("ROMA");
+            puntoComune.setDescrizione("descrizione");
+            puntoComune.setLatitudine(coordinate.get(0));
+            puntoComune.setLongitudine(coordinate.get(1));
+            puntoComune.setStato(StatoContenuto.APPROVATO);
+            repoPunto.save(puntoComune);
+
+            System.out.println("ROMA: " + luogo + " --> punto geolocalizzato aggiunto");
+            System.out.println("---------------------------------------------------------------------");
+        }
+    }
+
+    private void CreatePuntoGeoAttesa() throws IOException {
+        String luogo = URLEncoder.encode("PIAZZA NAVONA", StandardCharsets.UTF_8);
+        List<Double> coordinate = proxyOSM.getCoordinates( luogo + ",Roma");
+        PuntoGeolocalizzato puntoComune = new PuntoGeolocalizzato();
+        puntoComune.setAutore(this.repoUtente.findUserById(17));
+        puntoComune.setTitolo("PIAZZA NAVONA");
+        puntoComune.setComune("ROMA");
+        puntoComune.setDescrizione("descrizione");
+        puntoComune.setLatitudine(coordinate.get(0));
+        puntoComune.setLongitudine(coordinate.get(1));
+        puntoComune.setStato(StatoContenuto.ATTESA);
+        repoPunto.save(puntoComune);
+
+        System.out.println("ROMA: " + luogo + " --> punto geolocalizzato in attesa");
+    }
 }

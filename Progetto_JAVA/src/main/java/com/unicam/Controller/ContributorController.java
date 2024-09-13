@@ -89,7 +89,7 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        ControlloPresenzaComune(comune);
+        this.serviceComune.ControlloPresenzaComune(comune);
 
         //controllo che non esista già un itinerario nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.serviceItinerario.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), comune);
@@ -110,13 +110,6 @@ public class ContributorController {
 
     private List<PuntoGeolocalizzato> ControllaPuntiDiInteresse(List<String> nomiPunti, String comune) {
         return this.servicePuntoGeo.GetPuntiByListaNomiAndComuneAndStato(nomiPunti, comune);
-    }
-
-    private void ControlloPresenzaComune(String comune) {
-        if(!this.serviceComune.ContainComune(comune))
-            throw new NullPointerException("Non è stata ancora fatta richiesta di inserimento del comune nel sistema");
-        if(this.serviceComune.GetComuneByNome(comune).getStatoRichiesta() == StatoContenuto.ATTESA)
-            throw new IllegalArgumentException("Il comune non è ancora stato accettato nel sistema");
     }
 
     @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore-Animatore/Aggiungi-PuntoGeo")
@@ -143,14 +136,15 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        ControlloPresenzaComune(comune);
+        this.serviceComune.ControlloPresenzaComune(comune);
 
         //controllo che non esista già un punto logico nel database con lo stesso luogo (indipendentemente dallo stato del contenuto)
         this.servicePuntoGeo.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
         String indirizzo = richiesta.getTitolo();
+        String comuneRigerimento = URLEncoder.encode(comune, StandardCharsets.UTF_8.toString());
         indirizzo = URLEncoder.encode(indirizzo, StandardCharsets.UTF_8.toString());
-        List<Double> coordinate = servizioMappa.getCoordinates(indirizzo);
+        List<Double> coordinate = servizioMappa.getCoordinates(indirizzo  + "," + comuneRigerimento);
 
         PuntoGeoDTO puntoTrovato = new PuntoGeoDTO(richiesta.getTitolo(), richiesta.getDescrizione(), coordinate.get(0), coordinate.get(1));
 
@@ -191,7 +185,7 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        ControlloPresenzaComune(comune);
+        this.serviceComune.ControlloPresenzaComune(comune);
 
         //controllo che non esista già un punto geolocalizzato nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servicePuntoLogico.ControllaPresenzaNome(richiesta.getTitolo().toUpperCase(Locale.ROOT), richiesta.getNomePuntoGeo(), comune);
@@ -232,7 +226,8 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        ControlloPresenzaComune(comune);
+        this.serviceComune.ControlloPresenzaComune(comune);
+        //ControlloPresenzaComune(comune);
 
         RicercaContenutiResponseDTO propriContenutiApprovati = new RicercaContenutiResponseDTO();
 

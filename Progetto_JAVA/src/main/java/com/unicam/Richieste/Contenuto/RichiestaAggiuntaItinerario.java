@@ -4,7 +4,6 @@ import com.unicam.Model.Itinerario;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Richieste.ICommand;
 import com.unicam.Service.Contenuto.ItinerarioService;
-import com.unicam.Service.ContenutoService;
 
 public class RichiestaAggiuntaItinerario implements ICommand {
 

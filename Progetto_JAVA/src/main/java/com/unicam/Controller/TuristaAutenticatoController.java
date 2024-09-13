@@ -4,7 +4,6 @@ import com.unicam.Model.*;
 import com.unicam.Security.UserCustomDetails;
 import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
-import com.unicam.Service.PostService;
 import com.unicam.Service.UtenteService;
 import com.unicam.dto.AggiungiPreferitoDTO;
 
@@ -30,48 +29,23 @@ public class TuristaAutenticatoController<T extends Contenuto> {
     private final SecurityAutoConfiguration securityAutoConfiguration;
 
     private UtenteService servizioUtente;
-
-    /*private ContenutoService<Itinerario> serviceItinerario;
-    private ContenutoService<PuntoGeolocalizzato> servicePuntoGeo;
-    private ContenutoService<PuntoLogico> servicePuntoLogico;
-    @Autowired
-    private ContenutoService<Evento> serviceEv;
-    @Autowired
-    private ContenutoService<Contest> serviceCon;
-    private ContenutoService<PostTurista> servizioPost;
-
-    public TuristaAutenticatoController(ContenutoService<PostTurista> servizioPost,
-                                        ContenutoService<Itinerario> serviceIt,
-                                        ContenutoService<PuntoGeolocalizzato> servicePG,
-                                        ContenutoService<PuntoLogico> servicePL,
-                                        UtenteService servizioUtente){
-        this.serviceItinerario = serviceIt;
-        this.servicePuntoGeo = servicePG;
-        this.servicePuntoLogico = servicePL;
-        this.servizioPost = servizioPost;
-        this.servizioUtente = servizioUtente;
-    }*/
     @Autowired
     private ComuneService servizioComune;
+    @Autowired
     private ItinerarioService serviceItinerario;
+    @Autowired
     private PuntoGeoService servicePuntoGeo;
-    private PuntoLogicoService servicePuntoLogico;
     @Autowired
     private EventoService serviceEv;
     @Autowired
     private ContestService serviceCon;
-    private PostService servizioPost;
 
-    public TuristaAutenticatoController(PostService servizioPost,
-                                        ItinerarioService serviceIt,
+    public TuristaAutenticatoController(ItinerarioService serviceIt,
                                         PuntoGeoService servicePG,
-                                        PuntoLogicoService servicePL,
                                         UtenteService servizioUtente,
                                         SecurityAutoConfiguration securityAutoConfiguration){
         this.serviceItinerario = serviceIt;
         this.servicePuntoGeo = servicePG;
-        this.servicePuntoLogico = servicePL;
-        this.servizioPost = servizioPost;
         this.servizioUtente = servizioUtente;
         this.securityAutoConfiguration = securityAutoConfiguration;
     }

@@ -95,4 +95,15 @@ public class ComuneService {
                 throw new IllegalArgumentException("Il comune è già stato approvato");
         }
     }
+
+    public void ControlloPresenzaComune(String comune) {
+        List<Comune> comuni = this.repository.findAll();
+        if(this.repository.existsByNome(comune)) {
+            if (this.repository.existsByNomeAndStatoRichiesta(comune, StatoContenuto.ATTESA))
+                throw new IllegalArgumentException("Il comune non è stato ancora accettato");
+        }
+        else{
+            throw new IllegalArgumentException("Non è ancora stata fatta richiesta di aggiunta comune");
+        }
+    }
 }

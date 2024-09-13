@@ -4,7 +4,6 @@ import com.unicam.Model.PuntoLogico;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Richieste.ICommand;
 import com.unicam.Service.Contenuto.PuntoLogicoService;
-import com.unicam.Service.ContenutoService;
 
 public class RichiestaAggiuntaPuntoLogico implements ICommand {
 

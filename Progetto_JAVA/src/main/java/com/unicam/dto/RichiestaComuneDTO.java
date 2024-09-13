@@ -8,42 +8,23 @@ import java.util.Locale;
 
 public class RichiestaComuneDTO {
 
-    //private String nomeComune;
-    //private String descrizione;
-    //private long  idResponsabile;
     private double latitudine;
     private double longitudine;
 
 
     public RichiestaComuneDTO(){}
-    public RichiestaComuneDTO(/*String descrizione,*/ double lat, double lon){
-        //this.descrizione = descrizione;
+    public RichiestaComuneDTO(double lat, double lon){
         this.latitudine = lat;
         this.longitudine = lon;
     }
 
-    /*public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }*/
 
     public double getLatitudine() {
         return latitudine;
     }
 
-    public void setLatitudine(double latitudine) {
-        this.latitudine = latitudine;
-    }
-
     public double getLongitudine() {
         return longitudine;
-    }
-
-    public void setLongitudine(double longitudine) {
-        this.longitudine = longitudine;
     }
 
     public Comune ToEntityComune(String nomeComune){

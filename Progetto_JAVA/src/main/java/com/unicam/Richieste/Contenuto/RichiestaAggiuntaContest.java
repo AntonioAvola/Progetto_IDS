@@ -4,7 +4,6 @@ import com.unicam.Model.Contest;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Richieste.ICommand;
 import com.unicam.Service.Contenuto.ContestService;
-import com.unicam.Service.ContenutoService;
 
 public class RichiestaAggiuntaContest implements ICommand {
 

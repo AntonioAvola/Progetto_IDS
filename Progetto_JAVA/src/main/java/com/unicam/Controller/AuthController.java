@@ -22,21 +22,8 @@ public class AuthController {
 
     @Autowired
     private UtenteService servizioUtente;
-    //private
     @Autowired
     private JwtTokenProvider tokenProvider;
-
-    /*@Autowired
-    private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
-    @Autowired
-    private ContenutoService<PuntoLogico> servizioPuntoLo;
-    @Autowired
-    private ContenutoService<Itinerario> servizioIti;
-    @Autowired
-    private ContenutoService<Evento> servizioEv;
-    @Autowired
-    private ContenutoService<Contest> servizioCon;*/
-
     @Autowired
     private PuntoGeoService servizioPuntoGeo;
     @Autowired

@@ -19,32 +19,17 @@ import java.util.List;
 @RequestMapping("api/utente")
 public class UtenteController {
 
-    private UtenteService servizio;
-    /*private ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo;
-    private ContenutoService<PuntoLogico> servizioPuntoLo;
-    private ContenutoService<Itinerario> servizioIti;
-    private ContenutoService<Evento> servizioEv;
-    private ContenutoService<Contest> servizioCon;
-
     @Autowired
-    public UtenteController(UtenteService servizio,
-                            ContenutoService<PuntoGeolocalizzato> servizioPuntoGeo,
-                            ContenutoService<PuntoLogico> servizioPuntoLo,
-                            ContenutoService<Itinerario> servizioIti,
-                            ContenutoService<Evento> servizioEv,
-                            ContenutoService<Contest> servizioCon){
-        this.servizio = servizio;
-        this.servizioPuntoGeo = servizioPuntoGeo;
-        this.servizioPuntoLo = servizioPuntoLo;
-        this.servizioIti = servizioIti;
-        this.servizioEv = servizioEv;
-        this.servizioCon = servizioCon;
-    }*/
-
+    private UtenteService servizio;
+    @Autowired
     private PuntoGeoService servizioPuntoGeo;
+    @Autowired
     private PuntoLogicoService servizioPuntoLo;
+    @Autowired
     private ItinerarioService servizioIti;
+    @Autowired
     private EventoService servizioEv;
+    @Autowired
     private ContestService servizioCon;
 
     @Autowired

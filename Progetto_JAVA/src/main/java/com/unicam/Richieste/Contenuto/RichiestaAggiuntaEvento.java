@@ -4,7 +4,6 @@ import com.unicam.Model.Evento;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Richieste.ICommand;
 import com.unicam.Service.Contenuto.EventoService;
-import com.unicam.Service.ContenutoService;
 
 public class RichiestaAggiuntaEvento implements ICommand {
 

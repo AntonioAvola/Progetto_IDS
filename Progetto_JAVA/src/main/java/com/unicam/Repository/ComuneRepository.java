@@ -14,4 +14,6 @@ public interface ComuneRepository extends JpaRepository<Comune, Long> {
     List<Comune> findAllByStatoRichiesta(StatoContenuto attesa);
 
     Comune findByNome(String nomeComune);
+
+    boolean existsByNomeAndStatoRichiesta(String comune, StatoContenuto attesa);
 }
