@@ -2,6 +2,7 @@ package com.unicam.Security;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.ComuneRepository;
+import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private PuntoGeoRepository repoPunto;
+
+    @Autowired
+    private EventoRepository repEvento;
 
     @Autowired
     private ProxyOSM proxyOSM;
@@ -63,6 +68,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("---------------------------------------------------------------------");
             CreateComuneAttesa();
             CreatePuntoGeoApprovato(luoghiRoma);
+            CreateEventoApprovato();
             CreatePuntoGeoAttesa();
         }
         nomiComuni.clear();
@@ -220,5 +226,26 @@ public class DataInitializer implements CommandLineRunner {
         repoPunto.save(puntoComune);
 
         System.out.println("ROMA: " + luogo + " --> punto geolocalizzato in attesa");
+    }
+
+    private void CreateEventoApprovato() throws IOException {
+        Evento evento = new Evento();
+        evento.setAutore(this.repoUtente.findUserById(16));
+        evento.setComune("ROMA");
+        evento.setTitolo("Festa della birra");
+        evento.setDescrizione("Bellissima festa con tantissima birra buona");
+
+        PuntoGeolocalizzato luogo = repoPunto.findGeoByTitoloAndComune("FONTANA DI TREVI", "ROMA");
+        evento.setLuogo(luogo);
+
+        Tempo tempo = new Tempo();
+        tempo.setInizio(LocalDateTime.of(2024, 10, 20, 0, 0));
+        tempo.setFine(LocalDateTime.of(2024, 10, 20, 0, 0));
+        evento.setDurata(tempo);
+        evento.setStato(StatoContenuto.APPROVATO);
+
+        repEvento.save(evento);
+
+        System.out.println("Evento 'Festa della birra' creato con successo e associato al luogo: " + luogo.getTitolo());
     }
 }

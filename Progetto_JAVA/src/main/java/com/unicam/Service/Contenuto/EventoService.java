@@ -119,7 +119,7 @@ public class EventoService {
         }
     }
 
-    private void EliminaProposteEventiCheSiSovrappongono(List<Evento> eventiAttesa, Evento evento) {
+    public void EliminaProposteEventiCheSiSovrappongono(List<Evento> eventiAttesa, Evento evento) {
         for(Evento eventoTrovato : eventiAttesa){
             if(eventoTrovato.getLuogo().equals(evento.getLuogo())){
                 if((eventoTrovato.getDurata().getInizio().isBefore(evento.getDurata().getFine())

@@ -24,8 +24,16 @@ public class Tempo {
         return inizio;
     }
 
+    public void setInizio(LocalDateTime inizio) {
+        this.inizio = inizio;
+    }
+
     public LocalDateTime getFine() {
         return fine;
+    }
+
+    public void setFine(LocalDateTime fine) {
+        this.fine = fine;
     }
 
     // Calcola la durata tra inizio e fine
