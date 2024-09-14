@@ -1,4 +1,4 @@
-package com.unicam.test.EventoTest;
+package com.unicam.Test.EventoTest;
 
 import com.unicam.Model.BuilderContenuto.EventoBuilder;
 import com.unicam.Model.Evento;

@@ -194,7 +194,6 @@ public class PuntoGeoService {
     public void EliminaContenutiAttesaDoppioni(PuntoGeolocalizzato punto) {
         List<PuntoGeolocalizzato> puntiTrovati = new ArrayList<>();
         puntiTrovati.addAll(this.repoPunto.findByLatitudineAndLongitudineAndStato(punto.getLatitudine(), punto.getLongitudine(),StatoContenuto.ATTESA));
-        //puntiTrovati.addAll(this.repoPunto.findPuntiByTitoloAndComuneAndStato(punto.getTitolo(), punto.getComune(), StatoContenuto.ATTESA));
         for(PuntoGeolocalizzato puntoTrovato : puntiTrovati){
             if(punto.getTitolo().equals("COMUNE"))
                 this.repoComune.delete(this.repoComune.findByNome(puntoTrovato.getComune()));

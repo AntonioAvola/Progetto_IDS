@@ -3,7 +3,9 @@ package com.unicam.Security;
 import com.unicam.Model.*;
 import com.unicam.Repository.ComuneRepository;
 import com.unicam.Repository.Contenuto.EventoRepository;
+import com.unicam.Repository.Contenuto.ItinerarioRepository;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
+import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private ComuneRepository repoComune;
+
+    @Autowired
+    private PuntoLogicoRepository repoLogico;
+
+    @Autowired
+    private ItinerarioRepository repoItinerario;
 
     @Autowired
     private PuntoGeoRepository repoPunto;
@@ -67,9 +75,16 @@ public class DataInitializer implements CommandLineRunner {
             CreateComuneApprovato();
             System.out.println("---------------------------------------------------------------------");
             CreateComuneAttesa();
+            System.out.println("---------------------------------------------------------------------");
             CreatePuntoGeoApprovato(luoghiRoma);
             CreateEventoApprovato();
+            System.out.println("---------------------------------------------------------------------");
             CreatePuntoGeoAttesa();
+            System.out.println("---------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------");
+            CreateAvvisi();
+            System.out.println("---------------------------------------------------------------------");
+            CreateItinerari();
         }
         nomiComuni.clear();
     }
@@ -247,5 +262,71 @@ public class DataInitializer implements CommandLineRunner {
         repEvento.save(evento);
 
         System.out.println("Evento 'Festa della birra' creato con successo e associato al luogo: " + luogo.getTitolo());
+    }
+
+    private void CreateAvvisi(){
+        PuntoLogico punto = new PuntoLogico();
+        punto.setAutore(repoUtente.findUserById(15));
+        punto.setTitolo("AVVISO!! LAVORI IN CORSO");
+        punto.setDescrizione("lavori lungo la strada nelle vicinanze");
+        punto.setComune("ROMA");
+        punto.setRiferimento(repoPunto.findGeoByTitoloAndComune("ARCO DI TITO", "ROMA"));
+        punto.setStato(StatoContenuto.APPROVATO);
+        repoLogico.save(punto);
+
+        System.out.println("ROMA: AVVISO!! LAVORI IN CORSO; ARCO DI TITO --> avviso approvato");
+
+        PuntoLogico punto2 = new PuntoLogico();
+        punto2.setAutore(repoUtente.findUserById(15));
+        punto2.setTitolo("AVVISO!! RISTRUTTURAZIONE");
+        punto2.setDescrizione("Monumento sottoposto a ristrutturazione. Si potrà tornare a fisitarlo dal 15 settembre");
+        punto2.setComune("ROMA");
+        punto2.setRiferimento(repoPunto.findGeoByTitoloAndComune("PANTHEON", "ROMA"));
+        punto2.setStato(StatoContenuto.APPROVATO);
+        repoLogico.save(punto2);
+
+        System.out.println("ROMA: AVVISO!! RISTRUTTURAZIONE; PANTHEON --> avviso approvato");
+
+        PuntoLogico punto3 = new PuntoLogico();
+        punto3.setAutore(repoUtente.findUserById(15));
+        punto3.setTitolo("AVVISO!! AFFOLLATO");
+        punto3.setDescrizione("Luogo solitamente molto affollato, soprattutto durante periodo estivo");
+        punto3.setComune("ROMA");
+        punto3.setRiferimento(repoPunto.findGeoByTitoloAndComune("FONTANA DI TREVI", "ROMA"));
+        punto3.setStato(StatoContenuto.ATTESA);
+        repoLogico.save(punto3);
+
+        System.out.println("ROMA: AVVISO!! AFFOLLATO; FONTANA DI TREVI --> avviso in attesa");
+    }
+
+    private void CreateItinerari(){
+        Itinerario itinerio = new Itinerario();
+        itinerio.setAutore(repoUtente.findUserById(15));
+        itinerio.setTitolo("CAMMINATA");
+        itinerio.setDescrizione("Camminata piacevole per il comune");
+        itinerio.setComune("ROMA");
+        List<PuntoGeolocalizzato> interessi = new ArrayList<>();
+        interessi.add(repoPunto.findGeoByTitoloAndComune("PANTHEON", "ROMA"));
+        interessi.add(repoPunto.findGeoByTitoloAndComune("ARCO DI TITO", "ROMA"));
+        interessi.add(repoPunto.findGeoByTitoloAndComune("COMUNE", "ROMA"));
+        itinerio.setPuntiDiInteresse(interessi);
+        itinerio.setStato(StatoContenuto.APPROVATO);
+        repoItinerario.save(itinerio);
+
+        System.out.println("ROMA: CAMMINATA --> itinerario approvato");
+
+        Itinerario itinerio2 = new Itinerario();
+        itinerio2.setAutore(repoUtente.findUserById(15));
+        itinerio2.setTitolo("SCOUT");
+        itinerio2.setDescrizione("Percorso comunemente seguito dagli scout del comune");
+        itinerio2.setComune("ROMA");
+        List<PuntoGeolocalizzato> interessi2 = new ArrayList<>();
+        interessi2.add(repoPunto.findGeoByTitoloAndComune("FONTANA DI TREVI", "ROMA"));
+        interessi2.add(repoPunto.findGeoByTitoloAndComune("COMUNE", "ROMA"));
+        itinerio2.setPuntiDiInteresse(interessi2);
+        itinerio2.setStato(StatoContenuto.APPROVATO);
+        repoItinerario.save(itinerio2);
+
+        System.out.println("ROMA: SCOUT --> itinerario approvato");
     }
 }
