@@ -20,12 +20,19 @@ Per accedere a Swagger e testare tutte le API, aprire il seguente URL nel browse
 | ANIMATORE  | animatore1  | Animatore111!  | CASTELFIDARDO |
 | CONTRIBUTOR| contributor1| Contributor111!| CASTELFIDARDO |
 |------------|-------------|----------------|---------------|
-| COMUNE     | gestore2    | Gestore111!    | SANTA VITTORIA|
-| CURATORE   | curatore2   | Curatore111!   | SANTA VITTORIA|
-| ANIMATORE  | animatore2  | Animatore111!  | SANTA VITTORIA|
-| CONTRIBUTOR| contributor2| Contributor111!| SANTA VITTORIA|
+| COMUNE     | gestore2    | Gestore111!    | MILANO        |
+| CURATORE   | curatore2   | Curatore111!   | MILANO        |
+| ANIMATORE  | animatore2  | Animatore111!  | MILANO        |
+| CONTRIBUTOR| contributor2| Contributor111!| MILANO        |
 |------------|-------------|----------------|---------------|
 | COMUNE     | gestore3    | Gestore111!    | TOLENTINO     |
 | CURATORE   | curatore3   | Curatore111!   | TOLENTINO     |
 | ANIMATORE  | animatore3  | Animatore111!  | TOLENTINO     |
 | CONTRIBUTOR| contributor3| Contributor111!| TOLENTINO     |
+|------------|-------------|----------------|---------------|
+| COMUNE     | gestore4    | Gestore111!    | ROMA          |
+| CURATORE   | curatore4   | Curatore111!   | ROMA          |
+| ANIMATORE  | animatore4  | Animatore111!  | ROMA          |
+| CONTRIBUTOR| contributor4| Contributor111!| ROMA          |
+
+
