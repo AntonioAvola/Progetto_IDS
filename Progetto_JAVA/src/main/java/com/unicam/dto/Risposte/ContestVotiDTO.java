@@ -7,16 +7,14 @@ public class ContestVotiDTO {
     private String nomeContest;
     private String descrizione;
     private LocalDateTime fine;
-    private int votiFavore;
-    private int votiContrari;
+    private String vincitore;
 
     public ContestVotiDTO(String nomeContest, String descrizione,
-                              LocalDateTime fine, int votiFavore, int votiContrari){
+                              LocalDateTime fine, String vincitore){
         this.nomeContest = nomeContest;
         this.descrizione = descrizione;
         this.fine = fine;
-        this.votiFavore = votiFavore;
-        this.votiContrari = votiContrari;
+        this.vincitore = vincitore;
     }
 
     public String getNomeItinerario() {
@@ -31,11 +29,7 @@ public class ContestVotiDTO {
         return fine;
     }
 
-    public int getVotiFavore() {
-        return votiFavore;
-    }
-
-    public int getVotiContrari() {
-        return votiContrari;
+    public String getVincitore() {
+        return vincitore;
     }
 }

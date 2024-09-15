@@ -158,8 +158,8 @@ public class TuristaAutenticatoController<T extends Contenuto> {
         return ResponseEntity.ok(preferiti);
     }
 
-    @PutMapping("Api/Partecipante-Contest/Voto-Favore")
-    public ResponseEntity<String> VotoAFavore(@RequestParam String nomeContest){
+    @PutMapping("Api/Partecipante-Contest/Partecipa")
+    public ResponseEntity<String> Partecipa(@RequestParam String nomeContest){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -181,34 +181,7 @@ public class TuristaAutenticatoController<T extends Contenuto> {
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
-        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),true, idUtente);
+        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(), idUtente);
         return ResponseEntity.ok("Votazione eseguita con successo");
-    }
-
-    @PutMapping("Api/Partecipante-Contest/Voto-Contrario")
-    public ResponseEntity<String> VotoContrario(@RequestParam String nomeContest){
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
-
-        String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);
-
-        String currentRole = userDetails.getRole();
-
-        Comune comune = this.servizioComune.GetComuneByNome(this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato());
-
-        if(currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
-
-        if(this.servizioUtente.GetUtenteById(idUtente).getComune().equals(comune.getNome()) &&
-                (currentRole.equals(Ruolo.ANIMATORE.name()) || currentRole.equals(Ruolo.COMUNE.name())))
-            throw new IllegalArgumentException("Non hai i permessi per partecipare al contest");
-
-        this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
-
-        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(),false, idUtente);
-        return  ResponseEntity.ok("Votazione eseguita con successo");
     }
 }

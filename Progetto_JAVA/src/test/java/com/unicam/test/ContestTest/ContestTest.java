@@ -196,16 +196,15 @@ public class ContestTest {
 
         try{
             contestService.AggiungiContenuto(contest);
-            contestService.PartecipaContest("Concorso fotografico", "ROMA", true, 17L);
+            contestService.PartecipaContest("Concorso fotografico", "ROMA", 17L);
         }catch (Exception e){
             fail("la partecipazione ha restituito un errore " + e.getMessage());
         }
 
         Contest contestAggiornato = contestRepository.findContestByTitoloAndComune("Concorso fotografico", "ROMA");
 
-        assertTrue("il contest non è presente", contestAggiornato.getIdPartecipanti().contains(17L));
-
-        assertEquals("il numero di partecipanti dovrebbe essere 1",1, contestAggiornato.getVotiFavore());
+        //TODO modificare questo controllo; la lista contiene gli username
+        assertTrue("il contest non è presente", contestAggiornato.getListaPartecipanti().contains(17L));
     }
 
 
@@ -224,7 +223,8 @@ public class ContestTest {
         Contest contest = contestBuilder.Result();
         contest.setStato(StatoContenuto.APPROVATO);
 
-        contest.getIdPartecipanti().add(15L);
+        //TODO modificare questo comando, la lista contiene gli username (String)
+        //contest.getListaPartecipanti().add(15L);
 
         try{
             contestService.AggiungiContenuto(contest);
@@ -233,7 +233,7 @@ public class ContestTest {
         }
 
         assertThrows(IllegalArgumentException.class, ()-> {
-           contestService.PartecipaContest("Concorso fotografico", "ROMA", true, 15L);
+           contestService.PartecipaContest("Concorso fotografico", "ROMA", 15L);
        });
 
     }

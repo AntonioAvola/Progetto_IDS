@@ -1,4 +1,4 @@
-package com.unicam.Test.ItinerarioTest;
+package com.unicam.test.ItinerarioTest;
 
 import com.unicam.Model.Itinerario;
 import com.unicam.Model.PuntoGeolocalizzato;

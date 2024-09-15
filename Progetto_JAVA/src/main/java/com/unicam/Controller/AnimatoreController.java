@@ -9,6 +9,7 @@ import com.unicam.Service.Contenuto.ContestService;
 import com.unicam.Service.Contenuto.EventoService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
 import com.unicam.Service.UtenteService;
+import com.unicam.dto.ContestTerminatoDTO;
 import com.unicam.dto.PropostaContestDTO;
 import com.unicam.dto.PropostaEventoDTO;
 import com.unicam.dto.Risposte.ContestVotiDTO;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -130,9 +132,8 @@ public class AnimatoreController {
 
     }
 
-
-    @GetMapping("Api/Animatore/Andamento-Contest")
-    public ResponseEntity<RicercaContenutiResponseDTO> EsitoContestTerminati(){
+    @GetMapping("Api/Animatore/Contest-Terminati")
+    public ResponseEntity<List<ContestVotiDTO>> ContestTerminati(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -155,14 +156,65 @@ public class AnimatoreController {
 
         LocalDateTime adesso = LocalDateTime.now();
 
-        RicercaContenutiResponseDTO contestConVoti = new RicercaContenutiResponseDTO();
+        List<ContestVotiDTO> contestsFiniti = this.servizioContest.GetContestByComuneTempo(comune, adesso);
 
-        List<ContestVotiDTO> contestInCorso = this.servizioContest.GetContestByComuneTempo(comune, adesso, false);
-        List<ContestVotiDTO> contestsFinti = this.servizioContest.GetContestByComuneTempo(comune, adesso, true);
+        return ResponseEntity.ok(contestsFiniti);
+    }
 
-        contestConVoti.getContenutiPresenti().put("contest terminati:", contestsFinti);
-        contestConVoti.getContenutiPresenti().put("contest in corso:", contestInCorso);
+    @GetMapping("Api/Animatore/Partecipanti-Contest-Terminato")
+    public ResponseEntity<ContestTerminatoDTO> PartecipantiContest(@RequestParam String contest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return ResponseEntity.ok(contestConVoti);
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!currentRole.equals(Ruolo.ANIMATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        this.servizioContest.ControllaPresenzaNomeApprovato(contest.toUpperCase(Locale.ROOT), comune);
+
+        ContestTerminatoDTO contestTerminato = this.servizioContest.PartecipantiContest(contest.toUpperCase(Locale.ROOT), comune, adesso);
+
+        return ResponseEntity.ok(contestTerminato);
+    }
+
+    @PutMapping("Api/Animatore/Assegna-Vincitore")
+    public void AssegnaVincitore(@RequestParam String contest, @RequestParam String vincitore){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!currentRole.equals(Ruolo.ANIMATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        this.servizioContest.AssegnaVincitore(contest.toUpperCase(Locale.ROOT), vincitore, adesso, comune);
     }
 }

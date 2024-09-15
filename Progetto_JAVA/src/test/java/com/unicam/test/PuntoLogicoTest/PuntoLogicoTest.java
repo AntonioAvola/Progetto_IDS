@@ -1,4 +1,4 @@
-package com.unicam.Test.PuntoLogicoTest;
+package com.unicam.test.PuntoLogicoTest;
 
 import com.unicam.Model.PuntoLogico;
 import com.unicam.Model.StatoContenuto;

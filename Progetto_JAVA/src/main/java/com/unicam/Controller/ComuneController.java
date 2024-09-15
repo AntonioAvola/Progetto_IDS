@@ -175,7 +175,7 @@ public class ComuneController {
 
         RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
         List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune, StatoContenuto.ATTESA);
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestStatoByComune(comune, StatoContenuto.ATTESA, adesso);
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestStatoByComune(comune, StatoContenuto.ATTESA);
 
         contenuti.getContenutiPresenti().put("eventi", eventi);
         contenuti.getContenutiPresenti().put("contest", contest);

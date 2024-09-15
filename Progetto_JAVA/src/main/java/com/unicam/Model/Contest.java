@@ -1,9 +1,7 @@
 package com.unicam.Model;
 
-import com.unicam.dto.UtenteDTO;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -16,16 +14,14 @@ public class Contest extends Contenuto{
 
     @Embedded
     private Tempo durata;
-    private int votiFavore;
-    private int votiContrari;
+    private String vincitore;
 
-    private List<Long> idPartecipanti;
+    private List<String> listaPartecipanti;
 
     public Contest(){
         super();
-        this.votiFavore = 0;
-        this.votiContrari = 0;
-        this.idPartecipanti = new ArrayList<>();
+        this.vincitore = "";
+        this.listaPartecipanti = new ArrayList<>();
     }
 
     public Tempo getDurata() {
@@ -36,23 +32,15 @@ public class Contest extends Contenuto{
         this.durata = durata;
     }
 
-    public List<Long> getIdPartecipanti() {
-        return idPartecipanti;
+    public List<String> getListaPartecipanti() {
+        return listaPartecipanti;
     }
 
-    public int getVotiFavore() {
-        return votiFavore;
+    public String getVincitore() {
+        return vincitore;
     }
 
-    public void setVotiFavore(int votiFavore) {
-        this.votiFavore = votiFavore;
-    }
-
-    public int getVotiContrari() {
-        return votiContrari;
-    }
-
-    public void setVotiContrari(int votiContrari) {
-        this.votiContrari = votiContrari;
+    public void setVincitore(String vincitore) {
+        this.vincitore = vincitore;
     }
 }

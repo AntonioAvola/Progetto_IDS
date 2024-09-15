@@ -9,12 +9,9 @@ import com.unicam.Service.ComuneService;
 import com.unicam.Service.Contenuto.*;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
-import com.unicam.dto.AccettaRifiutaPuntoLogicoDTO;
-import com.unicam.dto.ItinerarioDTO;
+import com.unicam.dto.*;
 import com.unicam.dto.OSM.PuntoGeoOSMDTO;
 import com.unicam.dto.Provvisori.ContenutoAttesaDTO;
-import com.unicam.dto.PuntoGeoDTO;
-import com.unicam.dto.PuntoLogicoDTO;
 import com.unicam.dto.Risposte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -28,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -227,7 +225,6 @@ public class ContributorController {
         }
 
         this.serviceComune.ControlloPresenzaComune(comune);
-        //ControlloPresenzaComune(comune);
 
         RicercaContenutiResponseDTO propriContenutiApprovati = new RicercaContenutiResponseDTO();
 
@@ -248,6 +245,36 @@ public class ContributorController {
 
 
         return ResponseEntity.ok(propriContenutiApprovati);
+    }
+
+    @GetMapping("Api/Utente/Contest-Vinti")
+    public ResponseEntity<List<EsitoContestDTO>> EsitoContest(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(currentRole.equals(Ruolo.ADMIN.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        String username = this.serviceUtente.GetUtenteById(idUtente).getUsername();
+        List<EsitoContestDTO> esito = this.serviceContest.EsitoContest(username, adesso);
+
+        return ResponseEntity.ok(esito);
     }
 
     @DeleteMapping("Api/Utente/Elimina-Proprio-PuntoGeo-Itinerario-Evento-Contest")

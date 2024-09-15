@@ -3,15 +3,15 @@ package com.unicam.Service.Contenuto;
 import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.ContestRepository;
 import com.unicam.Repository.UtenteRepository;
+import com.unicam.dto.ContestTerminatoDTO;
+import com.unicam.dto.EsitoContestDTO;
 import com.unicam.dto.Risposte.ContestResponseDTO;
 import com.unicam.dto.Risposte.ContestVotiDTO;
-import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class ContestService {
@@ -43,7 +43,7 @@ public class ContestService {
         List<ContestResponseDTO> contests = new ArrayList<>();
         for (Contest contest : contestPresenti) {
             if (contest.getStato() == StatoContenuto.APPROVATO) {
-                if(contest.getDurata().getFine().isAfter(adesso) && contest.getDurata().getInizio().isBefore(adesso))
+                if(contest.getDurata().getFine().isAfter(adesso))
                     contests.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
                             contest.getDurata().getFine(), contest.getAutore().getUsername()));
             }
@@ -51,7 +51,7 @@ public class ContestService {
         return contests;
     }
 
-    public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato, LocalDateTime adesso) {
+    public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato) {
         List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
         List<ContestResponseDTO> contests = new ArrayList<>();
         for (Contest contest : contestPresenti) {
@@ -84,15 +84,11 @@ public class ContestService {
             throw new IllegalArgumentException("Esiste già un contest in attesa con questo titolo. Si prega di cambiarlo");
     }
 
-    public void PartecipaContest(String titolo, String comune, boolean partecipo, long idUtente) {
+    public void PartecipaContest(String titolo, String comune, long idUtente) {
         Contest contest = this.repoContest.findContestByTitoloAndComune(titolo, comune);
-        if(contest.getIdPartecipanti().contains(idUtente))
+        if(contest.getListaPartecipanti().contains(repoUtente.findUserById(idUtente).getUsername()))
             throw new IllegalArgumentException("Hai già partecipato a questo contest");
-        contest.getIdPartecipanti().add(idUtente);
-        if(partecipo)
-            contest.setVotiFavore(contest.getVotiFavore()+1);
-        else
-            contest.setVotiContrari(contest.getVotiContrari()+1);
+        contest.getListaPartecipanti().add(repoUtente.findUserById(idUtente).getUsername());
         this.repoContest.save(contest);
     }
 
@@ -102,19 +98,15 @@ public class ContestService {
                     "Assicurarsi di aver inserito correttamente il nome del contest");
     }
 
-    public List<ContestVotiDTO> GetContestByComuneTempo(String comune, LocalDateTime adesso, boolean finito) {
+    public List<ContestVotiDTO> GetContestByComuneTempo(String comune, LocalDateTime adesso) {
         List<Contest> contests = this.repoContest.findByComuneAndStato(comune, StatoContenuto.APPROVATO);
         List<ContestVotiDTO> restituiti = new ArrayList<>();
         for(Contest contest: contests){
-            if(finito == true) {
-                if (contest.getDurata().getFine().isBefore(adesso))
+            if (contest.getDurata().getFine().isBefore(adesso)){
+                if(contest.getVincitore().equals("")){
                     restituiti.add(new ContestVotiDTO(contest.getTitolo(), contest.getDescrizione(),
-                            contest.getDurata().getFine(), contest.getVotiFavore(), contest.getVotiContrari()));
-            }
-            else {
-                if (contest.getDurata().getFine().isAfter(adesso) && contest.getDurata().getInizio().isBefore(adesso))
-                    restituiti.add(new ContestVotiDTO(contest.getTitolo(), contest.getDescrizione(),
-                            contest.getDurata().getFine(), contest.getVotiFavore(), contest.getVotiContrari()));
+                            contest.getDurata().getFine(), "--- da nominare ---"));
+                }
             }
         }
         return restituiti;
@@ -138,5 +130,53 @@ public class ContestService {
         if(contest == null)
             throw new NullPointerException("Il contest non esiste. Controllare di aver inserito correttamente il titolo del contest");
         this.repoContest.delete(contest);
+    }
+
+    public void AssegnaVincitore(String contest, String vincitore, LocalDateTime adesso, String comune) {
+        Contest contestTrovato = this.repoContest.findContestByTitoloAndComune(contest, comune);
+        if(contestTrovato.getDurata().getFine().isAfter(adesso)){
+            throw new IllegalArgumentException("Il contest non è ancora terminato");
+        }
+        if(!contestTrovato.getListaPartecipanti().contains(vincitore)){
+            throw new IllegalArgumentException("Utente non trovato tra i partecipanti. Controllare di aver scritto bene l'username del vincitore");
+        }
+        if(!contestTrovato.getVincitore().equals("")){
+            throw new IllegalArgumentException("Il contest selezionato ha già un vincitore assegnato");
+        }
+        contestTrovato.setVincitore(vincitore);
+        this.repoContest.save(contestTrovato);
+    }
+
+    public ContestTerminatoDTO PartecipantiContest(String contest, String comune, LocalDateTime adesso) {
+        Contest contestTrovato = this.repoContest.findContestByTitoloAndComune(contest, comune);
+        if(contestTrovato.getDurata().getFine().isAfter(adesso)){
+            throw new IllegalArgumentException("Il contest non è ancora terminato");
+        }
+        ContestTerminatoDTO contestPartecipanti = new ContestTerminatoDTO(contestTrovato.getTitolo(), contestTrovato.getListaPartecipanti());
+        return contestPartecipanti;
+    }
+
+    public List<EsitoContestDTO> EsitoContest(String username, LocalDateTime adesso) {
+        List<Contest> contest = this.repoContest.findAll();
+        List<EsitoContestDTO> esiti = new ArrayList<>();
+        for(Contest contestTrovato : contest){
+            if(contestTrovato.getListaPartecipanti().contains(username)){
+                EsitoContestDTO esito = new EsitoContestDTO(contestTrovato.getComune(), contestTrovato.getTitolo(), contestTrovato.getDescrizione());
+                if(contestTrovato.getVincitore().equals(username)){
+                    esito.setEsito("VINCITORE");
+                }
+                else if(contestTrovato.getDurata().getFine().isAfter(adesso)){
+                    esito.setEsito("---- contest ancora in corso ----");
+                }
+                else if(contestTrovato.getVincitore().equals("")){
+                    esito.setEsito("---- vincitore ancora da proclamare ----");
+                }
+                else {
+                    esito.setEsito("Non hai vinto");
+                }
+                esiti.add(esito);
+            }
+        }
+        return esiti;
     }
 }
