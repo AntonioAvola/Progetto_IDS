@@ -120,7 +120,7 @@ public class AnimatoreController {
 
         ControllaInizioFine(proposta.getInizio(), proposta.getFine());
 
-        //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
+        //controllo che non esiste già un contest nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servizioContest.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
         LocalDateTime adesso = LocalDateTime.now();

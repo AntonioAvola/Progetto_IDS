@@ -289,7 +289,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("ROMA: AVVISO!! RISTRUTTURAZIONE; PANTHEON --> avviso approvato");
 
         PuntoLogico punto3 = new PuntoLogico();
-        punto3.setAutore(repoUtente.findUserById(15));
+        punto3.setAutore(repoUtente.findUserById(17));
         punto3.setTitolo("AVVISO!! AFFOLLATO");
         punto3.setDescrizione("Luogo solitamente molto affollato, soprattutto durante periodo estivo");
         punto3.setComune("ROMA");
