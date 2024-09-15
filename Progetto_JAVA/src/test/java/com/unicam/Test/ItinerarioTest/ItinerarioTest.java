@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class InserimentoContenuti {
+public class ItinerarioTest {
 
     @Autowired
     private ComuneService comuneService;
@@ -145,5 +145,60 @@ public class InserimentoContenuti {
         itinerio2.setPuntiDiInteresse(interessi1);
         itinerio2.setStato(StatoContenuto.APPROVATO);
         assertThrows(IllegalArgumentException.class, () -> itinerarioService.ControllaPresenzaNome("CORSA", "ROMA"));
+    }
+
+    @Test
+    public void testAccettaItinerarioAttesa(){
+
+    }
+
+    @Test
+    public void testAccettaItinerarioRipetutoFallito(){
+
+    }
+
+    @Test
+    public void testRifiutaItinerarioAttesa(){
+
+    }
+
+    @Test
+    public void testRifiutaItinerarioAttesaRipetutoFallito(){
+
+    }
+
+    @Test
+    public void testAggiuntiAPreferiti(){
+
+    }
+
+    @Test
+    public void testAggiuntiAPreferitiRipetutoFallito(){
+
+    }
+
+    @Test
+    public void testSegnalaItinerario(){
+
+    }
+
+    @Test
+    public void testSegnalaItinerarioRipetutoFallito(){
+
+    }
+
+    @Test
+    public void testAccettaItinerarioSegnalato(){
+
+    }
+
+    @Test
+    public void testRifiutaItinerarioSegnalato(){
+
+    }
+
+    @Test
+    public void testElimina(){
+
     }
 }

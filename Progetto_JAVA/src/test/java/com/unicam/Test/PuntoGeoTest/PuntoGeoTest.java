@@ -1,14 +1,18 @@
-package com.unicam.test.PuntoGeoTest;
+package com.unicam.Test.PuntoGeoTest;
 
 import com.unicam.Model.BuilderContenuto.PuntoGeoBuilder;
 import com.unicam.Model.PuntoGeolocalizzato;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Security.DataInitializer;
 import com.unicam.Service.ComuneService;
+import com.unicam.Service.Contenuto.EventoService;
+import com.unicam.Service.Contenuto.ItinerarioService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
+import com.unicam.Service.Contenuto.PuntoLogicoService;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import com.unicam.Service.UtenteService;
-import org.checkerframework.checker.units.qual.A;
+import com.unicam.dto.Risposte.ItinerarioResponseDTO;
+import com.unicam.dto.Risposte.LuogoDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +29,14 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class InserimentoContenuti {
+public class PuntoGeoTest {
 
+    @Autowired
+    private PuntoLogicoService puntoLogicoService;
+    @Autowired
+    private EventoService eventoService;
+    @Autowired
+    private ItinerarioService itinerarioService;
     @Autowired
     private UtenteService utenteService;
     @Autowired
@@ -162,4 +172,129 @@ public class InserimentoContenuti {
         assertTrue("Il punto non è stato inserito correttamente", puntoGeoService.GetPuntiGeoByComune("ROMA").size() == 5);
     }
 
+    @Test
+    public void testAggiuntaPreferito(){
+        try{
+            puntoGeoService.AggiuntiPreferito("ARCO DI TITO", "ROMA", 13L);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Punto non aggiunto ai preferiti", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("ARCO DI TITO", "ROMA").getIdUtenteContenutoPreferito().contains(13L));
+    }
+
+    @Test
+    public void testAggiuntaPreferitoRipetutaFallita(){
+        try{
+            puntoGeoService.AggiuntiPreferito("FONTANA DI TREVI", "ROMA", 13L);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Punto non aggiunto ai preferiti", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("FONTANA DI TREVI", "ROMA").getIdUtenteContenutoPreferito().contains(13L));
+        assertThrows(IllegalArgumentException.class, () -> puntoGeoService.AggiuntiPreferito("FONTANA DI TREVI", "ROMA", 13L));
+    }
+
+    @Test
+    public void testSegnalazione(){
+        try{
+            puntoGeoService.SegnalaContenuto("ARCO DI TITO", "ROMA");
+        }catch(Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Segnalazione non avvenuta", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("ARCO DI TITO", "ROMA").getStato() == StatoContenuto.SEGNALATO);
+
+    }
+
+    @Test
+    public void testSegnalazioneRipetutaFallita(){
+        try{
+            puntoGeoService.SegnalaContenuto("PANTHEON", "ROMA");
+        }catch(Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Segnalazione non avvenuta", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("PANTHEON", "ROMA").getStato() == StatoContenuto.SEGNALATO);
+        assertThrows(IllegalArgumentException.class, () -> puntoGeoService.SegnalaContenuto("PANTHEON", "ROMA"));
+    }
+
+    @Test
+    public void testAccettaAttesa(){
+        try{
+            puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.APPROVATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==5);
+    }
+
+    @Test
+    public void testAccettaAttesaRipetuto(){
+        try{
+            puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.APPROVATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size() == 5);
+        assertThrows(IllegalArgumentException.class, () -> puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.APPROVATO));
+    }
+
+    @Test
+    public void testRifiutaAttesa(){
+        try{
+            puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.RIFIUTATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==4);
+    }
+
+    @Test
+    public void testAccettaSegnalazione(){
+        try{
+            puntoGeoService.SegnalaContenuto("ARCO DI TITO", "ROMA");
+        }catch(Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Segnalazione non avvenuta", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("ARCO DI TITO", "ROMA").getStato() == StatoContenuto.SEGNALATO);
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==3);
+        try{
+            puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.APPROVATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==4);
+    }
+
+    @Test
+    public void testRifiutaSegnalazione(){
+        try{
+            puntoGeoService.SegnalaContenuto("ARCO DI TITO", "ROMA");
+        }catch(Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Segnalazione non avvenuta", puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("ARCO DI TITO", "ROMA").getStato() == StatoContenuto.SEGNALATO);
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==3);
+        try{
+            puntoGeoService.AccettaORifiuta("PIAZZA NAVONA", "ROMA", StatoContenuto.RIFIUTATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Il punto non è stato accettato", puntoGeoService.GetPuntiGeoByComune("ROMA").size()==3);
+    }
+
+    @Test
+    public void testEliminaPunto(){
+        PuntoGeolocalizzato punto = puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("FONTANA DI TREVI", "ROMA");
+        LuogoDTO luogo = new LuogoDTO(punto.getTitolo(), punto.getLatitudine(), punto.getLongitudine());
+        try{
+            puntoGeoService.EliminaPuntoGeo("FONTANA DI TREVI", "ROMA");
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        List<ItinerarioResponseDTO> itinerari = itinerarioService.GetItinerariByComune("ROMA");
+        for(ItinerarioResponseDTO itinerario: itinerari){
+            List<LuogoDTO> punti = itinerario.getLuogo();
+            assertFalse("Il punto non è stato eliminato", punti.contains(luogo));
+        }
+        assertTrue("Il punto non è stato eliminato", eventoService.GetEventiByComune("ROMA").size() == 0);
+        assertFalse("Il punto non è stato eliminato", puntoLogicoService.ContienePuntoLogico("AVVISO!! AFFOLLATO", "ROMA"));
+    }
 }

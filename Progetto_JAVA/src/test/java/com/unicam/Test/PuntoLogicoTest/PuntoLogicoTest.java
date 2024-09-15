@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mapping.model.AbstractPersistentProperty;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class InserimentoContenuti {
+public class PuntoLogicoTest {
 
     @Autowired
     private PuntoGeoService puntoGeoService;
@@ -132,5 +131,65 @@ public class InserimentoContenuti {
         }
 
         assertTrue("L'avviso non è stato inserito con successo", logicoService.GetPuntiLogiciByComune("ROMA").size() == 4);
+    }
+
+    @Test
+    public void testAccettaAvviso(){
+        try{
+            logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.APPROVATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Avviso non accettato", logicoService.GetPuntiLogiciByComune("ROMA").size() == 3);
+    }
+
+    @Test
+    public void testAccettaAvvisoRipetuto(){
+        try{
+            logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.APPROVATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Avviso non accettato", logicoService.GetPuntiLogiciByComune("ROMA").size() == 3);
+
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.APPROVATO));
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AVVISO!! LAVORI IN CORSO", "ARCO DI TITO", "ROMA", StatoContenuto.APPROVATO));
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AFFOLLATO", "PANTHEON", "ROMA", StatoContenuto.APPROVATO));
+    }
+
+    @Test
+    public void testRifiuta(){
+        try{
+            logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.RIFIUTATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Avviso non rifiutato", logicoService.GetPuntiLogiciByComune("ROMA").size() == 2);
+        assertFalse("Avviso non rifiutato", logicoService.ContienePuntoLogico("AVVISO!! AFFOLLATO", "ROMA"));
+    }
+
+    @Test
+    public void testRifiutaRipetuto(){
+        try{
+            logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.RIFIUTATO);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("Avviso non rifiutato", logicoService.GetPuntiLogiciByComune("ROMA").size() == 2);
+        assertFalse("Avviso non rifiutato", logicoService.ContienePuntoLogico("AVVISO!! AFFOLLATO", "ROMA"));
+
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.RIFIUTATO));
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AFFOLLATO", "FONTANA DI TREVI", "ROMA", StatoContenuto.RIFIUTATO));
+        assertThrows(IllegalArgumentException.class, () -> logicoService.AccettaORifiuta("AVVISO!! AFFOLLATO", "PANTHEON", "ROMA", StatoContenuto.RIFIUTATO));
+
+    }
+    @Test
+    public void testElimina(){
+        try{
+            logicoService.EliminaPuntoLogico("AVVISO!! LAVORI IN CORSO", "ROMA", "ARCO DI TITO");
+        }catch(Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+        assertTrue("L'avviso non è stato eliminato", logicoService.GetPuntiLogiciByComune("ROMA").size() == 1);
     }
 }
