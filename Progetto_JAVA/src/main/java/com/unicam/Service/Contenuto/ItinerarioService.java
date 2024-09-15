@@ -116,8 +116,9 @@ public class ItinerarioService {
 
     public void AccettaORifiuta(String nomeContenuto, String comune, StatoContenuto stato) {
         if(!this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.ATTESA))
-            throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
-                    "Si prega di controllare di aver scritto bene il nome e riprovare");
+            if(!this.repoItinerario.existsByTitoloAndComuneAndStato(nomeContenuto, comune, StatoContenuto.SEGNALATO))
+                throw new IllegalArgumentException("Il punto non è presente tra le richieste. " +
+                        "Si prega di controllare di aver scritto bene il nome e riprovare");
         Itinerario itinerario = this.repoItinerario.findItinerarioByTitoloAndComune(nomeContenuto,comune);
         if(stato == StatoContenuto.RIFIUTATO)
             this.repoItinerario.delete(itinerario);

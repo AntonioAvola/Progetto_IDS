@@ -329,6 +329,21 @@ public class DataInitializer implements CommandLineRunner {
         repoItinerario.save(itinerio2);
 
         System.out.println("ROMA: SCOUT --> itinerario approvato");
+
+        Itinerario itinerio3 = new Itinerario();
+        itinerio3.setAutore(repoUtente.findUserById(17));
+        itinerio3.setTitolo("CAMMINATA CENTRO STORICO");
+        itinerio3.setDescrizione("Per visitare i luoghi storici del comune");
+        itinerio3.setComune("ROMA");
+        List<PuntoGeolocalizzato> interessi3 = new ArrayList<>();
+        interessi3.add(repoPunto.findGeoByTitoloAndComune("ARCO DI TITO", "ROMA"));
+        interessi3.add(repoPunto.findGeoByTitoloAndComune("FONTANA DI TREVI", "ROMA"));
+        interessi3.add(repoPunto.findGeoByTitoloAndComune("COMUNE", "ROMA"));
+        itinerio3.setPuntiDiInteresse(interessi2);
+        itinerio3.setStato(StatoContenuto.ATTESA);
+        repoItinerario.save(itinerio3);
+
+        System.out.println("ROMA: CAMMINATA CENTRO STORICO --> itinerario approvato");
     }
 
     private void CreateContest(){
