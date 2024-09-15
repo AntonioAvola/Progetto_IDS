@@ -76,7 +76,7 @@ public class ContestService {
         }
     }
 
-    public void ControllaPresenzaNome(String titolo, String comune, LocalDateTime inizioContest) {
+    public void ControllaPresenzaNome(String titolo, String comune) {
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.APPROVATO)){
             throw new IllegalArgumentException("Esiste già un contest approvato con questo titolo. Rimonimare il contest");
         }

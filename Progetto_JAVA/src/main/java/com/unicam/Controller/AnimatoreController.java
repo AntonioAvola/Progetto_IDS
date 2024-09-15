@@ -115,7 +115,7 @@ public class AnimatoreController {
         ControllaInizioFine(proposta.getInizio(), proposta.getFine());
 
         //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
-        this.servizioContest.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune, proposta.getInizio());
+        this.servizioContest.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
         Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         RichiestaAggiuntaContest richiesta = new RichiestaAggiuntaContest(servizioContest, contest);

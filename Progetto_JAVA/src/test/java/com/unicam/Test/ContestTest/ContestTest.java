@@ -155,7 +155,33 @@ public class ContestTest {
         contestBuilder.BuildSpecifica(tempo);
         Contest contest = contestBuilder.Result();
         contest.setStato(StatoContenuto.APPROVATO);
-         //TODO
+
+        try{
+            contestService.AggiungiContenuto(contest);
+            contestService.ControllaPresenzaNomeApprovato("Concorso fotografico", "ROMA");
+        }catch (Exception e){
+            fail("l'aggiunta ha restituito un errore " +e.getMessage());
+        }
+
+        Tempo tempo2 = new Tempo();
+        ContestBuilder contestBuilder2 = new ContestBuilder();
+        contestBuilder2.BuildAutore(utenteService.GetUtenteById(16L));
+        contestBuilder2.BuildTitolo("Concorso fotografico");
+        contestBuilder2.BuildComune("ROMA");
+        contestBuilder2.BuildDescrizione("Concorso fotografico!!");
+        tempo2.setInizio(LocalDateTime.of(2024, 10, 20, 9, 0));
+        tempo2.setFine(LocalDateTime.of(2024, 10, 20, 12, 0));
+        contestBuilder.BuildSpecifica(tempo2);
+        Contest contest2 = contestBuilder2.Result();
+        contest2.setStato(StatoContenuto.APPROVATO);
+
+        try{
+            contestService.AggiungiContenuto(contest2);
+
+        }catch (Exception e){
+            fail("l'aggiunta ha restituito un errore " +e.getMessage());
+        }
+
     }
 
 
