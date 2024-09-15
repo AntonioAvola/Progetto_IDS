@@ -51,13 +51,18 @@ public class ContestService {
         return contests;
     }
 
-    public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato) {
+    public List<ContestResponseDTO> GetContestStatoByComune(String comune, StatoContenuto stato, LocalDateTime adesso) {
         List<Contest> contestPresenti = this.repoContest.findContestByComune(comune);
         List<ContestResponseDTO> contests = new ArrayList<>();
         for (Contest contest : contestPresenti) {
             if (contest.getStato() == stato) {
-                contests.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
-                        contest.getDurata().getFine(), contest.getAutore().getUsername()));
+                if(contest.getDurata().getFine().isBefore(adesso)){
+                    this.repoContest.delete(contest);
+                }
+                else {
+                    contests.add(new ContestResponseDTO(contest.getTitolo(), contest.getDescrizione(),
+                            contest.getDurata().getFine(), contest.getAutore().getUsername()));
+                }
             }
         }
         return contests;
@@ -84,8 +89,14 @@ public class ContestService {
             throw new IllegalArgumentException("Esiste già un contest in attesa con questo titolo. Si prega di cambiarlo");
     }
 
-    public void PartecipaContest(String titolo, String comune, long idUtente) {
+    public void PartecipaContest(String titolo, String comune, long idUtente, LocalDateTime adesso) {
         Contest contest = this.repoContest.findContestByTitoloAndComune(titolo, comune);
+        if(contest.getDurata().getFine().isBefore(adesso)){
+            throw new IllegalArgumentException("Il contest è già terminato. Non si può più partecipare");
+        }
+        if(contest.getDurata().getInizio().isAfter(adesso)){
+            throw new IllegalArgumentException("Il contest deve ancora iniziare");
+        }
         if(contest.getListaPartecipanti().contains(repoUtente.findUserById(idUtente).getUsername()))
             throw new IllegalArgumentException("Hai già partecipato a questo contest");
         contest.getListaPartecipanti().add(repoUtente.findUserById(idUtente).getUsername());

@@ -2,10 +2,7 @@ package com.unicam.Security;
 
 import com.unicam.Model.*;
 import com.unicam.Repository.ComuneRepository;
-import com.unicam.Repository.Contenuto.EventoRepository;
-import com.unicam.Repository.Contenuto.ItinerarioRepository;
-import com.unicam.Repository.Contenuto.PuntoGeoRepository;
-import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
+import com.unicam.Repository.Contenuto.*;
 import com.unicam.Repository.UtenteRepository;
 import com.unicam.Service.ProxyOSM.ProxyOSM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +37,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private EventoRepository repEvento;
+
+    @Autowired
+    private ContestRepository repoContest;
 
     @Autowired
     private ProxyOSM proxyOSM;
@@ -81,10 +81,11 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("---------------------------------------------------------------------");
             CreatePuntoGeoAttesa();
             System.out.println("---------------------------------------------------------------------");
-            System.out.println("---------------------------------------------------------------------");
             CreateAvvisi();
             System.out.println("---------------------------------------------------------------------");
             CreateItinerari();
+            System.out.println("---------------------------------------------------------------------");
+            CreateContest();
         }
         nomiComuni.clear();
     }
@@ -328,5 +329,45 @@ public class DataInitializer implements CommandLineRunner {
         repoItinerario.save(itinerio2);
 
         System.out.println("ROMA: SCOUT --> itinerario approvato");
+    }
+
+    private void CreateContest(){
+        Contest contest = new Contest();
+        contest.setTitolo("AUTORITRATTI");
+        contest.setDescrizione("Effettuare il proprio autoritratto. Premio: €150");
+        contest.setAutore(repoUtente.findUserById(16));
+        contest.setComune("ROMA");
+        LocalDateTime inizio = LocalDateTime.of(2024, 8,20,9,0);
+        LocalDateTime fine = LocalDateTime.of(2024, 8,28,21,0);
+        contest.setDurata(new Tempo(inizio, fine));
+        contest.getListaPartecipanti().add("contributor2");
+        contest.getListaPartecipanti().add("contributor3");
+        contest.getListaPartecipanti().add("curatore1");
+        contest.getListaPartecipanti().add("curatore3");
+        contest.getListaPartecipanti().add("animatore1");
+        contest.getListaPartecipanti().add("animatore3");
+        contest.setVincitore("");
+        contest.setStato(StatoContenuto.APPROVATO);
+        repoContest.save(contest);
+
+        System.out.println("ROMA: AUTORITRATTI --> contest approvato e terminato");
+
+        Contest contest2 = new Contest();
+        contest2.setTitolo("BELLEZZA");
+        contest2.setDescrizione("Miglior make up realizzato in un'ora. Premio: €200");
+        contest2.setAutore(repoUtente.findUserById(16));
+        contest2.setComune("ROMA");
+        LocalDateTime inizio2 = LocalDateTime.of(2024, 9,14,9,0);
+        LocalDateTime fine2 = LocalDateTime.of(2024, 10, 15, 21,0);
+        contest2.setDurata(new Tempo(inizio2, fine2));
+        contest2.getListaPartecipanti().add("contributor2");
+        contest2.getListaPartecipanti().add("contributor3");
+        contest2.getListaPartecipanti().add("curatore1");
+        contest2.getListaPartecipanti().add("animatore3");
+        contest2.setVincitore("");
+        contest2.setStato(StatoContenuto.APPROVATO);
+        repoContest.save(contest);
+
+        System.out.println("ROMA: BELLEZZA --> contest approvato in corso");
     }
 }

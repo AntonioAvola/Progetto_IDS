@@ -61,9 +61,10 @@ public class ContestTest {
             contestService.AggiungiContenuto(contest);
             contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA");
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore" + e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " + e.getMessage());
         }
     }
+
 
     @Test
     public void TestAccettaContest(){
@@ -84,9 +85,10 @@ public class ContestTest {
             contestService.AccettaORifiuta("Cerimonia di apertura", "ROMA", StatoContenuto.APPROVATO);
             contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA");
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore" + e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " + e.getMessage());
         }
     }
+
 
     @Test
     public void TestRifiutaContest() {
@@ -107,9 +109,10 @@ public class ContestTest {
             contestService.AccettaORifiuta("Cerimonia di apertura", "ROMA", StatoContenuto.RIFIUTATO);
             assertThrows(IllegalArgumentException.class,()-> contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA"));
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore " + e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " + e.getMessage());
         }
     }
+
 
     @Test
     public void TestEliminaContest() {
@@ -129,16 +132,12 @@ public class ContestTest {
             contestService.AggiungiContenuto(contest);
             contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA");
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore " +e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " +e.getMessage());
         }
 
         contestService.EliminaContest("Cerimonia di apertura", "ROMA");
 
-        try{
-            assertThrows(IllegalArgumentException.class, ()-> contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA"));
-        }catch (Exception e){
-            fail("non è stata lanciata nessuna eccezione" + e.getMessage());
-        }
+        assertThrows(IllegalArgumentException.class, ()-> contestService.ControllaPresenzaNomeApprovato("Cerimonia di apertura", "ROMA"));
     }
 
 
@@ -160,7 +159,7 @@ public class ContestTest {
             contestService.AggiungiContenuto(contest);
             contestService.ControllaPresenzaNomeApprovato("Concorso fotografico", "ROMA");
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore " +e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " +e.getMessage());
         }
 
         Tempo tempo2 = new Tempo();
@@ -176,7 +175,6 @@ public class ContestTest {
         contest2.setStato(StatoContenuto.APPROVATO);
 
         assertThrows(IllegalArgumentException.class,() -> contestService.ControllaPresenzaNome("Concorso fotografico", "ROMA"));
-
     }
 
 
@@ -194,19 +192,19 @@ public class ContestTest {
         Contest contest = contestBuilder.Result();
         contest.setStato(StatoContenuto.APPROVATO);
 
+        LocalDateTime adesso = LocalDateTime.of(2024, 10, 20, 11,0);
         try{
             contestService.AggiungiContenuto(contest);
-            contestService.PartecipaContest("Concorso fotografico", "ROMA", 17L);
+            contestService.PartecipaContest("Concorso fotografico", "ROMA", 17L, adesso);
         }catch (Exception e){
-            fail("la partecipazione ha restituito un errore " + e.getMessage());
+            fail("la partecipazione ha restituito un errore: " + e.getMessage());
         }
 
         Contest contestAggiornato = contestRepository.findContestByTitoloAndComune("Concorso fotografico", "ROMA");
 
         //TODO modificare questo controllo; la lista contiene gli username
-        assertTrue("il contest non è presente", contestAggiornato.getListaPartecipanti().contains(17L));
+        assertTrue("il contest non è presente", contestAggiornato.getListaPartecipanti().contains(utenteService.GetUtenteById(17L).getUsername()));
     }
-
 
 
     @Test
@@ -223,24 +221,18 @@ public class ContestTest {
         Contest contest = contestBuilder.Result();
         contest.setStato(StatoContenuto.APPROVATO);
 
-        //TODO modificare questo comando, la lista contiene gli username (String)
-        //contest.getListaPartecipanti().add(15L);
+        contest.getListaPartecipanti().add(utenteService.GetUtenteById(15L).getUsername());
 
         try{
             contestService.AggiungiContenuto(contest);
         }catch (Exception e){
-            fail("l'aggiunta ha restituito un errore " + e.getMessage());
+            fail("l'aggiunta ha restituito un errore: " + e.getMessage());
         }
 
+        LocalDateTime adesso = LocalDateTime.of(2024, 10, 20, 11,30);
+
         assertThrows(IllegalArgumentException.class, ()-> {
-           contestService.PartecipaContest("Concorso fotografico", "ROMA", 15L);
-       });
-
+           contestService.PartecipaContest("Concorso fotografico", "ROMA", 15L, adesso);
+        });
     }
-
-
-
-
-
-
 }

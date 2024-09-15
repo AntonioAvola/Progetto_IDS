@@ -8,6 +8,7 @@ import com.unicam.dto.Risposte.LuogoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,16 +89,21 @@ public class EventoService {
         this.repoEvento.save(evento);
     }
 
-    public List<EventoResponseDTO> GetEventiByComune(String comune, StatoContenuto stato) {
+    public List<EventoResponseDTO> GetEventiByComune(String comune, StatoContenuto stato, LocalDateTime adesso) {
         List<Evento> eventiPresenti = this.repoEvento.findEventoByComune(comune);
         List<EventoResponseDTO> eventi = new ArrayList<>();
         for (Evento evento : eventiPresenti) {
             if (evento.getStato() == stato) {
-                EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(),
-                        evento.getDescrizione(), evento.getDurata().getInizio(), evento.getDurata().getFine(),
-                        evento.getAutore().getUsername());
-                nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
-                eventi.add(nuovo);
+                if(evento.getDurata().getInizio().isBefore(adesso)){
+                    this.repoEvento.delete(evento);
+                }
+                else {
+                    EventoResponseDTO nuovo = new EventoResponseDTO(evento.getTitolo(),
+                            evento.getDescrizione(), evento.getDurata().getInizio(), evento.getDurata().getFine(),
+                            evento.getAutore().getUsername());
+                    nuovo.setLuogo(ConvertiInLuogoDTO(evento.getLuogo()));
+                    eventi.add(nuovo);
+                }
             }
         }
         return eventi;

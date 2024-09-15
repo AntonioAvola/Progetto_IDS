@@ -207,7 +207,6 @@ public class EventoTest {
         assertFalse("balli di gruppo presenti", eventiEsistenti.contains(evento));
         assertTrue("Giochi da tavola presenti", eventiInAttesa.contains(evento2));
     }
-
 }
 
 

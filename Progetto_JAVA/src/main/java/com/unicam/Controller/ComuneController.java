@@ -174,8 +174,8 @@ public class ComuneController {
         LocalDateTime adesso = LocalDateTime.now();
 
         RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
-        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune, StatoContenuto.ATTESA);
-        List<ContestResponseDTO> contest = this.servizioCon.GetContestStatoByComune(comune, StatoContenuto.ATTESA);
+        List<EventoResponseDTO> eventi = this.servizioEv.GetEventiByComune(comune, StatoContenuto.ATTESA, adesso);
+        List<ContestResponseDTO> contest = this.servizioCon.GetContestStatoByComune(comune, StatoContenuto.ATTESA, adesso);
 
         contenuti.getContenutiPresenti().put("eventi", eventi);
         contenuti.getContenutiPresenti().put("contest", contest);

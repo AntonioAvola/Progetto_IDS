@@ -78,7 +78,11 @@ public class AnimatoreController {
         //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servizioEvento.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
 
-        this.servizioEvento.ControllaPresenzaNome(proposta.getTitolo(), comune);
+        LocalDateTime adesso = LocalDateTime.now();
+
+        if(proposta.getInizio().isBefore(adesso) || proposta.getFine().isBefore(adesso))
+            throw new IllegalArgumentException("Non è possibile richiedere l'inserimento di un evento già iniziato o addirittura terminato");
+
         Evento evento = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         evento.setDurata(new Tempo(proposta.getInizio(), proposta.getFine()));
         evento.setLuogo(ControlloPresenzaPuntoGeo(proposta.getNomeLuogo(), comune));
@@ -118,6 +122,11 @@ public class AnimatoreController {
 
         //controllo che non esiste già un evento nel database con lo stesso nome (indipendentemente dallo stato del contenuto)
         this.servizioContest.ControllaPresenzaNome(proposta.getTitolo().toUpperCase(Locale.ROOT), comune);
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        if(proposta.getInizio().isBefore(adesso) || proposta.getFine().isBefore(adesso))
+            throw new IllegalArgumentException("Non è possibile richiedere l'inserimento di un contest già iniziato o addirittura finito");
 
         Contest contest = proposta.ToEntity(this.servizioUtente.GetUtenteById(idUtente), comune);
         RichiestaAggiuntaContest richiesta = new RichiestaAggiuntaContest(servizioContest, contest);

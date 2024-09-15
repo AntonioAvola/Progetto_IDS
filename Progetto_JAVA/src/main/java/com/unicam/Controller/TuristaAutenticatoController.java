@@ -145,7 +145,6 @@ public class TuristaAutenticatoController<T extends Contenuto> {
 
         RicercaContenutiResponseDTO preferiti = new RicercaContenutiResponseDTO();
 
-        LocalDateTime adesso = LocalDateTime.now();
 
         List<PuntoGeoResponseDTO> puntiGeo = this.servicePuntoGeo.GetPuntiPreferiti(idUtente, comune.getNome());
         List<ItinerarioResponseDTO> itinerari = this.serviceItinerario.GetItinerariPreferiti(idUtente, comune.getNome());
@@ -181,7 +180,9 @@ public class TuristaAutenticatoController<T extends Contenuto> {
 
         this.serviceCon.ControllaPresenzaNomeApprovato(nomeContest.toUpperCase(Locale.ROOT), comune.getNome());
 
-        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(), idUtente);
+        LocalDateTime adesso = LocalDateTime.now();
+
+        this.serviceCon.PartecipaContest(nomeContest.toUpperCase(Locale.ROOT), comune.getNome(), idUtente, adesso);
         return ResponseEntity.ok("Votazione eseguita con successo");
     }
 }
