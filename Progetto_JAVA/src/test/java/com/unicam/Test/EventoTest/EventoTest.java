@@ -1,4 +1,4 @@
-package com.unicam.Test.EventoTest;
+package com.unicam.test.EventoTest;
 
 import com.unicam.Model.BuilderContenuto.EventoBuilder;
 import com.unicam.Model.Evento;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
 
@@ -43,6 +44,7 @@ public class EventoTest {
 
     @Autowired
     private ProxyOSM proxyOSM;
+
     @Autowired
     private PuntoGeoService puntoGeoService;
 
@@ -53,12 +55,12 @@ public class EventoTest {
     }
 
     @Test
-    public void EventiPresenti() throws Exception {
+    public void TestEventiPresenti() {
         assertTrue("non sono presenti eventi", !eventoService.GetEventiByComune("ROMA").isEmpty());
     }
 
     @Test
-    public void AggiuntaEvento() throws Exception {
+    public void TestAggiuntaEvento() {
 
         Tempo tempo = new Tempo();
         EventoBuilder eventoBuilder = new EventoBuilder();
@@ -82,15 +84,76 @@ public class EventoTest {
 
 
     @Test
-    public void EliminaEvento() throws Exception {
+    public void TestEliminaEvento() {
         eventoService.EliminaEvento("Festa della birra", "ROMA");
 
-        assertTrue("l'evento non è stato eliminato", eventoService.GetEventiByComune("ROMA").isEmpty());
+        assertFalse("L'evento 'Festa della birra' dovrebbe essere stato eliminato",
+                eventoService.GetEventiByComune("ROMA")
+                        .stream()
+                        .anyMatch(evento -> "Festa della birra".equals(evento.getNomeEvento())));
+    }
+
+    @Test
+    public void TestEliminaEventoNonEsistente() {
+        assertThrows(NullPointerException.class, () -> eventoService.EliminaEvento("Evento non esistente", "ROMA"));
+    }
+
+    @Test
+    public void TestRifiutoEvento() {
+        Tempo tempo1 = new Tempo();
+        EventoBuilder eventoBuilder = new EventoBuilder();
+        eventoBuilder.BuildComune("ROMA");
+        eventoBuilder.BuildTitolo("OpenBar");
+        eventoBuilder.BuildAutore(utenteService.GetUtenteById(16L));
+        eventoBuilder.BuildDescrizione("OpenBar FREE ENTRY");
+        tempo1.setInizio(LocalDateTime.of(2024, 10, 20, 0, 0));
+        tempo1.setFine(LocalDateTime.of(2024, 10, 20, 0, 0));
+        eventoBuilder.BuildSpecifica(tempo1, puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("FONTANA DI TREVI","ROMA"));
+        Evento evento = eventoBuilder.Result();
+        evento.setStato(StatoContenuto.ATTESA);
+
+        try{
+            eventoService.AggiungiContenuto(evento);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+
+        eventoService.AccettaORifiuta("OpenBar", "ROMA", StatoContenuto.RIFIUTATO);
+
+        assertTrue("l'evento è ancora presente", eventoService.GetEventiByComune("ROMA").size() == 1);
+
+
+    }
+
+    @Test
+    public void TestAccettazioneEvento() {
+        Tempo tempo1 = new Tempo();
+        EventoBuilder eventoBuilder = new EventoBuilder();
+        eventoBuilder.BuildComune("ROMA");
+        eventoBuilder.BuildTitolo("OpenBar");
+        eventoBuilder.BuildAutore(utenteService.GetUtenteById(16L));
+        eventoBuilder.BuildDescrizione("OpenBar FREE ENTRY");
+        tempo1.setInizio(LocalDateTime.of(2024, 10, 20, 0, 0));
+        tempo1.setFine(LocalDateTime.of(2024, 10, 20, 0, 0));
+        eventoBuilder.BuildSpecifica(tempo1, puntoGeoService.GetPuntoGeoByNomeAndComuneAndStato("FONTANA DI TREVI","ROMA"));
+        Evento evento = eventoBuilder.Result();
+        evento.setStato(StatoContenuto.ATTESA);
+
+        try{
+            eventoService.AggiungiContenuto(evento);
+        }catch (Exception e){
+            fail("Il metodo ha lanciato un errore: " + e.getMessage());
+        }
+
+        eventoService.AccettaORifiuta("OpenBar", "ROMA", StatoContenuto.APPROVATO);
+
+        assertTrue("l'evento approvato non è presente ", eventoService.GetEventiByComune("ROMA").size() == 2);
+
     }
 
 
     @Test
-    public void AggiuntaEventoConStessoNome() throws Exception {
+    public void TestAggiuntaEventoConStessoNome() {
 
         Tempo tempo = new Tempo();
         EventoBuilder eventoBuilder = new EventoBuilder();
@@ -108,7 +171,7 @@ public class EventoTest {
     }
 
     @Test
-    public void AggiuntaEventiAccavallati() throws IOException {
+    public void TestAggiuntaEventiAccavallati() {
         Tempo tempo1 = new Tempo();
         EventoBuilder eventoBuilder = new EventoBuilder();
         eventoBuilder.BuildComune("ROMA");

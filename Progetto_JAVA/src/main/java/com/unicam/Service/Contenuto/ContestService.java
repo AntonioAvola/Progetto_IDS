@@ -76,13 +76,12 @@ public class ContestService {
         }
     }
 
-    //possono esistere per lo stesso comune due contest con lo stesso nome, basta che l'inizio del secondo non sia prima della fine del primo
     public void ControllaPresenzaNome(String titolo, String comune, LocalDateTime inizioContest) {
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.APPROVATO)){
-            throw new IllegalArgumentException("Esiste già un contest con questo titolo in quel periodo. Rimonimare il contest");
+            throw new IllegalArgumentException("Esiste già un contest approvato con questo titolo. Rimonimare il contest");
         }
         if(this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.ATTESA))
-            throw new IllegalArgumentException("Esiste già un contest con questo titolo. Si prega di cambiarlo");
+            throw new IllegalArgumentException("Esiste già un contest in attesa con questo titolo. Si prega di cambiarlo");
     }
 
     public void PartecipaContest(String titolo, String comune, boolean partecipo, long idUtente) {
@@ -100,7 +99,7 @@ public class ContestService {
     public void ControllaPresenzaNomeApprovato(String titolo, String comune) {
         if(!this.repoContest.existsByTitoloAndComuneAndStato(titolo, comune, StatoContenuto.APPROVATO))
             throw new IllegalArgumentException("Il contest non è ancora stato approvato. " +
-                    "Assicurarsi di aver inserito correttamente il nome del oontest");
+                    "Assicurarsi di aver inserito correttamente il nome del contest");
     }
 
     public List<ContestVotiDTO> GetContestByComuneTempo(String comune, LocalDateTime adesso, boolean finito) {
@@ -132,6 +131,7 @@ public class ContestService {
         }
         return contestPropri;
     }
+
 
     public void EliminaContest(String nomeContenuto, String comune) {
         Contest contest = this.repoContest.findContestByTitoloAndComune(nomeContenuto, comune);
