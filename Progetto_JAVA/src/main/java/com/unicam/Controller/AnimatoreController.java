@@ -14,6 +14,7 @@ import com.unicam.dto.PropostaContestDTO;
 import com.unicam.dto.PropostaEventoDTO;
 import com.unicam.dto.Risposte.ContestVotiDTO;
 import com.unicam.dto.Risposte.RicercaContenutiResponseDTO;
+import com.unicam.dto.Risposte.VincitoriContestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -225,5 +226,33 @@ public class AnimatoreController {
         LocalDateTime adesso = LocalDateTime.now();
 
         this.servizioContest.AssegnaVincitore(contest.toUpperCase(Locale.ROOT), vincitore, adesso, comune);
+    }
+
+    @GetMapping("Api/Animatore/Vincitori-Contest")
+    public ResponseEntity<List<VincitoriContestDTO>> ContestFinitiConVincitori(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
+
+        String idUtenteStr = userDetails.getUserId();
+        Long idUtente = Long.parseLong(idUtenteStr);
+
+        String currentRole = userDetails.getRole();
+
+        String comune = userDetails.getComune();
+
+        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
+        if(!this.servizioUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+
+        if(!currentRole.equals(Ruolo.ANIMATORE.name())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
+        }
+
+        LocalDateTime adesso = LocalDateTime.now();
+
+        List<VincitoriContestDTO> vincitori = this.servizioContest.VincitoriContest(comune);
+        return ResponseEntity.ok(vincitori);
     }
 }

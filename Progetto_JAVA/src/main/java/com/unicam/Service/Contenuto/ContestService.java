@@ -7,6 +7,7 @@ import com.unicam.dto.ContestTerminatoDTO;
 import com.unicam.dto.EsitoContestDTO;
 import com.unicam.dto.Risposte.ContestResponseDTO;
 import com.unicam.dto.Risposte.ContestVotiDTO;
+import com.unicam.dto.Risposte.VincitoriContestDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -189,5 +190,16 @@ public class ContestService {
             }
         }
         return esiti;
+    }
+
+    public List<VincitoriContestDTO> VincitoriContest(String comune) {
+        List<Contest> contests = this.repoContest.findContestByComune(comune);
+        List<VincitoriContestDTO> vincitori = new ArrayList<>();
+        for(Contest contest: contests){
+            if(!contest.getVincitore().equals("")){
+                vincitori.add(new VincitoriContestDTO(contest.getTitolo(), contest.getVincitore()));
+            }
+        }
+        return vincitori;
     }
 }
