@@ -2,14 +2,27 @@
 ---------------------------------------------------------
 **Antonio Avola**     Matr: 118596 <br>
 **Eleonora Carbini**  Matr: 118300 <br>
-**Sofia Scarpeccio**  Matr: 119074  <br>
+**Sofia Scarpeccio**  Matr: 119074 <br>
 
-##Come usare il progetto
+##Breve descrizione
+---------------------------------------------------------
+La piattaforma è progettata per promuovere la valorizzazione del territorio dei comuni attraverso la partecipazione attiva degli utenti.
+In base al ruolo dell'utente saranno consentite alcune delle seguenti funzioni: 
+- Aggiunta del comune nel sistema
+- Aggiungere punti geografici (Comuni, monumenti, piazze ...)
+- Aggiungere Avvisi e itinerari 
+- Proporre eventi e contest
+- Visitare altri comuni
+- Partecipare a eventi e contest
+- Segnalare punti geografici ed itinerari (al di fuori del proprio comune)
+- Salvare itinerari, eventi e punti geolocalizzati tra i preferiti (al di fuori del proprio comune)
+
+###Come usare il progetto
 ---------------------------------------------------------
 Una volta avviato il `main.java` nel progetto,  le API del progetto possono essere testate tramite **Swagger**. <br>
 Per accedere a Swagger e testare tutte le API, aprire il seguente URL nel browser :  http://localhost:8080/swagger-ui/index.html 
 
-###Utenti già pronti per i test:
+####Utenti già pronti per i test:
 -------------------------------------------------------------
 | RUOLO      | USERNAME    | PASSWORD       | COMUNE        |
 |------------|-------------|----------------|---------------|
