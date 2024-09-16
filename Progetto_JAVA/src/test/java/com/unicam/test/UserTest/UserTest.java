@@ -146,8 +146,15 @@ public class UserTest {
 
     }
 
-
+    @Test
     public void TestVisitaComune() {
+        try{
+            utenteService.AggiornaComuneVisitato(11L, "ROMA");
+        }catch (Exception e){
+            fail("l'aggiornamento del comune visitato ha restituito un errore  " + e.getMessage());
+        }
 
+        User utente = utenteService.GetUtenteById(11L);
+        assertEquals("il comune visitato non risultà essere quello aspettato", "ROMA", utente.getComuneVisitato());
     }
 }

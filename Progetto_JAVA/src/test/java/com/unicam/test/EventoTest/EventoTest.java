@@ -2,8 +2,10 @@ package com.unicam.test.EventoTest;
 
 import com.unicam.Model.BuilderContenuto.EventoBuilder;
 import com.unicam.Model.Evento;
+import com.unicam.Model.Itinerario;
 import com.unicam.Model.StatoContenuto;
 import com.unicam.Model.Tempo;
+import com.unicam.Repository.Contenuto.EventoRepository;
 import com.unicam.Security.DataInitializer;
 import com.unicam.Service.Contenuto.EventoService;
 import com.unicam.Service.Contenuto.PuntoGeoService;
@@ -47,6 +49,8 @@ public class EventoTest {
 
     @Autowired
     private PuntoGeoService puntoGeoService;
+    @Autowired
+    private EventoRepository eventoRepository;
 
 
     @Before
@@ -206,6 +210,18 @@ public class EventoTest {
 
         assertFalse("balli di gruppo presenti", eventiEsistenti.contains(evento));
         assertTrue("Giochi da tavola presenti", eventiInAttesa.contains(evento2));
+    }
+
+    @Test
+    public void TestAggiuntaAiPreferiti(){
+        try{
+            eventoService.AggiungiPreferito("Festa della birra", "ROMA", 16L);
+        }catch (Exception e){
+            fail("l'aggiunta ai preferiti ha restituito un errore " + e.getMessage());
+        }
+
+        Evento evento = eventoRepository.findEventoByTitoloAndComune("Festa della birra", "ROMA");
+        assertTrue("L'aggiunta ai preferiti non è riuscita", evento.getIdUtenteContenutoPreferito().contains(16L));
     }
 }
 
