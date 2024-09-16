@@ -343,7 +343,7 @@ public class DataInitializer implements CommandLineRunner {
         itinerio3.setStato(StatoContenuto.ATTESA);
         repoItinerario.save(itinerio3);
 
-        System.out.println("ROMA: CAMMINATA CENTRO STORICO --> itinerario approvato");
+        System.out.println("ROMA: CAMMINATA CENTRO STORICO --> itinerario in attesa");
     }
 
     private void CreateContest(){
