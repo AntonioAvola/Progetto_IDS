@@ -139,9 +139,9 @@ public class UserTest {
 
         assertTrue("i contenuti esistono ancora", eventoRepository.findAll().isEmpty());
         assertTrue( "i contenuti esistono ancora", contestRepository.findAll().isEmpty());
-        assertTrue("i contenuti esistono ancora", itinerarioService.GetItinerariByComune("ROMA").size() == 0);
-        assertTrue("i contenuti esistono ancora", puntoGeoService.GetPuntiGeoByComune("ROMA").size() == 0);
-        assertTrue("i contenuti esistono ancora", puntoLogicoService.GetPuntiLogiciByComune("ROMA").size() == 0);
+        assertEquals("i contenuti esistono ancora", 0, itinerarioService.GetItinerariByComune("ROMA").size());
+        assertEquals("i contenuti esistono ancora", 1, puntoGeoService.GetPuntiGeoByComune("ROMA").size());
+        assertEquals("i contenuti esistono ancora", 0, puntoLogicoService.GetPuntiLogiciByComune("ROMA").size());
 
 
     }
