@@ -250,8 +250,6 @@ public class AnimatoreController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
-        LocalDateTime adesso = LocalDateTime.now();
-
         List<VincitoriContestDTO> vincitori = this.servizioContest.VincitoriContest(comune);
         return ResponseEntity.ok(vincitori);
     }

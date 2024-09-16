@@ -269,6 +269,10 @@ public class ContributorController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
         }
 
+        if(this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune) &&
+                (currentRole.equals(Ruolo.ANIMATORE.name()) || currentRole.equals(Ruolo.COMUNE.name())))
+            throw new IllegalArgumentException("Non partecipando ai contest non puoi vedere se hai vinto o meno");
+
         LocalDateTime adesso = LocalDateTime.now();
 
         String username = this.serviceUtente.GetUtenteById(idUtente).getUsername();
@@ -347,27 +351,4 @@ public class ContributorController {
 
         this.servicePuntoLogico.EliminaPuntoLogico(titoloAvviso, comune, contenuto.getNomeLuogo());
     }
-
-    private String ControlliPermessi() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
-
-        String idUtenteStr = userDetails.getUserId();
-        Long idUtente = Long.parseLong(idUtenteStr);
-
-        String currentRole = userDetails.getRole();
-
-        String comune = userDetails.getComune();
-
-        //controllo che l'utente non tenti di eseguire l'azione mentre si trova in un comune diverso dal suo, quindi quando è un turista autenticato
-        if(!this.serviceUtente.GetUtenteById(idUtente).getComuneVisitato().equals(comune))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "non hai i permessi necessari per effettuare questa azione");
-
-        if(currentRole.equals(Ruolo.ADMIN.name()))
-            throw new IllegalArgumentException("ADMIN; nessun contenuto da visualizzare");
-        return comune;
-    }
-
 }
