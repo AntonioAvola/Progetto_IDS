@@ -1,9 +1,6 @@
 package com.unicam.Service.Contenuto;
 
-import com.unicam.Model.PuntoGeolocalizzato;
-import com.unicam.Model.PuntoLogico;
-import com.unicam.Model.StatoContenuto;
-import com.unicam.Model.User;
+import com.unicam.Model.*;
 import com.unicam.Repository.Contenuto.PuntoGeoRepository;
 import com.unicam.Repository.Contenuto.PuntoLogicoRepository;
 import com.unicam.Repository.UtenteRepository;
@@ -122,12 +119,23 @@ public class PuntoLogicoService {
         return puntiPropri;
     }
 
-    public void EliminaPuntoLogico(String nomeAvviso, String comune, String nomeLuogo) {
+    public void EliminaPuntoLogico(String nomeAvviso, String comune, String nomeLuogo, long idUtente) {
         PuntoGeolocalizzato punto = this.repoGeo.findGeoByTitoloAndComune(nomeLuogo, comune);
         if(punto != null){
             if(this.repoPunto.existsByTitoloAndComuneAndRiferimento(nomeAvviso, comune, punto)){
-                PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
-                this.repoPunto.delete(avviso);
+                if(repoUtente.findUserById(idUtente).getRuoloComune() != Ruolo.CURATORE){
+                    if(punto.getAutore().getId() == idUtente){
+                        PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
+                        this.repoPunto.delete(avviso);
+                    }
+                    else{
+                        throw new IllegalArgumentException("Il contenuto non è stato inserito da te");
+                    }
+                }
+                else{
+                    PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
+                    this.repoPunto.delete(avviso);
+                }
             }
             else{
                 throw new IllegalArgumentException("L'avviso non è presente. Controllare di aver inserito correttamente i parametri");

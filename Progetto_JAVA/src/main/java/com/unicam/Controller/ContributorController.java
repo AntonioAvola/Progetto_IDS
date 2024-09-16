@@ -111,7 +111,7 @@ public class ContributorController {
     }
 
     @PostMapping("Api/Contributor-ContributorAutorizzato-Curatore-Animatore/Aggiungi-PuntoGeo")
-    public void AggiungiPuntoGeolocalizzato(@RequestBody /*PuntoGeoDTO*/ PuntoGeoOSMDTO richiesta) throws IOException {
+    public void AggiungiPuntoGeolocalizzato(@RequestBody PuntoGeoOSMDTO richiesta) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserCustomDetails userDetails = (UserCustomDetails) authentication.getPrincipal();
@@ -342,6 +342,9 @@ public class ContributorController {
         if(currentRole.equals(Ruolo.ADMIN.name()))
             throw new IllegalArgumentException("ADMIN; nessun contenuto da eliminare");
 
+        if(currentRole.equals(Ruolo.COMUNE.name()) || currentRole.equals(Ruolo.ANIMATORE.name()))
+            throw new IllegalArgumentException("Non hai i permessi");
+
         String titoloAvviso = contenuto.getTitoloAvviso().toUpperCase(Locale.ROOT);
 
         if(!titoloAvviso.contains("AVVISO!!"))
@@ -349,6 +352,6 @@ public class ContributorController {
         if(!this.servicePuntoLogico.ContienePuntoLogico(titoloAvviso, comune))
             throw new IllegalArgumentException("Il punto logico/avviso specificato non esiste. Controllare di aver scritto correttamente il titolo");
 
-        this.servicePuntoLogico.EliminaPuntoLogico(titoloAvviso, comune, contenuto.getNomeLuogo());
+        this.servicePuntoLogico.EliminaPuntoLogico(titoloAvviso, comune, contenuto.getNomeLuogo(), idUtente);
     }
 }

@@ -186,7 +186,7 @@ public class PuntoLogicoTest {
     @Test
     public void testElimina(){
         try{
-            logicoService.EliminaPuntoLogico("AVVISO!! LAVORI IN CORSO", "ROMA", "ARCO DI TITO");
+            logicoService.EliminaPuntoLogico("AVVISO!! LAVORI IN CORSO", "ROMA", "ARCO DI TITO", 15);
         }catch(Exception e){
             fail("Il metodo ha lanciato un errore: " + e.getMessage());
         }
