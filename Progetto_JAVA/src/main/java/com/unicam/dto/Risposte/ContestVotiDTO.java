@@ -17,7 +17,7 @@ public class ContestVotiDTO {
         this.vincitore = vincitore;
     }
 
-    public String getNomeItinerario() {
+    public String getNomeContest() {
         return nomeContest;
     }
 

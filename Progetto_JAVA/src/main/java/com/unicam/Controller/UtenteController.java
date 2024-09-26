@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("api/utente")
@@ -55,8 +56,8 @@ public class UtenteController {
         login.setToken(this.servizio.RegistrazioneUtente(registrazione));
         login.setRole(this.servizio.GetUtente(registrazione.getUsername()));
         login.setUsername(registrazione.getUsername());
-        login.setComune(registrazione.getComune());
-        login.setComuneVisitato(registrazione.getComune());
+        login.setComune(registrazione.getComune().toUpperCase(Locale.ROOT));
+        login.setComuneVisitato(registrazione.getComune().toUpperCase(Locale.ROOT));
 
         LocalDateTime adesso = LocalDateTime.now();
 

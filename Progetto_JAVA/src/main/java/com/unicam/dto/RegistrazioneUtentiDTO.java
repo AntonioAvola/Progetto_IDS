@@ -95,7 +95,7 @@ public class RegistrazioneUtentiDTO {
 
     public User ToEntity(){
         User utente = new User(getName(), getEmail(),
-                getPassword(), getComune(), getUsername());
+                getPassword(), getComune().toUpperCase(Locale.ROOT), getUsername());
         if (isCuratore())
             utente.setRuoloComune(Ruolo.CURATORE);
         else if (isAnimatore())
@@ -104,7 +104,7 @@ public class RegistrazioneUtentiDTO {
             utente.setRuoloComune(Ruolo.COMUNE);
         else
             utente.setRuoloComune(Ruolo.CONTRIBUTOR);
-        utente.setComuneVisitato(getComune());
+        utente.setComuneVisitato(getComune().toUpperCase(Locale.ROOT));
         return utente;
     }
 }
