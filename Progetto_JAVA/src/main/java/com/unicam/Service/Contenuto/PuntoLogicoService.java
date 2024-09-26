@@ -145,4 +145,17 @@ public class PuntoLogicoService {
             throw new NullPointerException("Il luogo specificato non esiste. Controllare di aver inserito correttamente il luogo dell'avviso");
         }
     }
+
+    public List<PuntoLogicoResponseDTO> GetPuntiLogiciStatoByComune(String comune, StatoContenuto stato) {
+        List<PuntoLogico> puntiPresenti = this.repoPunto.findByComune(comune);
+        List<PuntoLogicoResponseDTO> punti = new ArrayList<>();
+        for (PuntoLogico punto : puntiPresenti) {
+            if (punto.getStato() == stato){
+                PuntoLogicoResponseDTO nuovo = new PuntoLogicoResponseDTO(punto.getTitolo(), punto.getDescrizione(), punto.getAutore().getUsername());
+                nuovo.setLuogo(new LuogoDTO(punto.getRiferimento().getTitolo(), punto.getRiferimento().getLatitudine(), punto.getRiferimento().getLongitudine()));
+                punti.add(nuovo);
+            }
+        }
+        return punti;
+    }
 }

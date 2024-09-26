@@ -65,9 +65,11 @@ public class CuratoreController {
         RicercaContenutiResponseDTO contenuti = new RicercaContenutiResponseDTO();
         List<PuntoGeoResponseDTO> puntiGeo = this.servizioPuntoGeo.GetPuntiGeoStatoByComune(comune, stato);
         List<ItinerarioResponseDTO> itinerari = this.servizioIti.GetItinerariStatoByComune(comune, stato);
+        List<PuntoLogicoResponseDTO> puntiLogici = this.servizioPuntoLo.GetPuntiLogiciStatoByComune(comune, stato);
 
         contenuti.getContenutiPresenti().put("punti geolocalizzati", puntiGeo);
         contenuti.getContenutiPresenti().put("itinerari", itinerari);
+        contenuti.getContenutiPresenti().put("punti logici / avvisi", puntiLogici);
         return contenuti;
     }
 
