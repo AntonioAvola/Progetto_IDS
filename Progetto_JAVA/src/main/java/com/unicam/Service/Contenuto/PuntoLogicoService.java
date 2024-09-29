@@ -124,8 +124,8 @@ public class PuntoLogicoService {
         if(punto != null){
             if(this.repoPunto.existsByTitoloAndComuneAndRiferimento(nomeAvviso, comune, punto)){
                 if(repoUtente.findUserById(idUtente).getRuoloComune() != Ruolo.CURATORE){
-                    if(punto.getAutore().getId() == idUtente){
-                        PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
+                    PuntoLogico avviso = this.repoPunto.findByTitoloAndRiferimento(nomeAvviso, punto);
+                    if(avviso.getAutore().getId() == idUtente){
                         this.repoPunto.delete(avviso);
                     }
                     else{
